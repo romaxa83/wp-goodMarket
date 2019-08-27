@@ -9,7 +9,32 @@ return [
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
-    'modules' => [],
+    'modules' => [
+        'category' => [
+            'class' => 'backend\modules\category\Category',
+        ],
+        'seo' => [
+            'class' => 'backend\modules\seo\Seo',
+        ],
+        'filemanager' => [
+            'class' => 'backend\modules\filemanager\FileManager',
+            'rename' => true,
+        ],
+        'users' => [
+            'class' => 'backend\modules\users\Users',
+            'modules' => [
+                'roles' => [
+                    'class' => 'backend\modules\users\roles\Roles',
+                ],
+                'administrators' => [
+                    'class' => 'backend\modules\users\administrators\Administrators',
+                ],
+                'people' => [
+                    'class' => 'backend\modules\users\people\People',
+                ],
+            ],
+        ],
+    ],
     'name' => 'GoodMarket',
     'homeUrl' => '/admin',
     'components' => [
