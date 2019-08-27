@@ -1,3 +1,8 @@
+<?php
+//use Yii;
+use common\controllers\AccessController;
+?>
+
 <aside class="main-sidebar">
     <section class="sidebar">
         <?php
@@ -5,7 +10,7 @@
                 [
                     'options' => ['class' => 'sidebar-menu tree', 'data-widget' => 'tree'],
                     'items' => [
-                        ['label' => 'Пример', 'icon' => 'dashboard', 'url' => ['']],
+                        ['label' => 'Каталог', 'icon' => 'list', 'url' => ['/category/category'], 'visible' => AccessController::checkPermission('/category/category/index')],
                         ['label' => 'Login', 'url' => ['site/login'], 'visible' => Yii::$app->user->isGuest],
                         [
                             'label' => 'Инструменты',

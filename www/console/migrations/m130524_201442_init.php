@@ -33,6 +33,14 @@ class m130524_201442_init extends Migration {
         $model->created_at = time();
         $model->updated_at = time();
         $model->save();
+        
+        $auth = Yii::$app->authManager;
+        $su_admin = $auth->createRole('superAdmin');
+        $su_admin->description = 'Главный админ';
+        $auth->add($su_admin);
+        $auth->assign($su_admin, $model->id);
+
+        echo 'CREATE_ADMIN' . PHP_EOL;
     }
 
     public function down() {
