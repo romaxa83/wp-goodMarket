@@ -58,3 +58,40 @@ frontend
 vendor/                  contains dependent 3rd-party packages
 environments/            contains environment-based overrides
 ```
+
+[![pipeline status](https://t-me.pp.ua/wi1w/webserver/badges/7.1-opencart/pipeline.svg)](https://t-me.pp.ua/wi1w/webserver/commits/7.1-opencart)
+
+# Deploying with Docker
+
+## Copy required files from dist
+
+```
+$ cp .env.dist .env
+$ cp traefik.toml.dist traefik.toml
+```
+
+### Set vars in env & traefik
+
+## Set required perm to acme for cert generate
+
+```
+$ sudo chmod 400 acme.json
+```
+
+## Login to registry (hub.t-me.pp.ua)
+
+```
+$ docker login REGISTRY
+```
+
+## Pull and run container
+
+```
+$ docker-compose up -d
+```
+
+## Dump db
+
+```
+$ set -a && . ./.env && set +a && docker exec -ti $(docker ps -f name=goodmarket_mariadb_ -q) sh -c "mysqldump -u$MYSQL_USER -p$MYSQL_PASSWORD -hmariadb $MYSQL_DATABASE > /docker-entrypoint-initdb.d/dump.sql"
+```
