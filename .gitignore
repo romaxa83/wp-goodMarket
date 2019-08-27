@@ -2,6 +2,7 @@ mariadb/
 logs/
 .env
 traefik.toml
+acme.json
 
 # phpstorm project files
 .idea
