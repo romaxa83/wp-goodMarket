@@ -1,0 +1,4 @@
+actor: SuiteTester
+modules:
+    enabled:
+        - \Helper\Suite
