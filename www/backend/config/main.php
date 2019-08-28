@@ -9,9 +9,13 @@ return [
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
+    'language' => 'ru',
     'modules' => [
         'category' => [
             'class' => 'backend\modules\category\Category',
+        ],
+        'product' => [
+            'class' => 'backend\modules\product\Product',
         ],
         'seo' => [
             'class' => 'backend\modules\seo\Seo',

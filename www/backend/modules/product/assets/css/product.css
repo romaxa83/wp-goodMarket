@@ -1,0 +1,142 @@
+.menu-weight {
+    width: 100px;
+}
+.gallery-box .gallery-box-content .gallery-box-item .active {
+    outline: 5px solid #5ba6f7;
+    outline-offset: -5px;
+}
+.gallery-box .gallery-box-content .gallery-box-item .active img {
+    opacity: 1;
+}
+.gallery-box .gallery-box-content .gallery-box-item .active .checked {
+    display: inline-block;
+}
+.gallery-box .gallery-box-content .gallery-box-item a .checked {
+    display: none;
+    position: absolute;
+    top: 5px;
+    right: 6px;
+    font-size: 2em;
+}
+#productcharacteristic-value-cont {
+    border-right: none !important;
+}
+.save-characteristic {
+    position: absolute;
+    right: 15px;
+    top: 25px;
+    z-index: 2;
+}
+.process{
+    opacity: 0.5;
+}
+
+.gallery-box {
+    margin-bottom: 15px;
+}
+.gallery-box .gallery-box-panel input{
+    display: none;
+}
+.gallery-box .gallery-box-item {
+    float: left;
+    margin-right: 3px;
+    margin-bottom: 3px;
+    margin-top: 3px;
+    cursor: move;
+    position: relative;
+}
+.gallery-box .gallery-box-item img {
+    width: 128px;
+    height: 128px;
+    border: 1px solid #d2d6de;
+    z-index: 1;
+}
+.gallery-box .gallery-box-item-delete {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+    display: none;
+}
+.gallery-box .gallery-box-item-default {
+    position: absolute;
+    left: 51px;
+    bottom: 0;
+    z-index: 2;
+}
+.gallery-box .gallery-box-item-search {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: 2;
+    display: none;
+}
+.gallery-box .gallery-box-item .btn {
+    padding: 2px 6px;
+}
+.gallery-box .gallery-box-content {
+    background: #eeeeee;
+    padding: 10px;
+    min-height: 154px;
+}
+.gallery-box-item:hover img {
+    opacity: 0.5;
+}
+.gallery-box-item:hover .gallery-box-item-delete,
+.gallery-box-item:hover .gallery-box-item-search {
+    display: block;
+}
+.select2-container .select2-selection--single .select2-selection__rendered {
+    margin-top: 0px;
+}
+.manufacturer-position-relative {
+    position: relative;
+}
+.manufacturer, .manufacturer-edit, .manufacturer-delete {
+    position: absolute;
+    padding: 3px 8px;
+    top: 28px;
+}
+.manufacturer {
+    right: 84px;
+}
+.manufacturer-edit {
+    right: 53px;
+}
+.manufacturer-delete {
+    right: 23px;
+}
+.crud-box {
+    position: relative;
+}
+.crud-box-add, .crud-box-edit, .crud-box-delete {
+    position: absolute;
+    padding: 3px 8px;
+    top: 28px;
+}
+.crud-box-add {
+    right: 84px;
+}
+.crud-box-edit {
+    right: 53px;
+}
+.crud-box-delete {
+    right: 23px;
+}
+th {
+    white-space: nowrap;
+}
+body .select2-container--krajee .select2-selection--single {
+    padding: 10px 24px 6px 12px;
+}
+.tab-content #tab_4 .box-header {
+    display: none;
+}
+#product-table {
+    white-space: nowrap;
+}
+.box .dropdown-menu.check-list-hide-col {
+    left: -125px;
+    padding: 10px;
+    border: 1px solid #3c8dbc;
+}
