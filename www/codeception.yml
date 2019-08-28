@@ -4,6 +4,7 @@ include:
     - frontend
     - backend
     - backend/modules/category
+    - backend/modules/product
 paths:
     log: console/runtime/logs
 settings:
