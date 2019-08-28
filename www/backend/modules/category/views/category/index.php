@@ -1,12 +1,18 @@
 <?php
 
 use backend\modules\category\CategoryAsset;
+use yii\helpers\Html;
 
 CategoryAsset::register($this);
 ?>
 <div class="box">
     <div class="box-header with-border">
         <h3 class="box-title">Список категорий</h3>
+    </div>
+    <div class="row">
+        <div class="col-md-12 mb-15">
+            <?= Html::a('Добавить категорию', ['create'], ['class' => 'btn btn-primary']); ?>
+        </div>
     </div>
     <div class="box-body">
         <div class="box-group" id="accordion0">

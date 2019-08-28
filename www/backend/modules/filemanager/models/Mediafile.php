@@ -47,7 +47,7 @@ class Mediafile extends ActiveRecord
      * @inheritdoc
      */
     public function init()
-    {      
+    {
         $linkTags = function ($event) {
             if ($this->tagIds === null) {
                 return;
@@ -315,7 +315,7 @@ class Mediafile extends ActiveRecord
         try{
             Image::thumbnail("$basePath/{$this->url}", $width, $height)->save("$basePath/$thumbUrl");
         } catch (Exception $ex) {
-            
+
         }
     }
 
@@ -651,7 +651,7 @@ class Mediafile extends ActiveRecord
     }
 
     public function loadUrlImg($url){
-        $curl_request = $this->curlRun($url); 
+        $curl_request = $this->curlRun($url);
         if($curl_request['status']){
 
             if ($curl_request['error'] === CURLE_OPERATION_TIMEDOUT)  return ['status'=>false, 'message'=>'Превышен лимит ожидания'];
@@ -663,7 +663,7 @@ class Mediafile extends ActiveRecord
             finfo_close($fi);
 
             if (strpos($mime, 'image') === false) return ['status'=>false, 'message'=>'Объект не является изображением'];
-            
+
             return ['status' => true, 'data'=>$curl_request['data']];
         }
         return $curl_request;
@@ -679,7 +679,7 @@ class Mediafile extends ActiveRecord
         if (!file_exists($path)) {
             mkdir($path, 0777, true);
         }
-    
+
         $load_result = $this->loadUrlImg($url);
         if(!$load_result['status']){
             return $load_result;
@@ -697,7 +697,7 @@ class Mediafile extends ActiveRecord
         }
         fclose($fp);
 
-        if(file_exists($absolutePath)){ 
+        if(file_exists($absolutePath)){
             $url = "$structure/$filename";
             $pathinfo = pathinfo($absolutePath);
             $this->filename = $filename;

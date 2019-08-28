@@ -25,6 +25,7 @@ use common\controllers\AccessController;
     <div class="pull-right" style="margin-top: 10px;margin-left: 15px;font-size: 18px;">
         <?php if(AccessController::isView(Yii::$app->controller, 'edit')):?>
             <a href="<?php echo Url::to(['/category/category/edit', 'id' => $level['parent']['id']]); ?>"><i class="fa fa-edit"></i></a>
+            <a href="<?php echo Url::to(['/category/category/delete', 'id' => $level['parent']['id']]); ?>"><i class="fa fa-trash"></i></a>
         <?php endif;?>
     </div>
     <div class="pull-right" style="margin-top: 7px;">
