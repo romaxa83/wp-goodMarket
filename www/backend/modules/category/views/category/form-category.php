@@ -1,6 +1,7 @@
 <?php
 
 use backend\modules\category\CategoryAsset;
+use kartik\select2\Select2;
 use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
@@ -12,7 +13,7 @@ use common\controllers\AccessController;
 
 CategoryAsset::register($this);
 ?>
-<?php $form = ActiveForm::begin(['id' => 'form-category', 'method' => 'POST', 'action' => Url::toRoute('/category/category/edit?id=' . $model->id)]); ?>
+<?php $form = ActiveForm::begin(['method' => 'POST']); ?>
 <div class="nav-tabs-custom">
     <ul class="nav nav-tabs">
         <li><a href="#tab_1" data-toggle="tab" aria-expanded="false">База</a></li>
@@ -28,7 +29,18 @@ CategoryAsset::register($this);
             </div>
             <div class="form-group field-category-parent_name required">
                 <label class="control-label" for="category-parent_name">Родительская категория</label>
-                <input type="text" id="category-parent_name" class="form-control" name="Category[parent_name]" value="<?php echo $parent_name ?>" readonly="readonly">
+                <?php
+                echo Select2::widget([
+                    'id' => 'parent_id',
+                    'name' => 'Category[parent_id]',
+                    'data' => $categoryList,
+                    'value' => $model->parent_id,
+                    'options' => ['placeholder' => 'Выбрать категорию ...'],
+                    'pluginOptions' => [
+                        'allowClear' => true
+                    ],
+                ]);
+                ?>
             </div>
             <?php
             echo LangWidget::widget(['model' => $model, 'fields' => [
@@ -80,7 +92,7 @@ CategoryAsset::register($this);
     </div>
 </div>
 <div class="form-group">
-    <?php echo Html::submitButton('Сохранить', ['class' => 'btn btn-primary', 'name' => 'save', 'value' => '/category/category/edit?id=' . $model->id]) ?>
+    <?php echo Html::submitButton('Сохранить', ['class' => 'btn btn-primary', 'name' => 'save']) ?>
     <?php echo (!isset($page)) ? Html::submitButton('Сохранить и выйти в список', ['class' => 'btn btn-primary', 'name' => 'save', 'value' => '/category/category/']) : FALSE; ?>
     <a href="<?php echo Url::to(['/category/category']) ?>" class="btn btn-danger">Отмена</a>
 </div>

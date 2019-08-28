@@ -6,6 +6,7 @@ use backend\modules\category\models\CategoryLang;
 use backend\modules\product\models\Product;
 use backend\modules\seo\models\SeoMeta;
 use backend\modules\filemanager\models\Mediafile;
+use yii\helpers\ArrayHelper;
 
 /**
  * Это класс модели для таблицы "pages".
@@ -35,11 +36,13 @@ class Category extends \yii\db\ActiveRecord {
      */
     public function rules() {
         return [
-            [['alias', 'media_id', 'rating', 'publish'], 'required', 'message' => 'Необходимо заполнить' ,'on'=>self::ADDED_CATEGORY],
+            [['alias', 'rating', 'media_id', 'publish'], 'required', 'message' => 'Необходимо заполнить' ,'on'=>self::ADDED_CATEGORY],
+            [['parent_id', 'rating', 'publish', 'media_id'], 'number', 'on'=>self::ADDED_CATEGORY],
             ['alias', 'unique', 'message'=>'Такой алиас уже существует', 'on'=>self::ADDED_CATEGORY],
             ['alias', 'match', 'pattern' => '/^[a-z0-9_-]+$/', 'message' => 'Неверно введен алиас', 'on'=>self::ADDED_CATEGORY],
 
-            [['alias', 'media_id', 'rating', 'publish'], 'required', 'on'=>self::SAVED_CATEGORY],
+            [['alias', 'rating', 'media_id', 'publish'], 'required', 'on'=>self::SAVED_CATEGORY],
+            [['parent_id', 'rating', 'publish', 'media_id'], 'number', 'on'=>self::SAVED_CATEGORY],
             ['alias', 'match', 'pattern' => '/^[a-z0-9_-]+$/', 'message' => 'Неверно введен алиас', 'on'=>self::SAVED_CATEGORY]
         ];
     }
@@ -79,6 +82,15 @@ class Category extends \yii\db\ActiveRecord {
 
     public function getCategoryLang() {
         return $this->hasMany(CategoryLang::className(), ['category_id' => 'id']);
+    }
+
+    public function getSelect2List() {
+        $categoryList = Category::find()->select(['id', 'alias'])->with('categoryLang')->where(['publish' => TRUE])->asArray()->all();
+        $categoryList = ArrayHelper::map($categoryList, 'id',  function ($element) {
+            return isset($element['categoryLang'][0]['name']) ? $element['categoryLang'][0]['name'] : $element['alias'];
+        });
+        unset($categoryList[$this->id]);
+        return $categoryList;
     }
 
 }
