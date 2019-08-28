@@ -26,6 +26,7 @@ services:
       - ./migrate.sh:/migrate.sh
       - ./www:/var/www/html
       - ./php-init.sh:/var/www/html/php-init.sh
+      - ./logs/apache2:/var/log/apache2
     links:
       - mariadb
     depends_on:
