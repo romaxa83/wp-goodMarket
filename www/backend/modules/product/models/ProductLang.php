@@ -3,7 +3,7 @@
 namespace backend\modules\product\models;
 
 use yii\db\ActiveRecord;
-use backend\models\Lang;
+use common\models\Lang;
 
 class ProductLang extends ActiveRecord {
 

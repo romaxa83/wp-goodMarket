@@ -206,7 +206,7 @@ Modal::end();
         <?php endif; ?>
         <div class="tab-pane" id="tab_6">
             <?php if ($product->productLang[0]->name): ?>
-                <div class="mt-15 mb-15"><?php echo $product->category->name . ' > ' . $product->productLang[0]->name; ?></div>
+                <div class="mt-15 mb-15"><?php echo $product->categoryLang->name . ' > ' . $product->productLang[0]->name; ?></div>
             <?php endif; ?>
             <?php
             echo GridView::widget([
@@ -380,7 +380,7 @@ Modal::end();
     <?php echo Html::submitButton('Сохранить и выйти в список', ['class' => 'btn btn-primary', 'name' => 'save', 'value' => '/product/product']) ?>
     <?php echo Html::submitButton('Сохранить', ['class' => 'btn btn-primary', 'name' => 'save', 'value' => '/product/product/update?id=' . $id]) ?>
     <?php if (($model->publish == 1)): ?>
-        <a href="<?php echo \Yii::$app->urlManagerFrontend->baseUrl . '/product/' . $model->alias ?>" target="_blank" class="btn btn-primary">Перейти в карточку товара</a>
+        <a href="<?php echo $_SERVER["REQUEST_SCHEME"] . '://' . $_SERVER["HTTP_HOST"] . '/product/' . $model->alias ?>" target="_blank" class="btn btn-primary">Перейти в карточку товара</a>
     <?php endif ?>
     <a href="<?php echo Url::to(['/product/product']) ?>" class="btn btn-danger">Отмена</a>
 </div>

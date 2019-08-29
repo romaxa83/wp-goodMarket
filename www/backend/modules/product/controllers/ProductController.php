@@ -81,7 +81,7 @@ class ProductController extends BaseController {
     public function actionUpdate() {
         $id = Yii::$app->request->get('id');
 
-        $model = $product = Product::find()->where(['id' => $id])->with('category')->with('productLang')->with('productLang.lang')->one();
+        $model = $product = Product::find()->where(['id' => $id])->with('category')->with('productLang.lang')->one();
         if ($product->stock_publish == 0) {
             Yii::$app->session->setFlash('error', 'Продукт отключен на складе');
             return $this->redirect('index');
@@ -133,30 +133,30 @@ class ProductController extends BaseController {
 
 
         // Пересмотреть после оптимизации модуля Акции BEGIN
-        if (!empty($stock_data = StocksProducts::getProductStocks($id))) {
-            for ($i = 0; $i < count($stock_data); $i++) {
-                $vproduct_id = $stock_data[$i]['vproduct_id'];
-                if ($vproduct_id != 0) {
-                    $var = $vp[$vproduct_id]['char_value'];
-                } else {
-                    $var = null;
-                }
-                $sale = $stock_data[$i]['sale'];
-                $stock_id = $stock_data[$i]['stock_id'];
-                $stock = Stock::findOne($stock_id);
-                $sale_price = $model->price * (1 - $sale / 100);
-                $sp_id = $stock_data[$i]['id'];
-                $stock_data[$i] = ['stock_id' => $stock_id, 'sp_id' => $sp_id, 'var' => $var, 'title' => $stock->title, 'type' => $stock->type, 'sale' => $sale, 'sale_price' => $sale_price];
-            }
-            $stock_exist = true;
-        } else {
-            $stock_data = null;
-            $stock_exist = false;
-        }
-        $stockDataProvider = new ArrayDataProvider([
-            'allModels' => $stock_data
-        ]);
-        $stockDataProvider->getModels();
+//        if (!empty($stock_data = StocksProducts::getProductStocks($id))) {
+//            for ($i = 0; $i < count($stock_data); $i++) {
+//                $vproduct_id = $stock_data[$i]['vproduct_id'];
+//                if ($vproduct_id != 0) {
+//                    $var = $vp[$vproduct_id]['char_value'];
+//                } else {
+//                    $var = null;
+//                }
+//                $sale = $stock_data[$i]['sale'];
+//                $stock_id = $stock_data[$i]['stock_id'];
+//                $stock = Stock::findOne($stock_id);
+//                $sale_price = $model->price * (1 - $sale / 100);
+//                $sp_id = $stock_data[$i]['id'];
+//                $stock_data[$i] = ['stock_id' => $stock_id, 'sp_id' => $sp_id, 'var' => $var, 'title' => $stock->title, 'type' => $stock->type, 'sale' => $sale, 'sale_price' => $sale_price];
+//            }
+//            $stock_exist = true; 
+//        } else {
+//            $stock_data = null;
+//            $stock_exist = false;
+//        }
+//        $stockDataProvider = new ArrayDataProvider([
+//            'allModels' => $stock_data
+//        ]);
+//        $stockDataProvider->getModels();
         //Пересмотреть после оптимизации модуля Акции END
 
         $options = [
@@ -173,9 +173,9 @@ class ProductController extends BaseController {
             'characteristic' => $characteristic,
             'product_characteristic' => $product_characteristic,
             // Пересмотреть
-            'stockDataProvider' => $stockDataProvider,
-            'stock_data' => $stock_data,
-            'stock_exist' => $stock_exist,
+            //'stockDataProvider' => $stockDataProvider,
+            //'stock_data' => $stock_data,
+            //'stock_exist' => $stock_exist,
         ];
         return $this->render('form', $options);
     }
