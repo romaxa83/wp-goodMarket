@@ -27,6 +27,8 @@ services:
       - ./www:/var/www/html
       - ./php-init.sh:/var/www/html/php-init.sh
       - ./logs/apache2:/var/log/apache2
+      - ./config/vhosts/default.conf:/etc/apache2/sites-enabled/000-default.conf
+      - ./config/php/php.ini:/usr/local/etc/php/php.ini
     links:
       - mariadb
     depends_on:
