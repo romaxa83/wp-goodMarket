@@ -13,7 +13,7 @@ use kartik\select2\Select2;
 <div class="form-group">
     <label class="control-label" for="product-category-name">Категория</label>
     <?php if ($item->type == 'baza') : ?>
-        <input type="text" id="product-category-name" class="form-control" name="Product[category_name]" value="<?php echo $item->category->name; ?>" readonly="readonly">
+        <input type="text" id="product-category-name" class="form-control" name="Product[category_name]" value="<?php echo $item->categoryLang->name; ?>" readonly="readonly">
         <input type="hidden" id="product-category-id" class="form-control" name="Product[category_id]" value="<?php echo $item->category->id; ?>" readonly="readonly">
     <?php else : ?>
         <?php

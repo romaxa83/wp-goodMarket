@@ -129,3 +129,89 @@ table.table-bordered>tfoot>tr>td,
 table.table-bordered {
     border: 1px solid #3c8dbc;
 }
+/* --- iCheck ---*/
+.tgl {
+    display: none;
+}
+
+.tgl, .tgl:after, .tgl:before, .tgl *, .tgl *:after, .tgl *:before, .tgl + .tgl-btn {
+    box-sizing: border-box;
+}
+
+.tgl::-moz-selection, .tgl:after::-moz-selection, .tgl:before::-moz-selection, .tgl *::-moz-selection, .tgl *:after::-moz-selection, .tgl *:before::-moz-selection, .tgl + .tgl-btn::-moz-selection {
+    background: none;
+}
+
+.tgl::selection, .tgl:after::selection, .tgl:before::selection, .tgl *::selection, .tgl *:after::selection, .tgl *:before::selection, .tgl + .tgl-btn::selection {
+    background: none;
+}
+
+.tgl + .tgl-btn {
+    outline: 0;
+    display: block;
+    width: 72px;
+    height: 28px;
+    position: relative;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.tgl + .tgl-btn:after, .tgl + .tgl-btn:before {
+    position: relative;
+    display: block;
+    content: "";
+    width: 50%;
+    height: 100%;
+}
+
+.tgl + .tgl-btn:after {
+    left: 0;
+}
+
+.tgl:checked + .tgl-btn:after {
+    left: 50%;
+}
+
+.tgl-light + .tgl-btn {
+    background-color: transparent;
+    border: 1px solid #db524b;
+    border-radius: 3px;
+    padding: 2px;
+    transition: all .4s ease;
+}
+
+.tgl-light + .tgl-btn:before {
+    content: "Выкл";
+    position: absolute;
+    left: 38px;
+    font-size: 12px;
+    font-weight: normal;
+    line-height: 24px;
+    height: 24px;
+    color: #949ba2;
+}
+
+.tgl-light + .tgl-btn:after {
+    border-radius: 3px;
+    background: #fff;
+    transition: all .2s ease;
+}
+
+.tgl-light:checked + .tgl-btn {
+    border: 1px solid #008d4c;
+}
+
+
+.tgl-light:checked + .tgl-btn:before {
+    content: "Вкл";
+    left: 8px;
+}
+
+.tgl-light:disabled + .tgl-btn {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+/* --- /iCheck ---*/

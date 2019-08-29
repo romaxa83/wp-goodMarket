@@ -22,12 +22,21 @@ class m190827_120623_create_product_lang_table extends Migration {
             'price' => $this->decimal(24, 13),
             'currency' => $this->string()
         ]);
+
+        // creates index for column `lang_id`
+        $this->createIndex(
+                'idx-product_lang-lang_id', 'product_lang', 'lang_id'
+        );
     }
 
     /**
      * {@inheritdoc}
      */
     public function safeDown() {
+        // drops index for column `lang_id`
+        $this->dropIndex(
+                'idx-product_lang-lang_id', 'product_lang'
+        );
         $this->dropTable('{{%product_lang}}');
     }
 

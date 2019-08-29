@@ -7,6 +7,7 @@ use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
+use yii\helpers\Json;
 
 /**
  * User model
@@ -199,6 +200,11 @@ class User extends ActiveRecord implements IdentityInterface {
             return null;
         }
         return $this->settings;
+    }
+
+    //проверка наличия сущьности
+    private function hasEntity($entity) {
+        return array_key_exists($entity, JSON::decode($this->settings));
     }
 
 }
