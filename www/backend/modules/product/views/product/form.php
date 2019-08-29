@@ -39,8 +39,12 @@ Modal::end();
         <?php if (AccessController::isView(Yii::$app->controller, 'ajax-get-product-characteristic')): ?>
             <li><a href="#tab_5" data-toggle="tab" aria-expanded="true">Характеристики</a></li>
         <?php endif; ?>
-        <li><a href="#tab_6" data-toggle="tab" aria-expanded="true">Атрибуты</a></li>
-        <li><a href="#tab_7" data-toggle="tab" aria-expanded="true">Акции</a></li>
+        <?php if (Yii::$app->controller->action->id === 'update'): ?>    
+            <li><a href="#tab_6" data-toggle="tab" aria-expanded="true">Атрибуты</a></li>
+        <?php endif; ?>
+        <?php if (Yii::$app->controller->action->id === 'update'): ?> 
+            <li><a href="#tab_7" data-toggle="tab" aria-expanded="true">Акции</a></li>
+        <?php endif; ?>
     </ul>
     <div class="tab-content">
         <?php if (isset($provider)): ?>
@@ -204,181 +208,184 @@ Modal::end();
                 <div id="product-characteristic"></div>
             </div>
         <?php endif; ?>
-        <div class="tab-pane" id="tab_6">
-            <?php if ($product->productLang[0]->name): ?>
-                <div class="mt-15 mb-15"><?php echo $product->categoryLang->name . ' > ' . $product->productLang[0]->name; ?></div>
-            <?php endif; ?>
-            <?php
-            echo GridView::widget([
-                'dataProvider' => $dataProvider,
-                'tableOptions' => [
-                    'id' => 'product-table1',
-                    'class' => 'table table-striped table-bordered table-hover',
-                ],
-                'columns' => [
-                    [
-                        'class' => CustomSerialColumn::className(),
-                        'headerOptions' => ['width' => '1%']
-                    ],
-                    [
-                        'headerOptions' => ['width' => '1%'],
-                        'attribute' => 'id',
-                        'value' => function($model) {
-                            return $model['id'];
-                        }
-                    ],
-                    [
-                        'headerOptions' => ['width' => '92%'],
-                        'attribute' => 'char_value',
-                        'value' => function($model) {
-                            return $model['char_value'];
-                        }
-                    ],
-                    [
-                        'headerOptions' => ['width' => '10%'],
-                        'attribute' => 'amount',
-                        'value' => function($model) {
-                            return $model->amount;
-                        }
-                    ],
-                    [
-                        'headerOptions' => ['width' => '10%'],
-                        'contentOptions' => function($model) use ($id) {
-                            return ['class' => 'life-edit-price', 'data-stock-id' => $model['id'], 'data-product-id' => $id];
-                        },
-                        'attribute' => 'price',
-                        'value' => function($model) {
-                            return number_format($model['price'], 2, '.', '');
-                        }
-                    ],
-                    [
-                        'label' => 'Скидка (%)',
-                        'headerOptions' => ['width' => '1%'],
-                        'attribute' => 'sale',
-                        'value' => function($model) {
-                            return 0;
-                        },
-                    ],
-                    [
-                        'label' => 'Цена со скидкой',
-                        'headerOptions' => ['width' => '1%'],
-                        'attribute' => 'sale_price',
-                        'value' => function($model) {
-                            return 0;
-                        }
-                    ],
-                    [
-                        'headerOptions' => ['width' => '1%'],
-                        'attribute' => 'media_id',
-                        'format' => 'raw',
-                        'value' => function($model) use($id) {
-                            return Html::tag(
-                                            'a', '', [
-                                        'href' => '#',
-                                        'title' => 'Добавить превью',
-                                        'aria-label' => 'Добавить превью',
-                                        'style' => 'color:rgb(63,140,187)',
-                                        'class' => 'grid-option fa fa-plus-circle product-gallery-window',
-                                        'data-toggle' => \Yii::t('yii', 'modal'),
-                                        'data-target' => \Yii::t('yii', '#product-gallery'),
-                                        'data-product_id' => $id,
-                                        'data-media' => $model["media_id"],
-                                        'data-id' => $model['id'],
-                                        'data-pjax' => '1'
-                                    ]) . '<span class="media_id">' . $model["media_id"] . '<span>';
-                        }
-                    ],
-                    [
-                        'label' => 'Статус',
-                        'headerOptions' => ['width' => '1%'],
-                        'format' => 'raw',
-                        'attribute' => 'publish',
-                        'filter' => [0 => 'Выкл.', 1 => 'Вкл.'],
-                        'value' => function($model) use($id) {
-                            $access = AccessController::isView(Yii::$app->controller, 'ajax-save-v-product');
-                            $checked = ($model['publish'] == 1) ? 'true' : '';
-                            $options = [
-                                'id' => 'cd_' . $model['id'],
-                                'class' => 'tgl tgl-light publish-toggle status-toggle-v-product',
-                                'data-product_id' => $id,
-                                'data-char-value' => $model['char_value'],
-                                'data-stock_id' => $model['id'],
-                                'data-url' => Url::to(['ajax-update-v-product-status']),
-                                'disabled' => !$access
-                            ];
-                            return Html::beginTag('div') .
-                                    Html::checkbox('status', $checked, $options) .
-                                    Html::label('', 'cd_' . $model['id'], ['class' => 'tgl-btn']) .
-                                    Html::endTag('div');
-                        }
-                    ],
-                    [
-                        'class' => CustomActionColumn::className(),
-                        'header' => '',
-                        'headerOptions' => ['width' => '1'],
-                        'template' => '',
-                        'filter' => '<a href="' . Url::to(['/product/product/update?id=' . $id], TRUE) . '"><i class="grid-option fa fa-filter" title="Сбросить фильтр"></i></a>',
-                        'buttons' => [
-                        ]
-                    ],
-                ]
-            ]);
-            ?>
-        </div>
-        <div class="tab-pane" id="tab_7">
-            <div class="table-responsive-md">
-
+        <?php if (Yii::$app->controller->action->id === 'update'): ?>
+            <div class="tab-pane" id="tab_6">
+                <?php if (isset($product->productLang[0]->name)): ?>
+                    <div class="mt-15 mb-15"><?php echo $product->categoryLang->name . ' > ' . $product->productLang[0]->name; ?></div>
+                <?php endif; ?>
                 <?php
-                if (isset($stockDataProvider)) {
-                    echo GridView::widget([
-                        'dataProvider' => $stockDataProvider,
-                        'tableOptions' => [
-                            'id' => 'sock-list',
-                            'class' => 'table table-hover'
+                echo GridView::widget([
+                    'dataProvider' => $dataProvider,
+                    'tableOptions' => [
+                        'id' => 'product-table1',
+                        'class' => 'table table-striped table-bordered table-hover',
+                    ],
+                    'columns' => [
+                        [
+                            'class' => CustomSerialColumn::className(),
+                            'headerOptions' => ['width' => '1%']
                         ],
-                        'columns' => [
-                            [
-                                'attribute' => 'title',
-                                'label' => 'Название акции',
-                                'format' => 'html',
-                                'value' => function($model) {
-                                    if ($model['type'] == 0) {
-                                        $url = ['/stock/stock/show-stock-products?id=' . $model['stock_id'] . '&sale_product_id=' . $model['sp_id']];
-                                    } else {
-                                        $url = ['/stock/stock/edit-stock?id=' . $model['stock_id']];
-                                    }
-                                    return Html::tag(
-                                                    'a', $model['title'], [
-                                                'href' => Url::to($url),
-                                                'style' => 'color:rgb(63,140,187)',
-                                                'class' => '',
-                                                'data-pjax' => '0',
-                                    ]);
-                                }
-                            ],
-                            [
-                                'attribute' => 'var',
-                                'label' => 'Вариация'
-                            ],
-                            [
-                                'attribute' => 'sale',
-                                'label' => 'Скидка (%)'
-                            ],
-                            [
-                                'attribute' => 'sale_price',
-                                'label' => 'Цена со скидкой',
-                            ],
+                        [
+                            'headerOptions' => ['width' => '1%'],
+                            'attribute' => 'id',
+                            'value' => function($model) {
+                                return $model['id'];
+                            }
                         ],
-                    ]);
-                }
+                        [
+                            'headerOptions' => ['width' => '92%'],
+                            'attribute' => 'char_value',
+                            'value' => function($model) {
+                                return $model['char_value'];
+                            }
+                        ],
+                        [
+                            'headerOptions' => ['width' => '10%'],
+                            'attribute' => 'amount',
+                            'value' => function($model) {
+                                return $model->amount;
+                            }
+                        ],
+                        [
+                            'headerOptions' => ['width' => '10%'],
+                            'contentOptions' => function($model) use ($id) {
+                                return ['class' => 'life-edit-price', 'data-stock-id' => $model['id'], 'data-product-id' => $id];
+                            },
+                            'attribute' => 'price',
+                            'value' => function($model) {
+                                return number_format($model['price'], 2, '.', '');
+                            }
+                        ],
+                        [
+                            'label' => 'Скидка (%)',
+                            'headerOptions' => ['width' => '1%'],
+                            'attribute' => 'sale',
+                            'value' => function($model) {
+                                return 0;
+                            },
+                        ],
+                        [
+                            'label' => 'Цена со скидкой',
+                            'headerOptions' => ['width' => '1%'],
+                            'attribute' => 'sale_price',
+                            'value' => function($model) {
+                                return 0;
+                            }
+                        ],
+                        [
+                            'headerOptions' => ['width' => '1%'],
+                            'attribute' => 'media_id',
+                            'format' => 'raw',
+                            'value' => function($model) use($id) {
+                                return Html::tag(
+                                                'a', '', [
+                                            'href' => '#',
+                                            'title' => 'Добавить превью',
+                                            'aria-label' => 'Добавить превью',
+                                            'style' => 'color:rgb(63,140,187)',
+                                            'class' => 'grid-option fa fa-plus-circle product-gallery-window',
+                                            'data-toggle' => \Yii::t('yii', 'modal'),
+                                            'data-target' => \Yii::t('yii', '#product-gallery'),
+                                            'data-product_id' => $id,
+                                            'data-media' => $model["media_id"],
+                                            'data-id' => $model['id'],
+                                            'data-pjax' => '1'
+                                        ]) . '<span class="media_id">' . $model["media_id"] . '<span>';
+                            }
+                        ],
+                        [
+                            'label' => 'Статус',
+                            'headerOptions' => ['width' => '1%'],
+                            'format' => 'raw',
+                            'attribute' => 'publish',
+                            'filter' => [0 => 'Выкл.', 1 => 'Вкл.'],
+                            'value' => function($model) use($id) {
+                                $access = AccessController::isView(Yii::$app->controller, 'ajax-save-v-product');
+                                $checked = ($model['publish'] == 1) ? 'true' : '';
+                                $options = [
+                                    'id' => 'cd_' . $model['id'],
+                                    'class' => 'tgl tgl-light publish-toggle status-toggle-v-product',
+                                    'data-product_id' => $id,
+                                    'data-char-value' => $model['char_value'],
+                                    'data-stock_id' => $model['id'],
+                                    'data-url' => Url::to(['ajax-update-v-product-status']),
+                                    'disabled' => !$access
+                                ];
+                                return Html::beginTag('div') .
+                                        Html::checkbox('status', $checked, $options) .
+                                        Html::label('', 'cd_' . $model['id'], ['class' => 'tgl-btn']) .
+                                        Html::endTag('div');
+                            }
+                        ],
+                        [
+                            'class' => CustomActionColumn::className(),
+                            'header' => '',
+                            'headerOptions' => ['width' => '1'],
+                            'template' => '',
+                            'filter' => '<a href="' . Url::to(['/product/product/update?id=' . $id], TRUE) . '"><i class="grid-option fa fa-filter" title="Сбросить фильтр"></i></a>',
+                            'buttons' => [
+                            ]
+                        ],
+                    ]
+                ]);
                 ?>
             </div>
-        </div>
+        <?php endif; ?>
+        <?php if (Yii::$app->controller->action->id === 'update'): ?>
+            <div class="tab-pane" id="tab_7">
+                <div class="table-responsive-md">
+                    <?php
+                    if (isset($stockDataProvider)) {
+                        echo GridView::widget([
+                            'dataProvider' => $stockDataProvider,
+                            'tableOptions' => [
+                                'id' => 'sock-list',
+                                'class' => 'table table-hover'
+                            ],
+                            'columns' => [
+                                [
+                                    'attribute' => 'title',
+                                    'label' => 'Название акции',
+                                    'format' => 'html',
+                                    'value' => function($model) {
+                                        if ($model['type'] == 0) {
+                                            $url = ['/stock/stock/show-stock-products?id=' . $model['stock_id'] . '&sale_product_id=' . $model['sp_id']];
+                                        } else {
+                                            $url = ['/stock/stock/edit-stock?id=' . $model['stock_id']];
+                                        }
+                                        return Html::tag(
+                                                        'a', $model['title'], [
+                                                    'href' => Url::to($url),
+                                                    'style' => 'color:rgb(63,140,187)',
+                                                    'class' => '',
+                                                    'data-pjax' => '0',
+                                        ]);
+                                    }
+                                ],
+                                [
+                                    'attribute' => 'var',
+                                    'label' => 'Вариация'
+                                ],
+                                [
+                                    'attribute' => 'sale',
+                                    'label' => 'Скидка (%)'
+                                ],
+                                [
+                                    'attribute' => 'sale_price',
+                                    'label' => 'Цена со скидкой',
+                                ],
+                            ],
+                        ]);
+                    }
+                    ?>
+                </div>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
 <div class="form-group">
     <?php echo Html::submitButton('Сохранить и выйти в список', ['class' => 'btn btn-primary', 'name' => 'save', 'value' => '/product/product']) ?>
-    <?php echo Html::submitButton('Сохранить', ['class' => 'btn btn-primary', 'name' => 'save', 'value' => '/product/product/update?id=' . $id]) ?>
+    <?php echo Html::submitButton('Сохранить', ['class' => 'btn btn-primary', 'name' => 'save', 'value' => (Yii::$app->controller->action->id === 'update') ? '/product/product/update?id=' . $id : '/product/product/create']) ?>
     <?php if (($model->publish == 1)): ?>
         <a href="<?php echo $_SERVER["REQUEST_SCHEME"] . '://' . $_SERVER["HTTP_HOST"] . '/product/' . $model->alias ?>" target="_blank" class="btn btn-primary">Перейти в карточку товара</a>
     <?php endif ?>

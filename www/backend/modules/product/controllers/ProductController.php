@@ -67,13 +67,17 @@ class ProductController extends BaseController {
         $this->view->title = 'Создание продукта';
         $searchModel = new VProductSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $manufacturer = ArrayHelper::map(Manufacturer::find()->asArray()->where(['status' => 1])->all(), 'id', 'name');
+        $group = ArrayHelper::map(Group::find()->where(['status' => 1])->all(), 'id', 'name');
         $options = [
             'model' => new Product(),
             'product' => new Product(),
             'characteristic' => new Characteristic(),
             'characteristic_list' => [],
             'product_characteristic' => new ProductCharacteristic(),
-            'dataProvider' => $dataProvider
+            'dataProvider' => $dataProvider,
+            'manufacturer' => $manufacturer,
+            'group' => $group
         ];
         return $this->render('form', $options);
     }
