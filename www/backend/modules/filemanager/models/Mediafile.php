@@ -225,20 +225,20 @@ class Mediafile extends ActiveRecord
         if (!file_exists($absolutePath)) {
             mkdir($absolutePath, 0777, true);
         }
-
+        
         // get file instance
         $this->file = UploadedFile::getInstance($this, 'file');
         //if a file with the same name already exist append a number
         $counter = 0;
         do{
             if($counter==0){
-                $filename = Inflector::generateTranslate($this->file->baseName).'.'. $this->file->extension;
+                $filename = Inflector::slug($this->file->baseName).'.'. $this->file->extension;
             }else{
                 //if we don't want to rename we finish the call here
                 if($rename == false){
                     return false;
                 }
-                $filename = Inflector::generateTranslate($this->file->baseName). $counter.'.'. $this->file->extension;
+                $filename = Inflector::slug($this->file->baseName). $counter.'.'. $this->file->extension;
             }
             $url = "$structure/$filename";
             $counter++;

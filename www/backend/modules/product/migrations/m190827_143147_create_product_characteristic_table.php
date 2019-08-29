@@ -19,6 +19,7 @@ class m190827_143147_create_product_characteristic_table extends Migration {
             'group_id' => $this->integer(),
             'characteristic_id' => $this->integer(),
             'value' => $this->text(),
+            'product_import_id' => $this->integer()
         ]);
     }
 

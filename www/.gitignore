@@ -43,3 +43,5 @@ phpunit.phar
 /backend/web/index-test.php
 /backend/web/robots.txt
 composer.lock
+backend/web/uploads/*
+!backend/web/uploads/index.html
