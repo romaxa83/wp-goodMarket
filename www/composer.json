@@ -29,7 +29,8 @@
         "2amigos/yii2-file-upload-widget": "~1.0",
         "kartik-v/yii2-widget-alert": "*",
         "yiisoft/yii2-imagine": "^2.1",
-        "guzzlehttp/guzzle": ">=4.1.4 <7.0"
+        "guzzlehttp/guzzle": ">=4.1.4 <7.0",
+        "paulzi/yii2-nested-sets": "^1.1"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",
