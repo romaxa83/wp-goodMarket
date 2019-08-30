@@ -1,0 +1,109 @@
+stages:
+  # - prod-conf
+  # - prod-build
+  - test-php
+
+variables:
+  DOCKER_TLS_CERTDIR: ""
+  MYSQL_ROOT_PASSWORD: $TEST_DB_ROOTPASS
+  MYSQL_DATABASE: $TEST_DB_NAME
+  MYSQL_USER: $DB_USER
+  MYSQL_PASSWORD: $DB_PASS
+  MYSQL_ROOT_HOST: "%"
+
+cache:
+  untracked: true
+  key: "$CI_COMMIT_REF_NAME"
+  paths:
+    - www/vendor/
+
+testing_in_php:
+  stage: test-php
+  tags: [yii]
+  services:
+    - name: mariadb:10.3
+      alias: mariadb
+      command: ["mysqld", "--character-set-server=utf8", "--collation-server=utf8_general_ci"]
+  image: edbizarro/gitlab-ci-pipeline-php:7.1-alpine
+  environment:
+    name: testing
+  script:
+    - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+    - php composer-setup.php
+    - php -r "unlink('composer-setup.php');"
+    - php composer.phar config -g github-oauth.github.com ${GITHUB_TOKEN}
+    - php composer.phar install -d $(pwd)/www
+    - php composer.phar update -d $(pwd)/www
+    # Конфиги
+    - cp www/common/config/main-local.php.dist www/common/config/main-local.php
+    - cp www/common/config/test-local.php.dist www/common/config/test-local.php
+    - sed -i -- "s~localhost~mariadb~g" www/common/config/test-local.php
+    - sed -i -- "s~{NAME_TEST_DB}~$TEST_DB_NAME~g" www/common/config/test-local.php
+    - sed -i -- "s~{USER}~$DB_USER~g" www/common/config/main-local.php
+    - sed -i -- "s~{PASSWORD}~$DB_PASS~g" www/common/config/main-local.php
+    # Инит проекта
+    - php www/init --env=Development --overwrite=No
+    # Test
+    - cd www
+    - php yii_test migrate --interactive=0
+    - php vendor/bin/codecept run unit
+
+# prod_conf:
+#   stage: prod-conf
+#   tags: [yii]
+#   image: edbizarro/gitlab-ci-pipeline-php:7.1-alpine
+#   only:
+#     - master
+#   environment:
+#     name: production
+#   script:
+#     - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+#     - php composer-setup.php
+#     - php -r "unlink('composer-setup.php');"
+# #    - php composer.phar config -g github-oauth.github.com ${GITHUB_TOKEN}
+# #    - ls -la
+#     - php composer.phar install -d $(pwd)/www
+#     - php composer.phar update -d $(pwd)/www
+#     # Конфиги
+#     - cp www/common/config/main-local.php.dist www/common/config/main-local.php
+#     - sed -i -- "s~{NAME}~$PROD_DB_NAME~g" www/common/config/main-local.php
+#     - sed -i -- "s~{USER}~$PROD_DB_USER~g" www/common/config/main-local.php
+#     - sed -i -- "s~{PASSWORD}~$PROD_DB_PASS~g" www/common/config/main-local.php
+#     - sed -i -- "s~localhost~mariadb~g" www/common/config/main-local.php
+#     - cp www/console/config/main-local.php.dist www/console/config/main-local.php
+#     - sed -i -- "s~{DOMAIN}~https://topusacompanies.com~g" www/console/config/main-local.php
+#     # Инит проекта
+#     - php www/init --env=Production --overwrite=No
+#   artifacts:
+#     paths:
+#       - www/yii
+#       - www/vendor/
+#       - www/backend/config/
+#       - www/backend/web/robots.txt
+#       - www/backend/web/index.php
+#       - www/common/config/
+#       - www/console/config/
+#       - www/frontend/config/
+#       - www/frontend/web/robots.txt
+#       - www/frontend/web/index.php
+#     expire_in: 1 day
+    
+# prod_build:
+#   stage: prod-build
+#   image: docker:latest
+#   services:
+#     - docker:dind
+#   only:
+#     - master
+#   environment:
+#     name: production
+#   script:
+#     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+#     - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG || true
+#     - docker build --cache-from $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG --tag $CI_REGISTRY_IMAGE:latest --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG .
+#     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+#     - docker push $CI_REGISTRY_IMAGE:latest
+#   dependencies:
+#     - prod_conf
+#   when:
+#     - manual
