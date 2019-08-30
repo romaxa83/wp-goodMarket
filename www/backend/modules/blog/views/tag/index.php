@@ -21,9 +21,7 @@ BlogAsset::register($this);
 <div class="tag-index">
 
     <p>
-        <?php if($access->accessInView(Url::toRoute(['create']))):?>
-            <?= Html::a('Создать тег', ['create'], ['class' => 'btn btn-primary']) ?>
-        <?php endif;?>
+        <?= Html::a('Создать тег', ['create'], ['class' => 'btn btn-primary']) ?>
     </p>
     <div class="box">
         <div class="box-body table-flexible">
@@ -45,11 +43,8 @@ BlogAsset::register($this);
                         'attribute' => 'title',
                         'label' => 'Название',
                         'format' => 'raw',
-                        'value' => function (Tag $model) use($access) {
-                            if($access->accessInView(Url::toRoute(['view']))){
-                                return Html::a(Html::encode($model->title), ['view', 'id' => $model->id]);
-                            }
-                            return Html::encode($model->title);
+                        'value' => function (Tag $model){
+                            return Html::a(Html::encode($model->title), ['view', 'id' => $model->id]);
                         },
                     ],
                     [
@@ -64,11 +59,8 @@ BlogAsset::register($this);
                         'attribute' => 'status',
                         'label' => 'Статус',
                         'format' => 'raw',
-                        'value' => function(Tag $model) use ($access){
-                            if($access->accessInView(Url::toRoute(['status-change']))){
-                                return StatusHelper::checkBox($model,'/blog/tag/status-change');
-                            }
-                            return StatusHelper::label($model->status);
+                        'value' => function(Tag $model){
+                            return StatusHelper::checkBox($model,'/blog/tag/status-change');
                         },
                         'filter' => StatusHelper::list()
                     ],
@@ -77,33 +69,29 @@ BlogAsset::register($this);
                         'header'=>'Управление',
                         'template' => '{update} {delete}',
                         'buttons' => [
-                            'update' => function($url, $model, $index) use($access){
-                                if($access->accessInView($url)){
-                                    return Html::tag(
-                                        'a',
-                                        '',[
-                                        'href' => $url,
-                                        'title' => 'Редактировать статью',
-                                        'aria-label' => 'Редактировать статью',
-                                        'class' => 'grid-option fa fa-pencil',
-                                        'data-pjax' => '0'
-                                    ]);
-                                }
+                            'update' => function($url, $model, $index){
+                                return Html::tag(
+                                    'a',
+                                    '',[
+                                    'href' => $url,
+                                    'title' => 'Редактировать статью',
+                                    'aria-label' => 'Редактировать статью',
+                                    'class' => 'grid-option fa fa-pencil',
+                                    'data-pjax' => '0'
+                                ]);
                             },
-                            'delete' => function($url, $model, $index) use($access){
-                                if($access->accessInView($url)){
-                                    return Html::tag(
-                                        'a',
-                                        '',[
-                                        'href' => $url,
-                                        'title' => 'Удалить статью',
-                                        'aria-label' => 'Удалить статью',
-                                        'class' => 'grid-option fa fa-trash',
-                                        'data-confirm' => 'Вы уверены, что хотите удалить этот элемент?',
-                                        'data-method' => 'post',
-                                        'data-pjax' => '0'
-                                    ]);
-                                }
+                            'delete' => function($url, $model, $index){
+                                return Html::tag(
+                                    'a',
+                                    '',[
+                                    'href' => $url,
+                                    'title' => 'Удалить статью',
+                                    'aria-label' => 'Удалить статью',
+                                    'class' => 'grid-option fa fa-trash',
+                                    'data-confirm' => 'Вы уверены, что хотите удалить этот элемент?',
+                                    'data-method' => 'post',
+                                    'data-pjax' => '0'
+                                ]);
                             }
                         ]
                     ],
