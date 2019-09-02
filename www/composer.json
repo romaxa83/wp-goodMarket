@@ -30,7 +30,9 @@
         "kartik-v/yii2-widget-alert": "*",
         "yiisoft/yii2-imagine": "^2.1",
         "guzzlehttp/guzzle": ">=4.1.4 <7.0",
-        "paulzi/yii2-nested-sets": "^1.1"
+        "paulzi/yii2-nested-sets": "^1.1",
+        "2amigos/yii2-tinymce-widget" : "~1.1",
+        "nesbot/carbon": "^2.6"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

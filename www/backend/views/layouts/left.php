@@ -19,7 +19,7 @@ use common\controllers\AccessController;
                             'items' => [
                                 ['label' => 'Категорий', 'icon' => 'clone', 'url' => ['/blog/category/index'], 'visible' => AccessController::checkPermission('/blog/category/index')],
                                 ['label' => 'Теги', 'icon' => 'tags', 'url' => ['/blog/tag/index'], 'visible' => AccessController::checkPermission('/category/category/index')],
-                                ['label' => 'Посты','icon' => 'file-text-o','url' => '#', 'visible' => AccessController::checkPermission('/category/category/index')]
+                                ['label' => 'Посты','icon' => 'file-text-o','url' => ['/blog/post/index'], 'visible' => AccessController::checkPermission('/category/category/index')]
                             ],
                             'visible' => AccessController::checkPermission('/category/category/index')
                         ],
