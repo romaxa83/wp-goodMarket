@@ -23,6 +23,7 @@ use common\controllers\AccessController;
                             ],
                             'visible' => AccessController::checkPermission('/category/category/index')
                         ],
+                        ['label' => 'Баннера', 'icon' => 'list', 'url' => ['/banners/banners'], 'visible' => AccessController::checkPermission('/banners/banners/index')],
                         ['label' => 'Login', 'url' => ['site/login'], 'visible' => Yii::$app->user->isGuest],
                         [
                             'label' => 'Инструменты',

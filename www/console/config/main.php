@@ -23,6 +23,7 @@ return [
             'migrationNamespaces' => [
                 'backend\modules\product\migrations',
                 'backend\modules\blog\migrations',
+                'backend\modules\banners\migrations'
             ],
         ],
     ],
