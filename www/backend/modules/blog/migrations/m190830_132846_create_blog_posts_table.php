@@ -29,7 +29,10 @@ class m190830_132846_create_blog_posts_table extends Migration
             'views' => $this->integer()->defaultValue(0),
             'likes' => $this->integer()->defaultValue(0),
             'links' => $this->integer()->defaultValue(0),
+            'comments' => $this->integer()->notNull()->defaultValue(0),
+            'position' => $this->integer(1)->notNull()->defaultValue(0),
             'status' => $this->integer(1),
+            'is_main' => $this->integer(1)->notNull()->defaultValue(0),
             'published_at' => $this->integer(),
             'created_at' => $this->integer()->notNull(),
             'updated_at' => $this->integer()->notNull(),
@@ -37,13 +40,10 @@ class m190830_132846_create_blog_posts_table extends Migration
 
         $this->createIndex('{{%idx-blog_posts-alias}}', '{{%blog_posts}}', 'alias');
         $this->createIndex('{{%idx-blog_posts-category_id}}', '{{%blog_posts}}', 'category_id');
-        $this->createIndex('{{%idx-blog_posts-country_id}}', '{{%blog_posts}}', 'country_id');
         $this->createIndex('{{%idx-blog_posts-author_id}}', '{{%blog_posts}}', 'author_id');
 
         $this->addForeignKey('{{%fk-blog_post-category_id}}', '{{%blog_posts}}', 'category_id', '{{%blog_categories}}', 'id');
-        $this->addForeignKey('{{%fk-blog_post-country_id}}', '{{%blog_posts}}', 'country_id', '{{%blog_categories}}', 'id');
         $this->addForeignKey('{{%fk-blog_post-author_id}}', '{{%blog_posts}}', 'author_id', '{{%user}}', 'id');
-
     }
 
     /**
