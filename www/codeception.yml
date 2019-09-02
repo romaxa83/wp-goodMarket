@@ -5,7 +5,12 @@ include:
     - backend
     - backend/modules/category
     - backend/modules/product
+    - backend/modules/content
 paths:
+    tests: .
+    output: _output
+    data: _data
+    support: _support
     log: console/runtime/logs
 settings:
-    colors: true
+    colors: false
