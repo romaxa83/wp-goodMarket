@@ -16,9 +16,8 @@ class m190830_132627_create_blog_categories_table extends Migration
     {
         $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         
-        $this->createTable('{{%blog_categories}}', [
+        $this->createTable('{{%blog_category}}', [
             'id' => $this->primaryKey(),
-            'title' => $this->string()->notNull(),
             'alias' => $this->string()->notNull(),
             'status' => $this->integer(1)->defaultValue(1),
             'lft' => $this->integer()->notNull(),
@@ -28,20 +27,7 @@ class m190830_132627_create_blog_categories_table extends Migration
             'updated_at' => $this->integer()->notNull(),
         ], $tableOptions);
 
-        $this->insert('{{%blog_categories}}', [
-            'id' => 1,
-            'title' => 'Все категории',
-            'alias' => 'root',
-            'status' => 1,
-            'created_at' => time(),
-            'updated_at' => time(),
-            'lft' => 1,
-            'rgt' => 2,
-            'depth' => 0,
-        ]);
-
-
-        $this->createIndex('{{%idx-blog_categories-alias}}', '{{%blog_categories}}', 'alias');
+        $this->createIndex('{{%idx-blog_category-alias}}', '{{%blog_category}}', 'alias');
     }
 
     /**

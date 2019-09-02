@@ -5,7 +5,7 @@ namespace backend\modules\blog\migrations;
 use yii\db\Migration;
 
 /**
- * Handles the creation of table `{{%blog_tags}}`.
+ * Handles the creation of table `{{%blog_tag}}`.
  */
 class m190830_132956_create_blog_tags_table extends Migration
 {
@@ -15,14 +15,13 @@ class m190830_132956_create_blog_tags_table extends Migration
     public function safeUp()
     {
         $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
-        $this->createTable('{{%blog_tags}}', [
+        $this->createTable('{{%blog_tag}}', [
             'id' => $this->primaryKey(),
-            'title' => $this->string()->notNull(),
             'alias' => $this->string()->notNull(),
             'status' => $this->integer(1)->defaultValue(1),
         ], $tableOptions);
 
-        $this->createIndex('{{%idx-blog_tags-alias}}', '{{%blog_tags}}', 'alias');
+        $this->createIndex('{{%idx-blog_tag-alias}}', '{{%blog_tag}}', 'alias');
     }
 
     /**

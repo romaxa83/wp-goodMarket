@@ -9,6 +9,7 @@ use app\modules\blog\BlogAsset;
 /* @var $this yii\web\View */
 /* @var $model backend\modules\blog\forms\CategoryForm*/
 /* @var $form yii\widgets\ActiveForm */
+$listCategory = $model->categoriesList();
 
 BlogAsset::register($this);
 ?>
@@ -35,7 +36,7 @@ BlogAsset::register($this);
                                 <?= $form->field($model, 'alias')->textInput(['class' => 'form-control alias-translit','maxlength' => true])->label('Аллиас') ?>
 
                                 <?= $form->field($model, 'parent_id')->dropDownList(
-                                    $model->categoriesList()
+                                    empty($listCategory) ? [0 => 'Всё категорий'] : $listCategory
                                 )->label('Родительская категория')->hint('Если вы создаете родительскую категорию,выбирать не надо') ?>
 
                             </div>
