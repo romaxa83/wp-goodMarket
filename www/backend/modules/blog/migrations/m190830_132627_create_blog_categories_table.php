@@ -27,6 +27,17 @@ class m190830_132627_create_blog_categories_table extends Migration
             'updated_at' => $this->integer()->notNull(),
         ], $tableOptions);
 
+        $this->insert('{{%blog_category}}', [
+            'id' => 1,
+            'alias' => 'root',
+            'status' => 1,
+            'created_at' => time(),
+            'updated_at' => time(),
+            'lft' => 1,
+            'rgt' => 2,
+            'depth' => 0,
+        ]);
+
         $this->createIndex('{{%idx-blog_category-alias}}', '{{%blog_category}}', 'alias');
     }
 

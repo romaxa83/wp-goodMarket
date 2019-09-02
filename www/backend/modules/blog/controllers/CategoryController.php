@@ -9,6 +9,7 @@ use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\web\NotFoundHttpException;
 use backend\modules\blog\entities\Category;
+use backend\modules\blog\entities\CategoryLang;
 use backend\modules\blog\forms\CategoryForm;
 use backend\modules\blog\helpers\StatusHelper;
 use backend\modules\blog\services\CategoryService;
@@ -45,18 +46,19 @@ class CategoryController extends Controller
     public function actionCreate()
     {
         $form = new CategoryForm();
+        $post = Yii::$app->request->post();
 
-        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
-
+        if($form->load($post) && $form->validate()){
             try {
-                $this->category_service->create($form);
+                $form->title = $post['CategoryForm']['Language']['ru'];
+                $category = $this->category_service->create($form);
+                $resultat = (new CategoryLang())->saveLang($post['CategoryForm']['Language'],$category->id);
 
                 return $this->redirect(['index']);
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
                 Yii::$app->session->setFlash('error', $e->getMessage());
             }
-
         }
         return $this->render('create', [
             'model' => $form,

@@ -53,8 +53,9 @@ BlogAsset::register($this);
                         'format' => 'raw',
                         'value' => function(Category $model){
                             $indent = ($model->depth > 1 ? str_repeat('&nbsp;&nbsp;', $model->depth - 1) . ' ' : '');
-
-                            return $indent . Html::a(Html::encode($model->title), ['view', 'id' => $model->id]);
+                            $currentTitle = $model->getLangRow()->one();
+                            
+                            return $indent . Html::a(Html::encode($currentTitle->title), ['view', 'id' => $model->id]);
                         }
                     ],
                     [

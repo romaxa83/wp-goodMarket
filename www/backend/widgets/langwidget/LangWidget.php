@@ -33,7 +33,7 @@ class LangWidget extends Widget {
 
     static function getActiveLanguageData($param) {
         $data = [];
-        $languages = Lang::find()->select(['status', 'name as lang', 'alias'])->where(['status' => 1])->orderBy(['priority' => SORT_ASC])->asArray()->all();
+        $languages = Lang::find()->select(['status', 'name as lang', 'alias','id'])->where(['status' => 1])->orderBy(['priority' => SORT_ASC])->asArray()->all();
         foreach ($languages as $k => $v) {
             if ($v['status'] == 1) {
                 foreach ($param as $item) {

@@ -5,6 +5,7 @@ namespace backend\modules\blog\entities;
 use yii\db\ActiveRecord;
 use paulzi\nestedsets\NestedSetsBehavior;
 use backend\modules\blog\forms\queries\CategoryQuery;
+use backend\modules\blog\entities\CategoryLang;
 
 /**
  * @property integer $id
@@ -24,6 +25,8 @@ class Category extends ActiveRecord
 {
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
+
+    public $title;
 
     public static function tableName()
     {
@@ -74,4 +77,8 @@ class Category extends ActiveRecord
         return new CategoryQuery(static::class);
     }
 
+    public function getLangRow(int $lang_id = 1)
+    {   
+        return $this->hasOne(CategoryLang::class, ['category_id' => 'id'])->andWhere(['lang_id' => $lang_id]);
+    }
 }

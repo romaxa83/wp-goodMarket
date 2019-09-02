@@ -5,7 +5,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\DetailView;
 use backend\modules\blog\helpers\StatusHelper;
-
+use backend\widgets\langwidget\LangWidget;
 /* @var $this yii\web\View */
 /* @var $category backend\modules\blog\entities\Category */
 /* @var $access backend\modules\user\useCase\Access */
@@ -37,8 +37,8 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="col-md-6">
             <div class="box">
                 <div class="box-body">
-
-                    <?= DetailView::widget([
+                    <?php 
+                    echo DetailView::widget([
                         'model' => $category,
                         'attributes' => [
                             'id',
@@ -46,7 +46,15 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'title',
                                 'label' => 'Название',
                                 'format' => 'raw',
-                                'value' => $category->title,
+                                'value' => function() use ($category){
+                                    $html = '<ul>';
+                                    foreach(LangWidget::getActiveLanguageData(['id','alias']) as $oneLang) {
+                                        $langModel = $category->getLangRow($oneLang['id'])->one();
+                
+                                        $html .= '<li><b>' . $oneLang['alias'] . '</b> : ' . $langModel->title . '</li>'; 
+                                    }               
+                                    return $html . '</ul>';
+                                }
                             ],
                             [
                                 'attribute' => 'alias',
@@ -61,8 +69,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'value' => StatusHelper::label($category->status),
                             ],
                         ],
-                    ]) ?>
-
+                    ]);
+                    ?>
                 </div>
             </div>
         </div>

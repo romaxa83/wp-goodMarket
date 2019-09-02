@@ -30,11 +30,11 @@ class CategoryForm extends Model
 
     public function rules() {
         return [
-            [['alias', 'title'], 'required'],
-            [['alias', 'title'], 'string','max' => 250],
+            [['alias'], 'required'],
+            [['alias'], 'string','max' => 250],
             [['parent_id'], 'integer'],
             ['alias', AliasValidator::class],
-            [['title', 'alias'], 'unique', 'targetClass' => Category::class, 'filter' => $this->_category ? ['<>', 'id', $this->_category->id] : null]
+            // ['alias', 'unique', 'targetClass' => Category::class, 'filter' => $this->_category ? ['<>', 'id', $this->_category->id] : null]
         ];
     }
 
@@ -55,7 +55,7 @@ class CategoryForm extends Model
             $category = Category::find()->andWhere(['not',['id' => 1]])->andWhere(['status' => Category::STATUS_ACTIVE])->orderBy('lft')->asArray()->all();
         }
         return ArrayHelper::map($category, 'id', function (array $category) {
-            return ($category['depth'] > 1 ? str_repeat('-- ', $category['depth'] - 1) . ' ' : '') . $category['title'];
+            return ($category['depth'] > 1 ? str_repeat('-- ', $category['depth'] - 1) . ' ' : '');
         });
     }
 }

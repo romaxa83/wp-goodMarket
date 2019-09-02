@@ -5,11 +5,10 @@ use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use app\modules\blog\BlogAsset;
-
+use backend\widgets\langwidget\LangWidget;
 /* @var $this yii\web\View */
 /* @var $model backend\modules\blog\forms\CategoryForm*/
 /* @var $form yii\widgets\ActiveForm */
-$listCategory = $model->categoriesList();
 
 BlogAsset::register($this);
 ?>
@@ -25,24 +24,28 @@ BlogAsset::register($this);
             <?php $form = ActiveForm::begin(); ?>
             <div class="box-body">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <div class="box">
                             <div class="box-header with-border">
                                 <h3 class="box-title">Основные поля</h3>
                             </div>
                             <div class="box-body">
-                                <?= $form->field($model, 'title')->textInput(['class' => 'form-control title-translit'])->label('Название категории'); ?>
+                                <?= LangWidget::widget([
+                                    'model' => $model,
+                                    'fields' => [
+                                        ['type' => 'text', 'name' => 'title'],
+                                    ]
+                                ]); ?>
 
                                 <?= $form->field($model, 'alias')->textInput(['class' => 'form-control alias-translit','maxlength' => true])->label('Аллиас') ?>
 
                                 <?= $form->field($model, 'parent_id')->dropDownList(
-                                    empty($listCategory) ? [0 => 'Всё категорий'] : $listCategory
+                                    $model->categoriesList()
                                 )->label('Родительская категория')->hint('Если вы создаете родительскую категорию,выбирать не надо') ?>
 
                             </div>
                         </div>
                     </div>
-
                 </div>
                 <div class="form-group">
                     <?= Html::submitButton('Сохранить',['class' => 'btn btn-primary mr-15',]) ?>
