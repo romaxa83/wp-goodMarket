@@ -32,7 +32,6 @@ class m190830_132846_create_blog_posts_table extends Migration
             'comments' => $this->integer()->notNull()->defaultValue(0),
             'position' => $this->integer(1)->notNull()->defaultValue(0),
             'status' => $this->integer(1),
-            'is_main' => $this->integer(1)->notNull()->defaultValue(0),
             'published_at' => $this->integer(),
             'created_at' => $this->integer()->notNull(),
             'updated_at' => $this->integer()->notNull(),

@@ -27,7 +27,6 @@ use backend\modules\filemanager\models\Mediafile;
  * @property integer $comments
  * @property integer $position
  * @property integer $status
- * @property integer $is_main
  * @property integer $published_at
  * @property integer $created_at
  * @property integer $updated_at
@@ -109,20 +108,7 @@ class Post extends ActiveRecord
         $this->published_at = time();
         $this->updated_at = time();
     }
-
-    /**
-     * @param $status
-     */
-    public function mainPage($status,$position):void
-    {
-        $this->is_main = $status;
-        $this->position = $position;
-        if($status == 0){
-            $this->position = 0;
-        }
-        $this->updated_at = time();
-    }
-
+    
     public function setPosition($position):void
     {
         $this->position = $position;
@@ -165,7 +151,7 @@ class Post extends ActiveRecord
      */
     public function getSeo(): ActiveQuery
     {
-        return $this->hasOne(Meta::class, ['page_id' => 'id']);
+        return $this->hasOne(Meta::class, ['page_id' => 'id'])->andWhere(['alias' => 'post']);
     }
 
     /**
