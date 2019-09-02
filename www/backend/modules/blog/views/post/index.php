@@ -187,31 +187,6 @@ BlogAsset::register($this);
                         'filterOptions' => SettingsWidget::setConfig('status',$user_settings['hide-col']??null,['class' => 'minw-160px']),
                     ],
                     [
-                        'attribute' => 'is_main',
-                        'label' => 'Пост на гл.',
-                        'format' => 'raw',
-                        'value' => function(Post $model){
-                            $position_html = '';
-                            if ($model->is_main == 1){
-                                $position_html .= Html::dropDownList(
-                                    'position',
-                                    $model->position,
-                                    $model->getArrayPosition(),
-                                    [
-                                        'class' => 'position_in_main',
-                                        'data-url' => \yii\helpers\Url::to(['/blog/post/set-position']),
-                                        'data-post-id' => $model->id
-                                    ]
-                                );
-                            }
-                            return StatusHelper::checkBox($model,'/blog/post/view-main-page','is_main') . $position_html;
-                        },
-                        'filter' => StatusHelper::list(true),
-                        'contentOptions' => SettingsWidget::setConfig('is_main',$user_settings['hide-col']??null),
-                        'headerOptions' => SettingsWidget::setConfig('is_main',$user_settings['hide-col']??null),
-                        'filterOptions' => SettingsWidget::setConfig('is_main',$user_settings['hide-col']??null,['class' => 'minw-100px']),
-                    ],
-                    [
                         'class' => CustomActionColumn::className(),
                         'header' => SettingsWidget::widget([
                             'model' => 'post',

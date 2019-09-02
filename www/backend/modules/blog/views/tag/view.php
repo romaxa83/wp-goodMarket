@@ -16,19 +16,15 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="tag-view">
 
     <p>
-        <?php if($access->accessInView(Url::toRoute(['update']))):?>
-            <?= Html::a('Редактирование', ['update', 'id' => $tag->id], ['class' => 'btn btn-primary']) ?>
-        <?php endif;?>
+        <?= Html::a('Редактирование', ['update', 'id' => $tag->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Вернуться', Yii::$app->request->referrer, ['class' => 'btn btn-primary']) ?>
-        <?php if($access->accessInView(Url::toRoute(['delete']))):?>
-            <?= Html::a('Удаление', ['delete', 'id' => $tag->id], [
-                'class' => 'btn btn-danger',
-                'data' => [
-                    'confirm' => 'Вы уверены что хотите удалить этот тег?',
-                    'method' => 'post',
-                ],
-            ]) ?>
-        <?php endif;?>
+        <?= Html::a('Удаление', ['delete', 'id' => $tag->id], [
+            'class' => 'btn btn-danger',
+            'data' => [
+                'confirm' => 'Вы уверены что хотите удалить этот тег?',
+                'method' => 'post',
+            ],
+        ]) ?>
     </p>
     <div class="row">
         <div class="col-md-6">

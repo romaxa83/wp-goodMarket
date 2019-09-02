@@ -11,7 +11,6 @@ use backend\modules\blog\entities\Category;
 /* @var $this yii\web\View */
 /* @var $searchModel backend\modules\blog\forms\search\CategorySearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
-/* @var $access backend\modules\user\useCase\Access */
 
 $this->title = 'Категории для постов';
 $this->params['breadcrumbs'][] = $this->title;

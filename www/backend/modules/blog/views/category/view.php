@@ -22,19 +22,15 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="category-view">
 
     <p>
-        <?php if($access->accessInView(Url::toRoute(['update']))):?>
-            <?= Html::a('Редактирование', ['update', 'id' => $category->id], ['class' => 'btn btn-primary']) ?>
-        <?php endif;?>
+        <?= Html::a('Редактирование', ['update', 'id' => $category->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Вернуться', Yii::$app->request->referrer, ['class' => 'btn btn-primary']) ?>
-        <?php if($access->accessInView(Url::toRoute(['delete']))):?>
-            <?= Html::a('Удаление', ['delete', 'id' => $category->id], [
-                'class' => 'btn btn-danger',
-                'data' => [
-                    'confirm' => 'Вы уверены что хотите удалить эту категорию?',
-                    'method' => 'post',
-                ],
-            ]) ?>
-        <?php endif;?>
+        <?= Html::a('Удаление', ['delete', 'id' => $category->id], [
+            'class' => 'btn btn-danger',
+            'data' => [
+                'confirm' => 'Вы уверены что хотите удалить эту категорию?',
+                'method' => 'post',
+            ],
+        ]) ?>
     </p>
 
     <div class="row">
