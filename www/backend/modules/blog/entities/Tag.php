@@ -20,7 +20,7 @@ class Tag extends ActiveRecord
 
     public static function tableName():string
     {
-        return '{{%blog_tags}}';
+        return '{{%blog_tag}}';
     }
 
     public static function create($title,$alias):self

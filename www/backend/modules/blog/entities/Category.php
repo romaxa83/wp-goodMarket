@@ -27,7 +27,7 @@ class Category extends ActiveRecord
 
     public static function tableName()
     {
-        return '{{%blog_categories}}';
+        return '{{%blog_category}}';
     }
 
     public static function create($title,$alias) : self
