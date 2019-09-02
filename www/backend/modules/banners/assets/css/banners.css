@@ -1,0 +1,6 @@
+.form-group .redactor-box {
+    margin-bottom: 0px;
+}
+.form-group.has-error .redactor-box {
+    border: 1px solid red;
+}
