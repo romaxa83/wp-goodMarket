@@ -12,6 +12,17 @@ use common\controllers\AccessController;
                     'items' => [
                         ['label' => 'Каталог', 'icon' => 'list', 'url' => ['/category/category'], 'visible' => AccessController::checkPermission('/category/category/index')],
                         ['label' => 'Продукты', 'icon' => 'list', 'url' => ['/product/product'], 'visible' => AccessController::checkPermission('/product/product/index')],
+                        [
+                            'label' => 'Контент',
+                            'icon' => 'briefcase',
+                            'url' => '#',
+                            'items' =>
+                                [
+                                    ['label' => 'Страницы', 'icon' => 'file-o', 'url' => ['/content/page'], 'visible' => AccessController::checkPermission('/content/page')],
+                                    ['label' => 'Типы записей', 'icon' => 'archive', 'url' => ['/content/channel'], 'visible' => AccessController::checkPermission('/content/channel')],
+                                    ['label' => 'Настройки', 'icon' => 'gear', 'url' => ['/content/options'], 'visible' => AccessController::checkPermission('/content/options')],
+                                ]
+                        ],
                         ['label' => 'Login', 'url' => ['site/login'], 'visible' => Yii::$app->user->isGuest],
                         [
                             'label' => 'Инструменты',
