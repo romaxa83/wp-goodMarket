@@ -236,15 +236,14 @@ class PostService
     }
 
     /**
-     * @param $country_id
      * @param $category_id
      * @param $post_id
      * @param $limit
      * @return array|bool|\yii\db\ActiveRecord[]
      */
-    public function getSimilarPosts($country_id, $category_id, $post_id, $limit)
+    public function getSimilarPosts( $category_id, $post_id, $limit)
     {
-        if($country_id && $posts = $this->post_repository->getSimilarPostsByCountry($country_id,$post_id,$limit)){
+        if($country_id && $posts = $this->post_repository->getSimilarPostsByCountry($post_id,$limit)){
             if(count($posts) == $limit){
                 return $posts;
             }

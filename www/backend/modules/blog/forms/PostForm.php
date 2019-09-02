@@ -53,11 +53,11 @@ class PostForm extends CompositeForm
         return [
             [['category_id', 'title','alias','content','published_at'], 'required'],
             [['title','alias','description'], 'string', 'max' => 255],
-            [['category_id','media_id','country_id'], 'integer'],
+            [['category_id','media_id'], 'integer'],
             [['description', 'content'], 'string'],
             ['alias', AliasValidator::class],
             [['title', 'alias'], 'unique', 'targetClass' => Post::class, 'filter' => $this->_post ? ['<>', 'id', $this->_post->id] : null],
-            [['published_at','status','country_id'], 'safe'],
+            [['published_at','status'], 'safe'],
         ];
     }
 
@@ -70,7 +70,6 @@ class PostForm extends CompositeForm
             'content' => 'Контент',
             'description' => 'Описание',
             'category_id' => 'Категория',
-            'country_id' => 'Привязать Страну',
             'status' => 'Статус',
             'published_at' => 'Дата публикации'
         ];

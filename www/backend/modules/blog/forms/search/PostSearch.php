@@ -39,7 +39,7 @@ class PostSearch extends Model
      * @param array $params
      * @return ActiveDataProvider
      */
-    public function search(array $params,$page): ActiveDataProvider
+    public function search(array $params): ActiveDataProvider
     {
         $query = Post::find();
 
@@ -51,7 +51,7 @@ class PostSearch extends Model
                 'defaultOrder' => ['id' => SORT_DESC]
             ],
             'pagination' => [
-                'pageSize' => $page,
+                'pageSize' => 10,
             ]
         ]);
 
