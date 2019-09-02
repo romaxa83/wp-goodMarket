@@ -49,20 +49,6 @@ BlogAsset::register($this);
                                             ->dropDownList($model->categoriesList(),['prompt' => 'Выберите категорию'])
                                             ->label('Категория'); ?>
                                     </div>
-                                    <!-- Country -->
-                                    <div class="col-lg-6">
-                                        <?= $form->field($model, 'country_id')->widget(Select2::classname(), [
-                                            'data' => $model->countryList(),
-                                            'language' => 'ru',
-                                            'maintainOrder' => true,
-                                            'options' => [
-                                                'placeholder' => 'Выберите страну',
-                                            ],
-                                            'pluginOptions' => [
-                                                'allowClear' => true
-                                            ],
-                                        ]) ?>
-                                    </div>
                                 </div>
 
                             </div>
@@ -133,7 +119,7 @@ BlogAsset::register($this);
                             <!-- Content -->
                             <div class="col-md-6">
                                 <?= $form->field($model, 'content')->widget(TM::className(), [
-                                    'options' => ['rows' => 6, 'class' => 'field-tiny-mce'],
+                                    'options' => ['rows' => 6, 'class' => 'field-tiny-mce','defaultTag' => 'blog'],
                                     'callbackBeforeInsert' => 'function(e,data){data.url = "/admin" + data.url }',
                                     'clientOptions' => [
                                         'language' => 'ru',

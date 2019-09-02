@@ -20,19 +20,15 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="user-view">
 
     <p>
-        <?php if($access->accessInView(Url::toRoute(['update']))):?>
-            <?= Html::a('Редактировать', ['update', 'id' => $post->id], ['class' => 'btn btn-primary']) ?>
-        <?php endif;?>
+        <?= Html::a('Редактировать', ['update', 'id' => $post->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Вернуться', Yii::$app->request->referrer, ['class' => 'btn btn-primary']) ?>
-        <?php if($access->accessInView(Url::toRoute(['delete']))):?>
-            <?= Html::a('Удалить', ['delete', 'id' => $post->id], [
-                'class' => 'btn btn-danger',
-                'data' => [
-                    'confirm' => 'Вы уверены ,что хотите удалить этот пост?',
-                    'method' => 'post',
-                ],
-            ]) ?>
-        <?php endif;?>
+        <?= Html::a('Удалить', ['delete', 'id' => $post->id], [
+            'class' => 'btn btn-danger',
+            'data' => [
+                'confirm' => 'Вы уверены ,что хотите удалить этот пост?',
+                'method' => 'post',
+            ],
+        ]) ?>
     </p>
     <div class="row">
         <div class="col-md-6">
@@ -58,10 +54,6 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'label' => 'Категория',
                                 'value' => ArrayHelper::getValue($post, 'category.title'),
-                            ],
-                            [
-                                'label' => 'Привязаная страна',
-                                'value' => ArrayHelper::getValue($post, 'country.name'),
                             ],
                             [
                                 'label' => 'Теги',

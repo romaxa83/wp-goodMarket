@@ -29,9 +29,7 @@ BlogAsset::register($this);
 
     <div class="row mb-15">
         <div class="col-xs-6">
-            <?php if($access->accessInView(Url::toRoute(['create']))):?>
-                <?= Html::a('Создать пост', Url::toRoute(['create']), ['class' => 'btn btn-primary']) ?>
-            <?php endif;?>
+            <?= Html::a('Создать пост', Url::toRoute(['create']), ['class' => 'btn btn-primary']) ?>
         </div>
     </div>
 
@@ -106,21 +104,6 @@ BlogAsset::register($this);
                         'contentOptions' => SettingsWidget::setConfig('category_id',$user_settings['hide-col']??null),
                         'headerOptions' => SettingsWidget::setConfig('category_id',$user_settings['hide-col']??null),
                         'filterOptions' => SettingsWidget::setConfig('category_id',$user_settings['hide-col']??null),
-                    ],
-                    [
-                        'attribute' => 'country_id',
-                        'label' => 'Страна',
-                        'format' => 'raw',
-                        'value' => function(Post $model){
-                            if ($model->country_id == null){
-                                return Html::tag('span','Не установленно',['class' => 'label label-danger']);
-                            } else {
-                                return Html::a(Html::encode($model->country->name), ['/referenceBooks/country/update', 'id' => $model->country_id]);
-                            }
-                        },
-                        'contentOptions' => SettingsWidget::setConfig('country_id',$user_settings['hide-col']??null),
-                        'headerOptions' => SettingsWidget::setConfig('country_id',$user_settings['hide-col']??null),
-                        'filterOptions' => SettingsWidget::setConfig('country_id',$user_settings['hide-col']??null),
                     ],
                     [
                         'attribute' => 'description',
@@ -232,7 +215,7 @@ BlogAsset::register($this);
                         'class' => CustomActionColumn::className(),
                         'header' => SettingsWidget::widget([
                             'model' => 'post',
-                            'count_page' => $page,
+                            'count_page' => 10,
                             'hide_col' => $user_settings['hide-col']??null,
                             'attribute' => [
                                 'id' => 'ID',
