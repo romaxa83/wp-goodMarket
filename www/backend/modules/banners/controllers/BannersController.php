@@ -93,13 +93,23 @@ class BannersController extends BaseController {
     }
 
     public function actionCreate($id = 0) {
-        if ($id != 0) {
-            $model = Banner::findOne($id);
-            $model->languageData = Banners::find()->select(['title', 'text', 'language'])->asArray()->where(['id' => $id])->orWhere(['parent' => $id])->all();
-            $title = 'Редактировать';
-        } else {
-            $model = new Banner();
-            $title = 'Добавить баннер';
+        $model = new Banner();
+        $title = 'Добавить баннер';
+//        if ($id != 0) {
+//            $model = Banner::findOne($id);
+//            $model->languageData = Banners::find()->select(['title', 'text', 'language'])->asArray()->where(['id' => $id])->orWhere(['parent' => $id])->all();
+//            $title = 'Редактировать';
+//        } else {
+//            $model = new Banner();
+//            $title = 'Добавить баннер';
+//        } 
+        if (Yii::$app->request->isPost) {
+            $data = Yii::$app->request->post();
+            $model->attributes = $data['Banner'];
+            $model->save();
+            
+            Yii::$app->session->setFlash('success', 'Пункт успешно добавлен');
+            return $this->redirect(['/banners/banners']);
         }
         return $this->render('form', [
                     'title' => $title,
@@ -128,28 +138,7 @@ class BannersController extends BaseController {
     }
 
     public function actionAddBanner() {
-        $model = new Banners();
-        if (($model->load(Yii::$app->request->post())) && (LangWidget::validate($model))) {
-            $last_id = 0;
-            $data = Yii::$app->request->post();
-            foreach (LangWidget::getActiveLanguageData(['alias']) as $v) {
-                $banner = new Banners();
-                $alias = $v['alias'];
-                $data_lang = $data['Banners']['Language'][$alias];
-                $banner->parent = $last_id;
-                $banner->language = $alias;
-                $banner->title = $data_lang['title'];
-                $banner->text = $data_lang['text'];
-                $banner->alias = $data['Banners']['alias'];
-                $banner->position = NULL;
-                $banner->publication = $data['Banners']['publication'];
-                $banner->media_id = $data['Banners']['media_id'];
-                $banner->save();
-                $last_id = ($last_id === NULL) ? $banner->id : $last_id;
-            }
-            Yii::$app->session->setFlash('success', 'Пункт успешно добавлен');
-            return $this->redirect(['/banners/banners']);
-        }
+        
     }
 
     public function actionDeleteBanner() {

@@ -17,7 +17,7 @@ class Banner extends ActiveRecord {
     public function rules() {
         return [
             [['text', 'title', 'alias'], 'string'],
-            [['text', 'title', 'alias', 'media_id'], 'required', 'message' => 'Заполните поле'],
+            [['text', 'title', 'alias', 'media_id'], 'required', 'message' => 'Поле не может быть пустым:'],
             [['publication'], 'integer'],
             ['image', 'image', 'extensions' => 'jpg, jpeg, gif, png', 'on' => ['insert', 'update']],
         ];
