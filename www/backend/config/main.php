@@ -11,6 +11,9 @@ return [
     'bootstrap' => ['log'],
     'language' => 'ru',
     'modules' => [
+        'blog' => [
+            'class' => 'backend\modules\blog\Blog',
+        ],
         'category' => [
             'class' => 'backend\modules\category\Category',
         ],
