@@ -46,7 +46,7 @@ testing_in_php:
     # Test
     - cd www
     - php yii_test migrate --interactive=0
-    - php vendor/bin/codecept run unit
+    - php vendor/bin/codecept run
 
 # prod_conf:
 #   stage: prod-conf
