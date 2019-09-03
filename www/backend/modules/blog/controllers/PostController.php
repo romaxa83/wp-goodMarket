@@ -15,6 +15,7 @@ use backend\modules\blog\type\MessageType;
 use backend\modules\blog\services\PostService;
 use backend\modules\blog\forms\search\PostSearch;
 use backend\modules\blog\repository\PostRepository;
+use backend\modules\blog\entities\PostLang;
 
 class PostController extends Controller
 {
@@ -26,6 +27,7 @@ class PostController extends Controller
      * @var PostRepository
      */
     private $postRepository;
+    private $postLang;
 
     public function __construct(
         $id, Module $module,
@@ -37,6 +39,7 @@ class PostController extends Controller
         parent::__construct($id, $module, $config);
         $this->post_service = $posts;
         $this->postRepository = $postRepository;
+        $this->postLang = new PostLang();
     }
 
     public function actionIndex()
@@ -60,10 +63,17 @@ class PostController extends Controller
     public function actionCreate()
     {
         $form = new PostForm();
+        $post = Yii::$app->request->post();
 
-        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+        if ($form->load($post) && $form->validate()) {
             try {
-                $this->post_service->create($form);
+                $form->title = $post['PostForm']['Language']['ru']['title'];
+                $form->content = $post['PostForm']['Language']['ru']['content'];
+                $form->description = $post['PostForm']['Language']['ru']['description'];
+                
+                $modelPost = $this->post_service->create($form);
+                $resultat = $this->postLang->saveLang($post['PostForm']['Language'],$modelPost->id);
+
                 Yii::$app->session->setFlash('success', 'Пост создан');
                 return $this->redirect(['index']);
             } catch (\DomainException $e) {

@@ -44,6 +44,7 @@ class PostSearch extends Model
         $query = Post::find();
 
         $query->joinWith(['category']);
+        $query->joinWith(['langRow']);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

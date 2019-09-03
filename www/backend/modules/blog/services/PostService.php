@@ -31,11 +31,13 @@ class PostService
      * @param TagAssignmentsRepository $tags_rel
      * @param MetaRepository $meta
      */
-    public function __construct(PostRepository $posts,
-                                CategoryRepository $categories,
-                                TagRepository $tags,
-                                TagAssignmentsRepository $tags_rel,
-                                MetaRepository $meta)
+    public function __construct(
+        PostRepository $posts,
+        CategoryRepository $categories,
+        TagRepository $tags,
+        TagAssignmentsRepository $tags_rel,
+        MetaRepository $meta
+    )
     {
         $this->post_repository = $posts;
         $this->category_repository = $categories;
@@ -57,7 +59,6 @@ class PostService
 
         $post = Post::create(
             $category->id,
-            $form->country_id,
             \Yii::$app->user->identity->id??null,
             $form->title,
             $form->alias,

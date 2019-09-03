@@ -33,11 +33,6 @@ class TagLang extends ActiveRecord
         ];
     }
 
-    public function getLang() 
-    {
-        return $this->hasOne(Lang::className(), ['id' => 'lang_id']);
-    }
-
     public function saveLang($data,$baseId)
     {
         $langAlias = LangWidget::getActiveLanguageData(['alias','id']);
@@ -76,5 +71,15 @@ class TagLang extends ActiveRecord
         }
 
         throw new NotFoundHttpException('index ' . "'" . $this->currentLang . "'" . ' in coming array');
+    }
+
+    public function getLang() 
+    {
+        return $this->hasOne(Lang::className(), ['id' => 'lang_id']);
+    }
+
+    public function getBaseTag() 
+    {
+        return $this->hasOne(Tag::className(), ['id' => 'tag_id']);
     }
 }

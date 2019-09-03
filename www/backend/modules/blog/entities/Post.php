@@ -48,7 +48,6 @@ class Post extends ActiveRecord
 
     public static function create(
         $category_id,
-        $country_id,
         $author_id,
         $title,
         $alias,
@@ -56,16 +55,13 @@ class Post extends ActiveRecord
         $content,
         $media_id,
         $status,
-        $published_at): self
+        $published_at
+    ): self
     {
         $post = new static();
         $post->category_id = $category_id;
-        $post->country_id = $country_id != '' ? $country_id : null;
         $post->author_id = $author_id;
-        $post->title = $title;
         $post->alias = $alias;
-        $post->description = $description;
-        $post->content = $content;
         $post->media_id = $media_id;
         $post->status = self::setStatus((int)$status,DateHelper::convertPublishedForUnix($published_at));
         $post->published_at = ($published_at) ? DateHelper::convertPublishedForUnix($published_at):false;
@@ -186,12 +182,14 @@ class Post extends ActiveRecord
         return $this->hasMany(Comment::class, ['post_id' => 'id']);
     }
 
-    /**
-     * @return ActiveQuery
-     */
-    public function getCountry(): ActiveQuery
-    {
-        return $this->hasOne(Country::class, ['id' => 'country_id']);
+    public function getLangRow(int $lang_id = 1)
+    {   
+        return $this->hasOne(PostLang::class, ['post_id' => 'id'])->andWhere(['lang_id' => $lang_id]);
+    }
+
+    public function getTitle(int $lang_id = 1)
+    {   
+        return $this->hasMany(PostLang::class, ['post_id' => 'id']);
     }
 
     public function getArrayPosition():array

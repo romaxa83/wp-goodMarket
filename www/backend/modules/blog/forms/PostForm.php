@@ -13,7 +13,6 @@ use backend\modules\blog\validators\AliasValidator;
 class PostForm extends CompositeForm
 {
     public $category_id;
-    public $country_id;
     public $title;
     public $alias;
     public $description;
@@ -51,12 +50,11 @@ class PostForm extends CompositeForm
     public function rules(): array
     {
         return [
-            [['category_id', 'title','alias','content','published_at'], 'required'],
-            [['title','alias','description'], 'string', 'max' => 255],
+            [['category_id','alias','published_at'], 'required'],
+            ['alias', 'string', 'max' => 255],
             [['category_id','media_id'], 'integer'],
-            [['description', 'content'], 'string'],
             ['alias', AliasValidator::class],
-            [['title', 'alias'], 'unique', 'targetClass' => Post::class, 'filter' => $this->_post ? ['<>', 'id', $this->_post->id] : null],
+            ['alias', 'unique', 'targetClass' => Post::class, 'filter' => $this->_post ? ['<>', 'id', $this->_post->id] : null],
             [['published_at','status'], 'safe'],
         ];
     }
