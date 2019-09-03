@@ -16,13 +16,15 @@ class m190902_103555_create_table_post_lang extends Migration
         $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         $this->createTable('{{%blog_post_lang}}', [
             'id' => $this->primaryKey(),
+            'post_id' => $this->integer(),
+            'lang_id' => $this->integer(),
             'title' => $this->string()->notNull(),
             'description' => $this->string(),
-            'comments' => $this->integer()->notNull()->defaultValue(0),
+            'content' => $this->string()->notNull(),
         ], $tableOptions);
         
-        $this->addForeignKey('{{%fk-blog_post_lang-id}}','{{%blog_category_lang}}', 'category_id', '{{%blog_category}}', 'id',  'CASCADE', 'RESTRICT');
-        $this->addForeignKey('{{%fk-blog_lang_post_lang-id}}','{{%blog_category_lang}}', 'lang_id', '{{%lang}}', 'id',  'CASCADE', 'RESTRICT');
+        $this->addForeignKey('{{%fk-blog_post_lang-id}}','{{%blog_post_lang}}', 'post_id', '{{%blog_post}}', 'id',  'CASCADE', 'RESTRICT');
+        $this->addForeignKey('{{%fk-blog_lang_post_lang-id}}','{{%blog_post_lang}}', 'lang_id', '{{%lang}}', 'id',  'CASCADE', 'RESTRICT');
     }
 
     /**
@@ -30,9 +32,7 @@ class m190902_103555_create_table_post_lang extends Migration
      */
     public function safeDown()
     {
-        // echo "m190902_103555_create_table_post_lang cannot be reverted.\n";
-
-        // return false;
+        $this->dropTable('{{%blog_post_lang}}');
     }
 
     /*
