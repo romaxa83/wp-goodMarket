@@ -60,10 +60,7 @@ class PostService
         $post = Post::create(
             $category->id,
             \Yii::$app->user->identity->id??null,
-            $form->title,
             $form->alias,
-            $form->description,
-            $form->content,
             $form->media_id,
             $form->status,
             $form->published_at);
@@ -99,11 +96,7 @@ class PostService
 
         $post->edit(
             $category->id,
-            $form->country_id,
-            $form->title,
             $form->alias,
-            $form->description,
-            $form->content,
             $form->media_id,
             $form->status,
             $form->published_at);

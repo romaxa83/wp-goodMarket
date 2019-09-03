@@ -75,7 +75,7 @@ class PostController extends Controller
                 $resultat = $this->postLang->saveLang($post['PostForm']['Language'],$modelPost->id);
 
                 Yii::$app->session->setFlash('success', 'Пост создан');
-                return $this->redirect(['index']);
+                return $this->redirect(['update?id='.$modelPost->id]);
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
                 Yii::$app->session->setFlash('error', $e->getMessage());
@@ -89,22 +89,39 @@ class PostController extends Controller
 
     public function actionUpdate($id)
     {
-        $post = $this->postRepository->getWithSeo($id);
-
-        $form = new PostForm($post);
-        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+        //get base model
+        $postModel = $this->postRepository->get($id);
+        //get by related model with lang
+        $relatedRecord = $postModel->getAllLangRow()->all();
+        $form = new PostForm($postModel);
+        //cycle for assembly languageData
+        $data['Language'] = [];
+        foreach ($relatedRecord as $oneLang) {
+            //get by related alias lang
+            $langSetting = $oneLang->getLang()->select('alias')->one();
+            $data['Language'][$langSetting->alias]['title'] = $oneLang->title;
+            $data['Language'][$langSetting->alias]['description'] = $oneLang->description;
+            $data['Language'][$langSetting->alias]['content'] = $oneLang->content;
+        }
+        $form->languageData = $data;
+        $post = Yii::$app->request->post();
+        
+        if ($form->load($post) && $form->validate()) {
             try {
-                $this->post_service->edit($post->id, $form);
+                $this->post_service->edit($postModel->id, $form);
                 Yii::$app->session->setFlash('success', 'Пост отредактирован');
-                return $this->redirect(['index']);
+                $resultat = $this->postLang->updateLang($post['PostForm']['Language'],$postModel->id);
+
+                return $this->redirect(['update?id='.$modelPost->id]);
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
                 Yii::$app->session->setFlash('error', $e->getMessage());
             }
         }
+
         return $this->render('update', [
             'model' => $form,
-            'post' => $post,
+            'post' => $postModel
         ]);
     }
 

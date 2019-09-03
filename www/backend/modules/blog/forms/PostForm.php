@@ -20,6 +20,7 @@ class PostForm extends CompositeForm
     public $content;
     public $status;
     public $published_at;
+    public $languageData;
 
     private $_post;
 
@@ -27,11 +28,7 @@ class PostForm extends CompositeForm
     {
         if ($post) {
             $this->category_id = $post->category_id;
-            $this->country_id = $post->country_id;
-            $this->title = $post->title;
             $this->alias = $post->alias;
-            $this->description = $post->description;
-            $this->content = $post->content;
             $this->media_id = $post->media_id;
             $this->status = (int)$post->status;
             $this->published_at = DateHelper::convertUnixForPublished($post->published_at);
@@ -81,15 +78,6 @@ class PostForm extends CompositeForm
         $cat = new CategoryForm();
         return $cat->categoriesList(true);
     }
-
-    /**
-     * @return array
-     */
-    public function countryList(): array
-    {
-        return (new CountryReadRepository(new PostRepository(new CategoryRepository(),new TagRepository())))->getAllOnlyNameForAdmin();
-    }
-
     /**
      * @return array
      */

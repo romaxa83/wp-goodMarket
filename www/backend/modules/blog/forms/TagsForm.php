@@ -45,9 +45,14 @@ class TagsForm extends Model
 
     public function checkTagList($post_id)
     {
-        $tags = ArrayHelper::map(TagAssignment::find()->where(['post_id' => $post_id])->asArray()->all(),'tag_id','tag_id');
-        
-        return ArrayHelper::getColumn(Tag::find()->where(['in','id',$tags])->andWhere(['status' => Tag::STATUS_ACTIVE])->asArray()->all(),'title');
+        $tagAssignment = ArrayHelper::map(TagAssignment::find()->where(['post_id' => $post_id])->asArray()->all(),'tag_id','tag_id');
+        $tag = Tag::find()->where(['in','id',$tagAssignment])->andWhere(['status' => Tag::STATUS_ACTIVE])->with('title')->asArray()->all();
+
+        foreach($tag as $oneElement){
+            $title = $oneElement['title'][0]['title'];
+            $preparedTagList[$title] = $title;
+        }
+        return $preparedTagList;
     }
 
 }

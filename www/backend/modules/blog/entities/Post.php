@@ -49,10 +49,7 @@ class Post extends ActiveRecord
     public static function create(
         $category_id,
         $author_id,
-        $title,
         $alias,
-        $description,
-        $content,
         $media_id,
         $status,
         $published_at
@@ -73,22 +70,14 @@ class Post extends ActiveRecord
 
     public function edit(
         $category_id,
-        $country_id,
-        $title,
         $alias,
-        $description,
-        $content,
         $media_id,
         $status,
         $published_at): void
     {
 
         $this->category_id = $category_id;
-        $this->country_id = $country_id != '' ? $country_id : null;
-        $this->title = $title;
         $this->alias = $alias;
-        $this->description = $description;
-        $this->content = $content;
         $this->media_id = $media_id;
         $this->status = self::setStatus((int)$status,DateHelper::convertPublishedForUnix($published_at));
         $this->published_at = DateHelper::convertPublishedForUnix($published_at);
@@ -153,7 +142,7 @@ class Post extends ActiveRecord
     /**
      * @return ActiveQuery
      */
-    public function getTagAssignments(): ActiveQuery
+    public function getTagAssignment(): ActiveQuery
     {
         return $this->hasMany(TagAssignment::class, ['post_id' => 'id']);
     }
@@ -163,7 +152,7 @@ class Post extends ActiveRecord
      */
     public function getTags(): ActiveQuery
     {
-        return $this->hasMany(Tag::class, ['id' => 'tag_id'])->via('tagAssignments');
+        return $this->hasMany(Tag::class, ['id' => 'tag_id'])->via('tagAssignment');
     }
 
     /**
@@ -187,7 +176,7 @@ class Post extends ActiveRecord
         return $this->hasOne(PostLang::class, ['post_id' => 'id'])->andWhere(['lang_id' => $lang_id]);
     }
 
-    public function getTitle(int $lang_id = 1)
+    public function getAllLangRow(int $lang_id = 1)
     {   
         return $this->hasMany(PostLang::class, ['post_id' => 'id']);
     }
