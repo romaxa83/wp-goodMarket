@@ -54,7 +54,7 @@ class CategoryController extends Controller
                 $category = $this->category_service->create($form);
                 $resultat = (new CategoryLang())->saveLang($post['CategoryForm']['Language'],$category->id);
 
-                return $this->redirect(['index']);
+                return $this->redirect(['update?id='.$category->id]);
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
                 Yii::$app->session->setFlash('error', $e->getMessage());
@@ -67,13 +67,26 @@ class CategoryController extends Controller
 
     public function actionUpdate($id)
     {
+        //get base model
         $category = $this->findModel($id);
+        //get by related model with lang
+        $relatedRecord = $category->getRelatedRecords();
         $form = new CategoryForm($category);
+        //cycle for assembly languageData
+        $data['Language'] = [];
+        foreach ($relatedRecord as $oneLangModel) {
+            foreach ($oneLangModel as $oneLang) {
+                //get by related alias lang
+                $langSetting = $oneLang->getLang()->select('alias')->one();
+                $data['Language'][$langSetting->alias]['title'] = $oneLang->title;
+            }
+        }
+        $form->languageData = $data;
 
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
                 $this->category_service->edit($category->id, $form);
-                return $this->redirect(['index']);
+                return $this->redirect(['update?id='.$category->id]);
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
                 Yii::$app->session->setFlash('error', $e->getMessage());
@@ -125,7 +138,7 @@ class CategoryController extends Controller
 
     protected function findModel($id) : Category
     {
-        if (($model = Category::findOne($id)) !== null) {
+        if (($model = Category::find()->where(['id' => $id])->with('title')->one()) !== null) {
             return $model;
         }
 

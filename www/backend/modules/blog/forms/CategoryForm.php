@@ -14,7 +14,7 @@ class CategoryForm extends Model
     public $alias;
 
     public $parent_id;
-
+    public $languageData;
     private $_category;
 
     public function __construct(Category $category = null,array $config = [])
