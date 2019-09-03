@@ -4,8 +4,6 @@ namespace backend\widgets\langwidget;
 
 use Yii;
 use yii\base\Widget;
-use yii\helpers\ArrayHelper;
-use backend\modules\settings\models\Settings;
 use backend\widgets\langwidget\LangWidgetAsset;
 use yii\helpers\StringHelper;
 use common\models\Lang;
@@ -22,9 +20,8 @@ class LangWidget extends Widget {
     }
 
     public function run() {
-        $class = StringHelper::basename($this->model->className());
         return $this->render('langs-tab', [
-                    'class' => $class,
+                    'class' => StringHelper::basename($this->model->className()),
                     'model' => $this->model,
                     'fields' => $this->fields,
                     'languages' => self::getActiveLanguageData(['lang', 'alias'])
@@ -33,7 +30,7 @@ class LangWidget extends Widget {
 
     static function getActiveLanguageData($param) {
         $data = [];
-        $languages = Lang::find()->select(['status', 'name as lang', 'alias'])->where(['status' => 1])->orderBy(['priority' => SORT_ASC])->asArray()->all();
+        $languages = Lang::find()->select(['id', 'status', 'name as lang', 'alias'])->where(['status' => 1])->orderBy(['priority' => SORT_ASC])->asArray()->all();
         foreach ($languages as $k => $v) {
             if ($v['status'] == 1) {
                 foreach ($param as $item) {

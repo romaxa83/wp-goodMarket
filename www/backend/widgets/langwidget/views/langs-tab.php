@@ -23,22 +23,22 @@ use yii\helpers\ArrayHelper;
                         <?php endif; ?>
                         <?php if ($field['type'] != 'widget'): ?>
                             <input
-                                    type="<?php echo $field["type"]; ?>"
-                                    id="<?php echo strtolower($class) . '-' . $field["name"] . '-' . $v0['alias']; ?>"
-                                    class="form-control" name="<?php echo $class . '[Language][' . $v0['alias'] . '][' . $field['name'] . ']'; ?>"
-                                    value="<?php echo (isset($model->languageData['Language'][$v0['alias']][$field['name']])) ? $model->languageData['Language'][$v0['alias']][$field['name']] : NULL; ?>">
-                        <?php else : ?>
-                            <?php
-                            $widget_options = [
-                                'name' => $class . '[Language][' . $v0['alias'] . '][' . $field["name"] . ']',
-                                'value' => (isset($model->languageData['Language'][$v0['alias']][$field["name"]])) ? $model->languageData['Language'][$v0['alias']][$field["name"]] : NULL,
-                            ];
-                            if (isset($field['options'])) {
-                                $widget_options = ArrayHelper::merge($widget_options, $field['options']);
-                            }
-                            echo $field['class']::widget($widget_options);
-                            ?>
-                        <?php endif; ?>
+                                type="<?php echo $field["type"]; ?>"
+                                id="<?php echo strtolower($class) . '-' . $field["name"] . '-' . $v0['alias']; ?>"
+                                class="form-control" name="<?php echo $class . '[Language][' . $v0['alias'] . '][' . $field['name'] . ']'; ?>"
+                                value="<?php echo (isset($model->languageData['Language'][$v0['alias']][$field['name']])) ? $model->languageData['Language'][$v0['alias']][$field['name']] : NULL; ?>">
+                            <?php else : ?>
+                                <?php
+                                $widget_options = [
+                                    'name' => $class . '[Language][' . $v0['alias'] . '][' . $field["name"] . ']',
+                                    'value' => (isset($model->languageData['Language'][$v0['alias']][$field["name"]])) ? $model->languageData['Language'][$v0['alias']][$field["name"]] : NULL,
+                                ];
+                                if (isset($field['options'])) {
+                                    $widget_options = ArrayHelper::merge($widget_options, $field['options']);
+                                }
+                                echo $field['class']::widget($widget_options);
+                                ?>
+                            <?php endif; ?>
                         <div class="help-block"><?php echo (isset($model->errors[$attribute][0])) ? $model->errors[$attribute][0] : NULL; ?></div>
                     </div>
                 <?php endforeach; ?>
