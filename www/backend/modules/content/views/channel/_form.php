@@ -56,6 +56,9 @@ use vova07\imperavi\Asset;
                         <div id="channel-new-content"></div>
                     </div>
                     <div class="tab-pane" id="tab_2">
+                        <?php if($seo->id) : ?>
+                        <?= $form->field($seo, 'id')->hiddenInput()->label(false) ?>
+                        <?php endif; ?>
                         <?= $form->field($seo, 'title')->textInput() ?>
                         <?= $form->field($seo, 'description')->textarea() ?>
                         <?= $form->field($seo, 'keywords')->textInput() ?>

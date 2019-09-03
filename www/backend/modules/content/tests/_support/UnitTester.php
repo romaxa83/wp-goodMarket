@@ -1,5 +1,6 @@
 <?php
 
+namespace backend\modules\content\tests;
 
 /**
  * Inherited Methods
@@ -18,7 +19,7 @@
 */
 class UnitTester extends \Codeception\Actor
 {
-    use backend\modules\content\tests\_generated\UnitTesterActions;
+    use \backend\modules\content\tests\_generated\UnitTesterActions;
 
    /**
     * Define custom actions here
