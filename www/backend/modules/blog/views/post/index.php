@@ -76,9 +76,8 @@ BlogAsset::register($this);
                         'label' => 'Название',
                         'format' => 'raw',
                         'value' => function(Post $model){
-                            return Html::a(Html::encode($model->title), ['view', 'id' => $model->id]);
+                            return Html::a(Html::encode($model['langRow']->title), ['view', 'id' => $model->id]);
                         },
-//                       'options' => ['style' => 'width:50px;max-width:50px'],
                         'contentOptions' => SettingsWidget::setConfig('title',$user_settings['hide-col']??null),
                         'headerOptions' => SettingsWidget::setConfig('title',$user_settings['hide-col']??null),
                         'filterOptions' => SettingsWidget::setConfig('title',$user_settings['hide-col']??null),
@@ -99,7 +98,9 @@ BlogAsset::register($this);
                         'label' => 'Категория',
                         'format' => 'raw',
                         'value' => function(Post $model){
-                            return $model->category->title;
+                            $currentCategory = $model->category->getLangRow()->one();
+                            
+                            return $currentCategory->title;
                         },
                         'contentOptions' => SettingsWidget::setConfig('category_id',$user_settings['hide-col']??null),
                         'headerOptions' => SettingsWidget::setConfig('category_id',$user_settings['hide-col']??null),
@@ -110,7 +111,7 @@ BlogAsset::register($this);
                         'label' => 'Описание',
                         'format' => 'raw',
                         'value' => function(Post $model){
-                            return StringHelper::truncateWords(strip_tags($model->description),5);
+                            return StringHelper::truncateWords(strip_tags($model['langRow']->description),5);
                         },
                         'contentOptions' => SettingsWidget::setConfig('description',$user_settings['hide-col']??null),
                         'headerOptions' => SettingsWidget::setConfig('description',$user_settings['hide-col']??null),

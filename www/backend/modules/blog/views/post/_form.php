@@ -9,7 +9,7 @@ use dosamigos\tinymce\TinyMce;
 use app\modules\blog\BlogAsset;
 use backend\modules\filemanager\widgets\FileInput;
 use backend\modules\filemanager\widgets\TinyMce as TM;
-
+use backend\widgets\langwidget\LangWidget;
 /* @var $this yii\web\View */
 /* @var $model backend\modules\blog\forms\PostForm*/
 /* @var $post backend\modules\blog\entities\Post*/
@@ -30,30 +30,73 @@ BlogAsset::register($this);
         <div class="col-xs-12">
                 <div class="box">
                     <div class="box-body">
+                        <!-- multi-lang  -->
                         <div class="row">
-                            <!-- Name -->
-                            <div class="col-md-6">
-                                <?= $form->field($model, 'title')->textInput(['class' => 'form-control title-translit'])->label('Название поста'); ?>
+                            <div class="col-md-12">
+                                <?= LangWidget::widget([
+                                        'model' => $model,
+                                        'fields' => [
+                                            ['type' => 'text', 'name' => 'title'],
+                                            ['type' => 'widget', 'name' => 'content', 'class' => 'backend\modules\filemanager\widgets\TinyMce', 'options' => [
+                                                'options' => ['rows' => 6, 'class' => 'field-tiny-mce','defaultTag' => 'blog'],
+                                                'callbackBeforeInsert' => 'function(e,data){data.url = "/admin" + data.url }',
+                                                'clientOptions' => [
+                                                    'language' => 'ru',
+                                                    'image_dimensions' => true,
+                                                    'plugins' => [
+                                                        "advlist autolink lists link image charmap print preview anchor",
+                                                        "searchreplace visualblocks code fullscreen",
+                                                        "insertdatetime media table contextmenu paste"
+                                                    ],
+                                                    'toolbar' => "undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image"
+                                                ]
+                                            ]],
+                                            ['type' => 'widget', 'name' => 'description', 'class' => 'backend\modules\filemanager\widgets\TinyMce', 'options' => [
+                                                'options' => ['rows' => 6, 'class' => 'field-tiny-mce','defaultTag' => 'blog'],
+                                                'callbackBeforeInsert' => 'function(e,data){data.url = "/admin" + data.url }',
+                                                'clientOptions' => [
+                                                    'language' => 'ru',
+                                                    'image_dimensions' => true,
+                                                    'plugins' => [
+                                                        "advlist autolink lists link image charmap print preview anchor",
+                                                        "searchreplace visualblocks code fullscreen",
+                                                        "insertdatetime media table contextmenu paste"
+                                                    ],
+                                                    'toolbar' => "undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image"
+                                                ]
+                                            ]],
+                                        ]
+                                    ]); ?>
                             </div>
-                            <!-- Alias -->
+                        </div>
+                        <!-- single -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <?= $form->field($model, 'category_id')->dropDownList($model->categoriesList(),['prompt' => 'Выберите категорию'])->label('Категория'); ?>
+                            </div>
                             <div class="col-md-6">
                                 <?= $form->field($model, 'alias')->textInput(['class' => 'form-control alias-translit'])->label('Алиас'); ?>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="row">
-                                    <!-- Category -->
-                                    <div class="col-lg-6">
-                                        <?= $form->field($model, 'category_id')
-                                            ->dropDownList($model->categoriesList(),['prompt' => 'Выберите категорию'])
-                                            ->label('Категория'); ?>
-                                    </div>
-                                </div>
-
+                                <?= $form->field($model->tags, 'existing')->widget(Select2::classname(), [
+                                        'data' => $model->tags->tagsList(),
+                                        'language' => 'ru',
+                                        'maintainOrder' => true,
+                                        'options' => [
+                                            'placeholder' => 'Выберите тег или создайте новый',
+                                            'multiple' => true
+                                        ],
+                                        'pluginOptions' => [
+                                            'tags' => true,
+                                            'tokenSeparators' => [',', ' '],
+                                            'maximumInputLength' => 10,
+                                            'allowClear' => true
+                                        ],
+                                    ])->label('Теги') ?>
                             </div>
-                            <!-- StatusPublish -->
-                            <div class="col-md-2">
+                            <div class="col-md-1">
                                 <div class="box-custome-checkbox">
                                     <?= Html::label('Опубликовать', 'status', ['class' => 'tgl-btn']) . Html::checkbox('PostForm[status]', $model->status, [
                                             'id' => 'status',
@@ -62,8 +105,7 @@ BlogAsset::register($this);
                                         ]) . Html::label('', 'status', ['class' => 'tgl-btn']); ?>
                                 </div>
                             </div>
-                            <!-- DatePublish -->
-                            <div class="col-md-4">
+                            <div class="col-md-5">
                                 <?= $form->field($model, 'published_at')->widget(DateTimePicker::classname(), [
                                     'options' => ['placeholder' => 'Выберить дату публикации'],
                                     'language' => 'ru',
@@ -83,25 +125,6 @@ BlogAsset::register($this);
                             </div>
                         </div>
                         <div class="row">
-                            <!-- Tags -->
-                            <div class="col-md-6">
-                                <?= $form->field($model->tags, 'existing')->widget(Select2::classname(), [
-                                    'data' => $model->tags->tagsList(),
-                                    'language' => 'ru',
-                                    'maintainOrder' => true,
-                                    'options' => [
-                                        'placeholder' => 'Выберите тег или создайте новый',
-                                        'multiple' => true
-                                    ],
-                                    'pluginOptions' => [
-                                        'tags' => true,
-                                        'tokenSeparators' => [',', ' '],
-                                        'maximumInputLength' => 10,
-                                        'allowClear' => true
-                                    ],
-                                ])->label('Теги') ?>
-                            </div>
-                            <!-- Image -->
                             <div class="col-md-6">
                                 <?= $form->field($model, 'media_id')->widget(FileInput::className(), [
                                     'buttonTag' => 'button',
@@ -113,40 +136,6 @@ BlogAsset::register($this);
                                     'imageContainer' => '.img',
                                     'pasteData' => FileInput::DATA_ID
                                 ])->label('Обложка'); ?>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <!-- Content -->
-                            <div class="col-md-6">
-                                <?= $form->field($model, 'content')->widget(TM::className(), [
-                                    'options' => ['rows' => 6, 'class' => 'field-tiny-mce','defaultTag' => 'blog'],
-                                    'callbackBeforeInsert' => 'function(e,data){data.url = "/admin" + data.url }',
-                                    'clientOptions' => [
-                                        'language' => 'ru',
-                                        'image_dimensions' => true,
-                                        'plugins' => [
-                                            "advlist autolink lists link image charmap print preview anchor",
-                                            "searchreplace visualblocks code fullscreen",
-                                            "insertdatetime media table contextmenu paste"
-                                        ],
-                                        'toolbar' => "undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image"
-                                    ]
-                                ])->label('Контент'); ?>
-                            </div>
-                            <!-- Description -->
-                            <div class="col-md-6">
-                                <?= $form->field($model, 'description')->widget(TinyMce::className(), [
-                                    'options' => ['rows' => 6, 'class' => 'field-tiny-mce'],
-                                    'language' => 'ru',
-                                    'clientOptions' => [
-                                        'plugins' => [
-                                            "advlist autolink lists link charmap print preview anchor",
-                                            "searchreplace visualblocks code fullscreen",
-                                            "insertdatetime media table contextmenu paste"
-                                        ],
-                                        'toolbar' => "undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image"
-                                    ]
-                                ])->label('Описание'); ?>
                             </div>
                         </div>
                     </div>
@@ -191,4 +180,3 @@ BlogAsset::register($this);
         </div>
     </div>
 </div>
-
