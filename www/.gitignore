@@ -45,3 +45,5 @@ phpunit.phar
 composer.lock
 backend/web/uploads/*
 !backend/web/uploads/index.html
+backend/modules/banners/assets/img/uploads/*
+!backend/modules/banners/assets/img/uploads/index.html

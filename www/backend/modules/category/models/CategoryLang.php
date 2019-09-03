@@ -56,7 +56,9 @@ class CategoryLang extends ActiveRecord {
             }
             $lang->attributes = $item;
             $lang->lang_id = $langs[$key];
-            $lang->save();
+            if (!$lang->save()) {
+                return false;
+            }
         }
         return true;
     }

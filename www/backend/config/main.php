@@ -17,6 +17,9 @@ return [
         'product' => [
             'class' => 'backend\modules\product\Product',
         ],
+        'banners' => [
+            'class' => 'backend\modules\banners\Banners',
+        ],
         'seo' => [
             'class' => 'backend\modules\seo\Seo',
         ],

@@ -12,6 +12,7 @@ use common\controllers\AccessController;
                     'items' => [
                         ['label' => 'Каталог', 'icon' => 'list', 'url' => ['/category/category'], 'visible' => AccessController::checkPermission('/category/category/index')],
                         ['label' => 'Продукты', 'icon' => 'list', 'url' => ['/product/product'], 'visible' => AccessController::checkPermission('/product/product/index')],
+                        ['label' => 'Баннера', 'icon' => 'list', 'url' => ['/banners/banners'], 'visible' => AccessController::checkPermission('/banners/banners/index')],
                         [
                             'label' => 'Контент',
                             'icon' => 'briefcase',

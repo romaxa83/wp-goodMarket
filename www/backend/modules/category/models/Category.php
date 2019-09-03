@@ -36,7 +36,7 @@ class Category extends \yii\db\ActiveRecord {
      */
     public function rules() {
         return [
-            [['alias', 'rating', 'media_id', 'publish'], 'required', 'message' => 'Необходимо заполнить' ,'on'=>self::ADDED_CATEGORY],
+            [['alias', 'rating', 'media_id', 'publish'], 'required' ,'on'=>self::ADDED_CATEGORY],
             [['parent_id', 'rating', 'publish', 'media_id'], 'number', 'on'=>self::ADDED_CATEGORY],
             ['alias', 'unique', 'message'=>'Такой алиас уже существует', 'on'=>self::ADDED_CATEGORY],
             ['alias', 'match', 'pattern' => '/^[a-z0-9_-]+$/', 'message' => 'Неверно введен алиас', 'on'=>self::ADDED_CATEGORY],
