@@ -81,4 +81,9 @@ class Category extends ActiveRecord
     {   
         return $this->hasOne(CategoryLang::class, ['category_id' => 'id'])->andWhere(['lang_id' => $lang_id]);
     }
+
+    public function getTitle(int $lang_id = 1)
+    {   
+        return $this->hasMany(CategoryLang::class, ['category_id' => 'id']);
+    }
 }
