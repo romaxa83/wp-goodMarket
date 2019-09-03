@@ -44,7 +44,9 @@ BlogAsset::register($this);
                         'label' => 'Название',
                         'format' => 'raw',
                         'value' => function (Tag $model){
-                            return Html::a(Html::encode($model->title), ['view', 'id' => $model->id]);
+                            $currentTitle = $model->getLangRow()->one();
+                            
+                            return Html::a(Html::encode($currentTitle->title), ['view', 'id' => $model->id]);
                         },
                     ],
                     [

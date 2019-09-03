@@ -2,6 +2,7 @@
 
 use app\modules\blog\BlogAsset;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use backend\widgets\langwidget\LangWidget;
 /* @var $this yii\web\View */
@@ -44,7 +45,7 @@ BlogAsset::register($this);
                 <div class="form-group">
                     <?= Html::submitButton('Сохранить',['class' => 'btn btn-primary mr-15',]) ?>
                     <?= Html::resetButton('Сбросить', ['class' => 'btn btn-primary mr-15']) ?>
-                    <?= Html::a('Вернуться', Yii::$app->request->referrer, ['class' => 'btn btn-primary']) ?>
+                    <a href="<?= Url::to(['index']) ?>" class="btn btn-primary">Вернуться к списку</a>
                 </div>
                 <?php ActiveForm::end(); ?>
             </div>

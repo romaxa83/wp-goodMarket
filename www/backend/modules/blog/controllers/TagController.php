@@ -59,7 +59,7 @@ class TagController extends Controller
                 $tag = $this->tag_service->create($form);
                 $resultat = $this->tag_lang->saveLang($post['TagForm']['Language'],$tag->id);
 
-                return $this->redirect(['index']);
+                return $this->redirect(['update?id='.$tag->id]);
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
                 Yii::$app->session->setFlash('error', $e->getMessage());
@@ -73,13 +73,28 @@ class TagController extends Controller
     public function actionUpdate($id)
     {
         $tag = $this->findModel($id);
+        //get by related model with lang
+        $relatedRecord = $tag->getRelatedRecords();
         $form = new TagForm($tag);
+        //cycle for assembly languageData
+        $data['Language'] = [];
+        foreach ($relatedRecord as $oneLangModel) {
+            foreach ($oneLangModel as $oneLang) {
+                //get by related alias lang
+                $langSetting = $oneLang->getLang()->select('alias')->one();
+                $data['Language'][$langSetting->alias]['title'] = $oneLang->title;
+            }
+        }
+        $form->languageData = $data;
+        $post = Yii::$app->request->post();
 
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
+                $form->title = $post['TagForm']['Language']['ru'];
                 $this->tag_service->edit($tag->id, $form);
+                $resultat = $this->tag_lang->updateLang($post['TagForm']['Language'],$tag->id);
 
-                return $this->redirect(['index']);
+                return $this->redirect(['update?id='.$tag->id]);
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
                 Yii::$app->session->setFlash('error', $e->getMessage());
@@ -118,7 +133,7 @@ class TagController extends Controller
 
     protected function findModel($id): Tag
     {
-        if (($model = Tag::findOne($id)) !== null) {
+        if (($model = Tag::find()->where(['id' => $id])->with('title')->one()) !== null) {
             return $model;
         }
         throw new NotFoundHttpException('The requested page does not exist.');

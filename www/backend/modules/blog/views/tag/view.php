@@ -4,7 +4,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\DetailView;
 use backend\modules\blog\helpers\StatusHelper;
-
+use backend\widgets\langwidget\LangWidget;
 /* @var $this yii\web\View */
 /* @var $tag backend\modules\blog\entities\Tag */
 /* @var $access backend\modules\user\useCase\Access */
@@ -35,14 +35,32 @@ $this->params['breadcrumbs'][] = $this->title;
                         'model' => $tag,
                         'attributes' => [
                             'id',
-                            'title',
-                            'alias',
+                            [
+                                'attribute' => 'title',
+                                'label' => 'Название',
+                                'format' => 'raw',
+                                'value' => function() use ($tag){
+                                    $html = '<ul>';
+                                    foreach(LangWidget::getActiveLanguageData(['id','alias']) as $oneLang) {
+                                        $langModel = $tag->getLangRow($oneLang['id'])->one();
+                
+                                        $html .= '<li><b>' . $oneLang['alias'] . '</b> : ' . $langModel->title . '</li>'; 
+                                    }               
+                                    return $html . '</ul>';
+                                }
+                            ],
+                            [
+                                'attribute' => 'alias',
+                                'label' => 'Алиас',
+                                'format' => 'raw',
+                                'value' => $tag->alias,
+                            ],
                             [
                                 'attribute' => 'status',
                                 'label' => 'Статус',
                                 'format' => 'raw',
                                 'value' => StatusHelper::label($tag->status),
-                            ]
+                            ],
                         ],
                     ]) ?>
 

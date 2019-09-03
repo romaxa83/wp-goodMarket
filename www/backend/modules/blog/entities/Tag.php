@@ -68,11 +68,11 @@ class Tag extends ActiveRecord
 
     public function getLangRow(int $lang_id = 1)
     {   
-        return $this->hasOne(CategoryLang::class, ['category_id' => 'id'])->andWhere(['lang_id' => $lang_id]);
+        return $this->hasOne(TagLang::class, ['tag_id' => 'id'])->andWhere(['lang_id' => $lang_id]);
     }
 
     public function getTitle(int $lang_id = 1)
     {   
-        return $this->hasMany(CategoryLang::class, ['category_id' => 'id']);
+        return $this->hasMany(TagLang::class, ['tag_id' => 'id']);
     }
 }
