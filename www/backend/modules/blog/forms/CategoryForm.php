@@ -50,13 +50,13 @@ class CategoryForm extends Model
 
     public function categoriesList($for_post = null): array
     {
-        $category = Category::find()->andWhere(['status' => Category::STATUS_ACTIVE])->with('title')->orderBy('lft')->asArray()->all();
+        $category = Category::find()->where(['status' => Category::STATUS_ACTIVE])->andWhere(['not',['id' => $this->_category->id ?? '']])->with('title')->orderBy('lft')->asArray()->all();
         if($for_post){
             $category = Category::find()->andWhere(['not',['id' => 1]])->andWhere(['status' => Category::STATUS_ACTIVE])->orderBy('lft')->asArray()->all();
         }
         return ArrayHelper::map($category, 'id', function (array $category) {
             $title = ($category['alias'] === 'root') ? 'Всё категорий' : $category['title'][0]['title'];
-
+            
             return ($category['depth'] > 1 ? str_repeat('-- ', $category['depth'] - 1) . ' ' : '') . $title;
         });
     }

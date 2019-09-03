@@ -48,11 +48,27 @@ class CategoryLang extends ActiveRecord
             $this->currentLang = $oneLang['alias'];
             $currentData = $this->existLangKey($data);
 
-            $model = new self;
+            $model = new CategoryLang();
             $model->category_id = $baseId;
             $model->lang_id = $oneLang['id'];
             $model->title = $currentData['title'];
             $model->save();
+        }
+    }
+
+    public function updateLang($data,$baseId)
+    {
+        $langAlias = LangWidget::getActiveLanguageData(['alias','id']);
+        $model = CategoryLang::findAll(['category_id' => $baseId]);
+        //$indexKey - default key of index array
+        foreach($langAlias as $indexKey => $oneLang){
+            $this->currentLang = $oneLang['alias'];
+            $currentData = $this->existLangKey($data);
+
+            $model[$indexKey]->category_id = $baseId;
+            $model[$indexKey]->lang_id = $oneLang['id'];
+            $model[$indexKey]->title = $currentData['title'];
+            $model[$indexKey]->save();
         }
     }
 

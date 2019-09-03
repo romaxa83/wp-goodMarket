@@ -18,11 +18,13 @@ use backend\modules\blog\forms\search\CategorySearch;
 class CategoryController extends Controller
 {
     private $category_service;
+    private $category_lang;
 
     public function __construct($id, Module $module,CategoryService $category_service, array $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->category_service = $category_service;
+        $this->category_lang = new CategoryLang();
     }
  
     public function actionIndex()
@@ -52,7 +54,7 @@ class CategoryController extends Controller
             try {
                 $form->title = $post['CategoryForm']['Language']['ru'];
                 $category = $this->category_service->create($form);
-                $resultat = (new CategoryLang())->saveLang($post['CategoryForm']['Language'],$category->id);
+                $resultat = $this->category_lang->saveLang($post['CategoryForm']['Language'],$category->id);
 
                 return $this->redirect(['update?id='.$category->id]);
             } catch (\DomainException $e) {
@@ -82,10 +84,14 @@ class CategoryController extends Controller
             }
         }
         $form->languageData = $data;
+        $post = Yii::$app->request->post();
 
-        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+        if ($form->load($post) && $form->validate()) {
             try {
+                $form->title = $post['CategoryForm']['Language']['ru'];
                 $this->category_service->edit($category->id, $form);
+                $resultat = $this->category_lang->updateLang($post['CategoryForm']['Language'],$category->id);
+
                 return $this->redirect(['update?id='.$category->id]);
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
