@@ -39,8 +39,8 @@ testing_in_php:
     - cp www/common/config/test-local.php.dist www/common/config/test-local.php
     - sed -i -- "s~localhost~mariadb~g" www/common/config/test-local.php
     - sed -i -- "s~{NAME_TEST_DB}~$TEST_DB_NAME~g" www/common/config/test-local.php
-    - sed -i -- "s~{USER}~$DB_USER~g" www/common/config/main-local.php
-    - sed -i -- "s~{PASSWORD}~$DB_PASS~g" www/common/config/main-local.php
+    - sed -i -- "s~{USER}~$DB_USER~g" www/common/config/test-local.php
+    - sed -i -- "s~{PASSWORD}~$DB_PASS~g" www/common/config/test-local.php
     # Инит проекта
     - php www/init --env=Development --overwrite=No
     # Test
@@ -87,7 +87,7 @@ testing_in_php:
 #       - www/frontend/web/robots.txt
 #       - www/frontend/web/index.php
 #     expire_in: 1 day
-    
+
 # prod_build:
 #   stage: prod-build
 #   image: docker:latest

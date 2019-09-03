@@ -13,6 +13,8 @@ use common\controllers\AccessController;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
 use yii\web\ForbiddenHttpException;
+use function Couchbase\defaultDecoder;
+
 /**
  * MenuController реализует CRUD-систему для модели Menu.
  */
