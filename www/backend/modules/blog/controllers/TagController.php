@@ -13,6 +13,7 @@ use backend\modules\blog\forms\TagForm;
 use backend\modules\blog\services\TagService;
 use backend\modules\blog\helpers\StatusHelper;
 use backend\modules\blog\forms\search\TagSearch;
+use backend\modules\blog\entities\TagLang;
 
 class TagController extends Controller
 {
@@ -20,11 +21,13 @@ class TagController extends Controller
      * @var TagService
      */
     private $tag_service;
+    private $tag_lang;
 
     public function __construct($id, $module, TagService $service, $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->tag_service = $service;
+        $this->tag_lang = new TagLang();
     }
 
     public function actionIndex()
@@ -48,10 +51,14 @@ class TagController extends Controller
     public function actionCreate()
     {
         $form = new TagForm();
+        $post = Yii::$app->request->post();
 
-        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+        if ($form->load($post) && $form->validate()) {
             try {
-                $this->tag_service->create($form);
+                $form->title = $post['TagForm']['Language']['ru'];
+                $tag = $this->tag_service->create($form);
+                $resultat = $this->tag_lang->saveLang($post['TagForm']['Language'],$tag->id);
+
                 return $this->redirect(['index']);
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);

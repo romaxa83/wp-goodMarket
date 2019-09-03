@@ -27,10 +27,10 @@ class TagForm extends Model
     //правила вилидации
     public function rules() {
         return [
-            [['alias', 'title'], 'required'],
-            [['alias', 'title'], 'string','max' => 250],
+            ['alias', 'required'],
+            ['alias', 'string','max' => 250],
             ['alias', AliasValidator::class],
-            [['title', 'alias'], 'unique', 'targetClass' => Tag::class, 'filter' => $this->_tag ? ['<>', 'id', $this->_tag->id] : null],
+            ['alias', 'unique', 'targetClass' => Tag::class, 'filter' => $this->_tag ? ['<>', 'id', $this->_tag->id] : null],
 
         ];
     }

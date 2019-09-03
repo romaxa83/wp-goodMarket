@@ -18,6 +18,8 @@ class Tag extends ActiveRecord
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
 
+    public $title;
+
     public static function tableName():string
     {
         return '{{%blog_tag}}';
@@ -56,15 +58,6 @@ class Tag extends ActiveRecord
     {
         return $this->hasMany(TagAssignment::class, ['tag_id' => 'id']);
     }
-
-    /**
-     * @return ActiveQuery
-     */
-    public function getTagReviewAssignments(): ActiveQuery
-    {
-        return $this->hasMany(TagReviewAssignment::class, ['tag_id' => 'id']);
-    }
-
     /**
      * @return ActiveQuery
      */
@@ -73,11 +66,13 @@ class Tag extends ActiveRecord
         return $this->hasMany(Post::class, ['id' => 'post_id'])->orderBy(['published_at' => SORT_DESC])->via('tagAssignments');
     }
 
-    /**
-     * @return ActiveQuery
-     */
-    public function getHotelReview(): ActiveQuery
-    {
-        return $this->hasMany(HotelReview::class, ['id' => 'hotel_review_id'])->orderBy(['published_at' => SORT_DESC])->via('tagReviewAssignments');
+    public function getLangRow(int $lang_id = 1)
+    {   
+        return $this->hasOne(CategoryLang::class, ['category_id' => 'id'])->andWhere(['lang_id' => $lang_id]);
+    }
+
+    public function getTitle(int $lang_id = 1)
+    {   
+        return $this->hasMany(CategoryLang::class, ['category_id' => 'id']);
     }
 }

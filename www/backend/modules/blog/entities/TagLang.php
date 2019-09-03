@@ -7,22 +7,19 @@ use common\models\Lang;
 use backend\widgets\langwidget\LangWidget;
 use yii\web\NotFoundHttpException;
 
-class CategoryLang extends ActiveRecord 
+class TagLang extends ActiveRecord 
 {
     private $currentLang;
-    // private $title;
-    // private $category_id;
-    // private $lang_id;
 
     public static function tableName() 
     {
-        return '{{%blog_category_lang}}';
+        return '{{%blog_tag_lang}}';
     }
 
     public function rules() 
     {
         return [
-            [['category_id', 'lang_id', 'title'], 'required'],
+            [['tag_id', 'lang_id', 'title'], 'required'],
         ];
     }
 
@@ -48,8 +45,8 @@ class CategoryLang extends ActiveRecord
             $this->currentLang = $oneLang['alias'];
             $currentData = $this->existLangKey($data);
 
-            $model = new CategoryLang();
-            $model->category_id = $baseId;
+            $model = new TagLang();
+            $model->tag_id = $baseId;
             $model->lang_id = $oneLang['id'];
             $model->title = $currentData['title'];
             $model->save();
@@ -59,13 +56,13 @@ class CategoryLang extends ActiveRecord
     public function updateLang($data,$baseId)
     {
         $langAlias = LangWidget::getActiveLanguageData(['alias','id']);
-        $model = CategoryLang::findAll(['category_id' => $baseId]);
+        $model = TagLang::findAll(['tag_id' => $baseId]);
         //$indexKey - default key of index array
         foreach($langAlias as $indexKey => $oneLang){
             $this->currentLang = $oneLang['alias'];
             $currentData = $this->existLangKey($data);
 
-            $model[$indexKey]->category_id = $baseId;
+            $model[$indexKey]->tag_id = $baseId;
             $model[$indexKey]->lang_id = $oneLang['id'];
             $model[$indexKey]->title = $currentData['title'];
             $model[$indexKey]->update();

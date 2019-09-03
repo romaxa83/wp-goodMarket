@@ -3,7 +3,7 @@
 use app\modules\blog\BlogAsset;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-
+use backend\widgets\langwidget\LangWidget;
 /* @var $this yii\web\View */
 /* @var $model backend\modules\blog\forms\TagForm */
 /* @var $form yii\widgets\ActiveForm */
@@ -27,7 +27,12 @@ BlogAsset::register($this);
                                 <h3 class="box-title">Основные поля</h3>
                             </div>
                             <div class="box-body">
-                                <?= $form->field($model, 'title')->textInput(['class' => 'form-control title-translit','maxlength' => true])->label('Название тега')?>
+                                <?= LangWidget::widget([
+                                    'model' => $model,
+                                    'fields' => [
+                                        ['type' => 'text', 'name' => 'title'],
+                                    ]
+                                ]); ?>
 
                                 <?= $form->field($model, 'alias')->textInput(['class' => 'form-control alias-translit','maxlength' => true])->label('Алиас тега') ?>
 
