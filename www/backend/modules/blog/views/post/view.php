@@ -13,9 +13,9 @@ use backend\modules\blog\helpers\ImageHelper;
 /* @var $modificationsProvider yii\data\ActiveDataProvider */
 /* @var $access backend\modules\user\useCase\Access */
 
-$this->title = $post->title;
+$this->title = $langData[0]->title;
 $this->params['breadcrumbs'][] = ['label' => 'Список постов', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+$this->params['breadcrumbs'][] = $langData[0]->title;
 ?>
 <div class="user-view">
 
@@ -45,7 +45,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             [
                                 'label' => 'Название поста',
-                                'value' => $post->title,
+                                'value' => function() use ($langData){
+                                    return $langData[0]->title;
+                                },
                             ],
                             [
                                 'label' => 'Алиас',
@@ -53,7 +55,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             [
                                 'label' => 'Категория',
-                                'value' => ArrayHelper::getValue($post, 'category.title'),
+                                'value' => $category->title,
                             ],
                             [
                                 'label' => 'Теги',
@@ -118,7 +120,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="box">
                 <div class="box-header with-border">Описание</div>
                 <div class="box-body">
-                    <?= Yii::$app->formatter->asNtext($post->description) ?>
+                    <?= Yii::$app->formatter->asNtext($langData[0]->description) ?>
                 </div>
             </div>
         </div>
@@ -128,7 +130,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="box">
         <div class="box-header with-border">Контент</div>
         <div class="box-body">
-            <?= Yii::$app->formatter->asHtml($post->content, [
+            <?= Yii::$app->formatter->asHtml($langData[0]->content, [
                 'Attr.AllowedRel' => array('nofollow'),
                 'HTML.SafeObject' => true,
                 'Output.FlashCompat' => true,

@@ -13,13 +13,10 @@ use backend\modules\filemanager\models\Mediafile;
 /**
  * @property integer $id
  * @property integer $category_id
- * @property integer $country_id
  * @property integer $author_id
  * @property integer $seo_id
  * @property string $title
- * @property string $alias
- * @property string $description
- * @property string $content
+ * @property string $alias 
  * @property integer $media_id
  * @property integer $views
  * @property integer $likes

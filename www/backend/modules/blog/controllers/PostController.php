@@ -55,8 +55,14 @@ class PostController extends Controller
 
     public function actionView($id)
     {
+        $model = $this->findModel($id);
+        $langData = $model->getAllLangRow()->all();
+        $category = $model->getCategory()->one();
+
         return $this->render('view', [
-            'post' => $this->findModel($id)
+            'post' => $model,
+            'langData' => $langData,
+            'category' => $category->getLangRow()->one()
         ]);
     }
 
