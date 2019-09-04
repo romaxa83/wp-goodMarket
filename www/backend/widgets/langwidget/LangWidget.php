@@ -41,15 +41,14 @@ class LangWidget extends Widget {
         return $data;
     }
 
-    static function validate($model) {
+    static function validate($model, $data) {
         $rules = $model->rules();
-        $class = strtolower(StringHelper::basename($model->className()));
-        $data = Yii::$app->request->post()[StringHelper::basename($model->className())]['Language'];
-        foreach ($data as $k => $v) {
+        $class = StringHelper::basename($model->className());
+        foreach ($data[$class] as $k => $v) {
             foreach ($v as $k0 => $v0) {
                 foreach ($rules as $rule) {
                     $action = $rule[1];
-                    $attr = $class . '-' . $k0 . '-' . $k;
+                    $attr = strtolower($class) . '-' . $k0 . '-' . $k;
                     if (is_array($rule[0]) && (array_search($k0, $rule[0]) !== FALSE))
                         if (method_exists(self::className(), $action))
                             self::$action($model, $attr, $v0, $k0, $rule);

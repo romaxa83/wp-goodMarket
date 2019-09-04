@@ -25,13 +25,13 @@ use yii\helpers\ArrayHelper;
                             <input
                                 type="<?php echo $field["type"]; ?>"
                                 id="<?php echo strtolower($class) . '-' . $field["name"] . '-' . $v0['alias']; ?>"
-                                class="form-control" name="<?php echo $class . '[Language][' . $v0['alias'] . '][' . $field['name'] . ']'; ?>"
-                                value="<?php echo (isset($model->languageData['Language'][$v0['alias']][$field['name']])) ? $model->languageData['Language'][$v0['alias']][$field['name']] : NULL; ?>">
+                                class="form-control" name="<?php echo $class . '[' . $v0['alias'] . '][' . $field['name'] . ']'; ?>"
+                                value="<?php echo (isset($model->languageData[$v0['alias']][$field['name']])) ? $model->languageData[$v0['alias']][$field['name']] : NULL; ?>">
                             <?php else : ?>
                                 <?php
                                 $widget_options = [
-                                    'name' => $class . '[Language][' . $v0['alias'] . '][' . $field["name"] . ']',
-                                    'value' => (isset($model->languageData['Language'][$v0['alias']][$field["name"]])) ? $model->languageData['Language'][$v0['alias']][$field["name"]] : NULL,
+                                    'name' => $class . '[' . $v0['alias'] . '][' . $field["name"] . ']',
+                                    'value' => (isset($model->languageData[$v0['alias']][$field["name"]])) ? $model->languageData[$v0['alias']][$field["name"]] : NULL,
                                 ];
                                 if (isset($field['options'])) {
                                     $widget_options = ArrayHelper::merge($widget_options, $field['options']);

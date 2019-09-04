@@ -57,7 +57,8 @@ class BannersController extends BaseController {
         $model = new Banner();
         $modelLang = new BannerLang();
         if (Yii::$app->request->isPost) {
-            if ($this->save($model, $modelLang)) {
+            $post = Yii::$app->request->post();
+            if (BannerLang::saveAll($model, $modelLang, $post)) {
                 Yii::$app->session->setFlash('success', 'Пункт успешно добавлен');
                 return $this->redirect(['/banners/banners']);
             }
@@ -74,15 +75,16 @@ class BannersController extends BaseController {
         $id = Yii::$app->request->get('id');
         $model = Banner::find()->where(['id' => $id])->with('bannerLang')->one();
         $modelLang = BannerLang::find()->where(['banner_id' => $id])->one();
-        $data['Language'] = [];
+        $data = [];
         foreach ($model->bannerLang as $v) {
             foreach ($v as $k1 => $v1) {
-                $data['Language'][$v->lang->alias][$k1] = $v1;
+                $data[$v->lang->alias][$k1] = $v1;
             }
         }
         $modelLang->languageData = $data;
         if (Yii::$app->request->isPost) {
-            if ($this->save($model, $modelLang)) {
+            $post = Yii::$app->request->post();
+            if (BannerLang::saveAll($model, $modelLang, $post)) {
                 Yii::$app->session->setFlash('success', 'Пункт успешно отредактирован');
                 return $this->redirect(['/banners/banners']);
             }
@@ -121,31 +123,6 @@ class BannersController extends BaseController {
                 }
             }
         }
-    }
-
-    private function save($model, $modelLang) {
-        $success = FALSE;
-        $data = Yii::$app->request->post();
-        $modelLang->languageData = $data['BannerLang'];
-        $LW = LangWidget::getActiveLanguageData(['id', 'alias']);
-        $model->attributes = $data['Banner'];
-        if ($model->validate() && LangWidget::validate($modelLang)) {
-            $model->save();
-            foreach ($LW as $item) {
-                $lang = BannerLang::find()->where(['banner_id' => $modelLang->banner_id, 'lang_id' => $item['id']])->one();
-                if ($lang === NULL) {
-                    $lang = new BannerLang();
-                }
-                $lang->attributes = $data['BannerLang']['Language'][$item['alias']];
-                $lang->banner_id = $model->id;
-                $lang->lang_id = $item['id'];
-                if ($lang->validate()) {
-                    $lang->save();
-                }
-            }
-            $success = TRUE;
-        }
-        return $success;
     }
 
 }
