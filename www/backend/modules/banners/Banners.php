@@ -2,13 +2,13 @@
 
 namespace backend\modules\banners;
 
-use backend\controllers\BaseController;
+use yii\base\Module;
 
 /**
- * Класс определения модуля 'blog'
+ * Класс определения модуля 'banners'
  */
-class Banners extends \yii\base\Module
-{
+class Banners extends Module {
+
     /**
      * В свойстве храниться пространство имен модуля
      * @see https://www.yiiframework.com/doc/api/2.0/yii-base-module#$controllerNamespace-detail
@@ -20,8 +20,7 @@ class Banners extends \yii\base\Module
      * Инициализация модуля
      * @see https://www.yiiframework.com/doc/api/2.0/yii-base-module#init()-detail
      */
-    public function init()
-    {
+    public function init() {
         parent::init();
         $this->setAliases([
             '@banners-assets' => __DIR__ . '/assets'
@@ -29,9 +28,6 @@ class Banners extends \yii\base\Module
         $this->setAliases([
             '@banners-img' => __DIR__ . '/assets/img'
         ]);
-
-//        BaseController::moduleAccess('blog');
-
-        // custom initialization code goes here
     }
+
 }
