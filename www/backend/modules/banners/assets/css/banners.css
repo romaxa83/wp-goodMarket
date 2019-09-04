@@ -4,3 +4,15 @@
 .form-group.has-error .redactor-box {
     border: 1px solid red;
 }
+.banner-arrow {
+    white-space: nowrap; 
+}
+.box .dropdown-menu.check-list-hide-col {
+    left: -125px;
+    padding: 10px;
+    border: 1px solid #3c8dbc;
+}
+table tr td {
+    text-align: center;
+    vertical-align: middle !important;
+}

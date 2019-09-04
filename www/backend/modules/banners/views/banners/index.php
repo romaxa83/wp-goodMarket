@@ -50,15 +50,16 @@ BannersAsset::register($this);
                     [
                         'attribute' => 'id',
                         'format' => 'html',
+                        'headerOptions' => ['width' => '1%'],
                         'value' => function($model) {
-                            return '<i class="fa fa-arrows-alt"></i> ' . $model->id;
+                            return '<span class="banner-arrow"><i class="fa fa-arrows-alt"></i> ' . $model->id . '</span>';
                         }
                     ],
                     [
-                        'attribute' => 'title',
+                        'attribute' => 'bannerLang.media_id',
                         'format' => 'raw',
                         'value' => function($model) {
-                            return $model->title;
+                            return '<img src="' . (Url::to('/admin' . $model->bannerLang[0]['media']['url'], TRUE)) . '" alt="" width="100px"; height="100px"/>';
                         },
                         'contentOptions' => [
                             'data-attr' => 'title',
@@ -74,10 +75,29 @@ BannersAsset::register($this);
                         ]
                     ],
                     [
-                        'attribute' => 'text',
+                        'attribute' => 'bannerLang.title',
+                        'format' => 'raw',
+                        'value' => function($model) {
+                            return $model->bannerLang[0]['title'];
+                        },
+                        'contentOptions' => [
+                            'data-attr' => 'title',
+                            'style' => $user_settings['hide-col'] !== null && in_array('title', $user_settings['hide-col']) ? 'display:none' : ''
+                        ],
+                        'headerOptions' => [
+                            'data-attr' => 'title',
+                            'style' => $user_settings['hide-col'] !== null && in_array('title', $user_settings['hide-col']) ? 'display:none' : ''
+                        ],
+                        'filterOptions' => [
+                            'data-attr' => 'title',
+                            'style' => $user_settings['hide-col'] !== null && in_array('title', $user_settings['hide-col']) ? 'display:none' : ''
+                        ]
+                    ],
+                    [
+                        'attribute' => 'bannerLang.text',
                         'format' => 'html',
                         'value' => function($model) {
-                            return substr($model->text, 0, 100) . ' ....';
+                            return (mb_strlen($model->bannerLang[0]['text']) > 400) ? (substr($model->bannerLang[0]['text'], 0, 400) . ' ....') : $model->bannerLang[0]['text'];
                         },
                         'contentOptions' => [
                             'data-attr' => 'text',
@@ -85,6 +105,7 @@ BannersAsset::register($this);
                         ],
                         'headerOptions' => [
                             'data-attr' => 'text',
+                            'width' => '30%',
                             'style' => $user_settings['hide-col'] !== null && in_array('text', $user_settings['hide-col']) ? 'display:none' : ''
                         ],
                         'filterOptions' => [
@@ -93,9 +114,11 @@ BannersAsset::register($this);
                         ]
                     ],
                     [
-                        'attribute' => 'alias',
+                        'attribute' => 'bannerLang.alias',
                         'format' => 'raw',
-                        //'value' => 'tagsAsString'
+                        'value' => function($model) {
+                            return $model->bannerLang[0]['alias'];
+                        },
                         'contentOptions' => [
                             'data-attr' => 'alias',
                             'style' => $user_settings['hide-col'] !== null && in_array('alias', $user_settings['hide-col']) ? 'display:none' : ''
@@ -114,7 +137,7 @@ BannersAsset::register($this);
                         'attribute' => 'status',
                         'value' => function($model, $key, $index, $column) {
                             $access = AccessController::isView(Yii::$app->controller, 'update-status');
-                            $checked = ($model->publication == 1) ? 'true' : '';
+                            $checked = ($model->status == 1) ? 'true' : '';
                             $options = [
                                 'id' => 'cd_' . $model->id,
                                 'class' => 'tgl tgl-light publish-toggle status-toggle',
@@ -133,6 +156,7 @@ BannersAsset::register($this);
                         ],
                         'headerOptions' => [
                             'data-attr' => 'status',
+                            'width' => '1%',
                             'style' => $user_settings['hide-col'] !== null && in_array('status', $user_settings['hide-col']) ? 'display:none' : ''
                         ],
                         'filterOptions' => [
@@ -144,41 +168,7 @@ BannersAsset::register($this);
                         'class' => 'yii\grid\ActionColumn',
                         'header' => 'Управление',
                         'headerOptions' => ['width' => '100'],
-                        'template' => '{update} {delete}',
-                        'buttons' => [
-                            'update' => function($url, $model, $index) {
-                                $access = AccessController::isView(Yii::$app->controller, 'create-form');
-                                if ($access) {
-                                    $url = Url::to(['create-form', 'id' => $model->id]);
-                                    return Html::tag(
-                                                    'a', '', [
-                                                'href' => $url,
-                                                'title' => 'Редактировать баннер',
-                                                'aria-label' => 'Редактировать баннер',
-                                                'style' => 'color:rgb(63,140,187)',
-                                                'class' => 'grid-option fa fa-pencil',
-                                                'data-pjax' => '0'
-                                    ]);
-                                }
-                            },
-                            'delete' => function($url, $model, $index) {
-                                $access = AccessController::isView(Yii::$app->controller, 'delete-banner');
-                                if ($access) {
-                                    $url = Url::to(['delete-banner', 'id' => $model->id]);
-                                    return Html::tag(
-                                                    'a', '', [
-                                                'href' => $url,
-                                                'title' => 'Удалить статью',
-                                                'aria-label' => 'Удалить статью',
-                                                'style' => 'color:rgb(63,140,187)',
-                                                'class' => 'grid-option fa fa-trash',
-                                                'data-confirm' => 'Вы уверены, что хотите  удалить этот элемент?',
-                                                'data-method' => 'post',
-                                                'data-pjax' => '0'
-                                    ]);
-                                }
-                            }
-                        ]
+                        'template' => '{update} {delete}'
                     ],
                 ],
             ]);
