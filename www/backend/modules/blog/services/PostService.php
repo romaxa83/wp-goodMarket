@@ -146,10 +146,6 @@ class PostService
     {
         $post = $this->post_repository->get($id);
 
-        if($post->is_main == 1){
-            return $this->message->errorPost(1);
-        }
-
         $post->status($status);
         $this->post_repository->save($post);
 
@@ -279,7 +275,7 @@ class PostService
                 $tag = Tag::create($tag_name,Tag::generateAlias($tag_name));
                 $this->tag_repository->save($tag);
             }
-            $tags [] = $tag->id;
+            $tags [] = $tag->tag_id;
         }
 
         $this->tag_rel_repository->save($tags,$post_id);

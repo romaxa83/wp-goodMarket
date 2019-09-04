@@ -28,6 +28,9 @@ BlogAsset::register($this);
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
+                'tableOptions' => [
+                    'class' => 'table table-hover'
+                ],
                 'columns' => [
                     ['class' => 'yii\grid\SerialColumn'],
                     [
@@ -44,9 +47,7 @@ BlogAsset::register($this);
                         'label' => 'Название',
                         'format' => 'raw',
                         'value' => function (Tag $model){
-                            $currentTitle = $model->getLangRow()->one();
-                            
-                            return Html::a(Html::encode($currentTitle->title), ['view', 'id' => $model->id]);
+                            return Html::a(Html::encode($model->oneLang->title), ['view', 'id' => $model->id]);
                         },
                     ],
                     [

@@ -29,7 +29,7 @@ BlogAsset::register($this);
                             </div>
                             <div class="box-body">
                                 <?= LangWidget::widget([
-                                    'model' => $model,
+                                    'model' => $langModel,
                                     'fields' => [
                                         ['type' => 'text', 'name' => 'title'],
                                     ]

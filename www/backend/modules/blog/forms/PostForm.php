@@ -13,16 +13,12 @@ use backend\modules\blog\validators\AliasValidator;
 class PostForm extends CompositeForm
 {
     public $category_id;
-    public $title;
     public $alias;
-    public $description;
     public $media_id;
-    public $content;
     public $status;
     public $published_at;
-    public $languageData;
 
-    private $_post;
+    public $_post;
 
     public function __construct(Post $post = null, $config = [])
     {

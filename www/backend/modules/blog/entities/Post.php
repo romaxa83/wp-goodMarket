@@ -9,7 +9,7 @@ use common\models\User;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use backend\modules\filemanager\models\Mediafile;
-
+use common\models\Lang;
 /**
  * @property integer $id
  * @property integer $category_id
@@ -112,12 +112,16 @@ class Post extends ActiveRecord
     }
     //Relation
 
-    /**
-     * @return ActiveQuery
-     */
     public function getCategory(): ActiveQuery
     {
         return $this->hasOne(Category::class, ['id' => 'category_id']);
+    }
+    /**
+     * @return ActiveQuery
+     */
+    public function getCategoryTitle(): ActiveQuery
+    {
+        return $this->hasOne(CategoryLang::class, ['category_id' => 'id'])->via('category');
     }
 
     /**
@@ -168,14 +172,19 @@ class Post extends ActiveRecord
         return $this->hasMany(Comment::class, ['post_id' => 'id']);
     }
 
-    public function getLangRow(int $lang_id = 1)
+    public function getOneLang()
     {   
-        return $this->hasOne(PostLang::class, ['post_id' => 'id'])->andWhere(['lang_id' => $lang_id]);
+        return $this->hasOne(PostLang::class, ['post_id' => 'id']);
     }
 
-    public function getAllLangRow(int $lang_id = 1)
+    public function getManyLang()
     {   
         return $this->hasMany(PostLang::class, ['post_id' => 'id']);
+    }
+
+    public function getAliasLang()
+    {   
+        return $this->hasMany(Lang::class, ['id' => 'lang_id'])->via('manyLang');
     }
 
     public function getArrayPosition():array

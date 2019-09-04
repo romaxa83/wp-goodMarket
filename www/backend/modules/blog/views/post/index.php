@@ -76,7 +76,7 @@ BlogAsset::register($this);
                         'label' => 'Название',
                         'format' => 'raw',
                         'value' => function(Post $model){
-                            return Html::a(Html::encode($model['langRow']->title), ['view', 'id' => $model->id]);
+                            return Html::a(Html::encode($model['oneLang']->title), ['view', 'id' => $model->id]);
                         },
                         'contentOptions' => SettingsWidget::setConfig('title',$user_settings['hide-col']??null),
                         'headerOptions' => SettingsWidget::setConfig('title',$user_settings['hide-col']??null),
@@ -98,7 +98,7 @@ BlogAsset::register($this);
                         'label' => 'Категория',
                         'format' => 'raw',
                         'value' => function(Post $model){
-                            $currentCategory = $model->category->getLangRow()->one();
+                            $currentCategory = $model->category->getOneLang()->one();
                             
                             return $currentCategory->title;
                         },
@@ -111,7 +111,7 @@ BlogAsset::register($this);
                         'label' => 'Описание',
                         'format' => 'raw',
                         'value' => function(Post $model){
-                            return StringHelper::truncateWords(strip_tags($model['langRow']->description),5);
+                            return StringHelper::truncateWords(strip_tags($model['oneLang']->description),5);
                         },
                         'contentOptions' => SettingsWidget::setConfig('description',$user_settings['hide-col']??null),
                         'headerOptions' => SettingsWidget::setConfig('description',$user_settings['hide-col']??null),

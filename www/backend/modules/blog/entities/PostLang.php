@@ -10,6 +10,7 @@ use yii\web\NotFoundHttpException;
 class PostLang extends ActiveRecord 
 {
     private $currentLang;
+    public $languageData;
 
     public static function tableName() 
     {
@@ -19,7 +20,10 @@ class PostLang extends ActiveRecord
     public function rules() 
     {
         return [
-            [['post_id', 'lang_id', 'title', 'description','content'], 'required'],
+            [['post_id', 'lang_id', 'title','description','content'], 'required', 'message' => 'Поле не может быть пустым:'],
+            [['title','description','content'], 'string', 'message' => 'Поле должно быть строкой:'],
+            ['lang_id' , 'exist', 'targetClass' => Lang::class, 'targetAttribute' => ['lang_id' => 'id'], 'message' => 'Ошибка связи с таблицей языков '],
+            ['post_id' , 'exist', 'targetClass' => Post::class, 'targetAttribute' => ['post_id' => 'id'], 'message' => 'Ошибка связи с таблицей тегов ']
         ];
     }
 
@@ -61,8 +65,6 @@ class PostLang extends ActiveRecord
             $this->currentLang = $oneLang['alias'];
             $currentData = $this->existLangKey($data);
 
-            $model[$indexKey]->post_id = $baseId;
-            $model[$indexKey]->lang_id = $oneLang['id'];
             $model[$indexKey]->title = $currentData['title'];
             $model[$indexKey]->description = $currentData['description'];
             $model[$indexKey]->content = $currentData['content'];

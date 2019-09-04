@@ -11,8 +11,7 @@ class TagForm extends Model
     public $title;
     public $alias;
 
-    private $_tag;
-    public $languageData;
+    public $_tag;
 
     //если попадает тег заполняем его данными,иначе ичего не делаем
     public function __construct(Tag $tag = null,array $config = [])

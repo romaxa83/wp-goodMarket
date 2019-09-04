@@ -34,7 +34,7 @@ BlogAsset::register($this);
                         <div class="row">
                             <div class="col-md-12">
                                 <?= LangWidget::widget([
-                                        'model' => $model,
+                                        'model' => $langModel,
                                         'fields' => [
                                             ['type' => 'text', 'name' => 'title'],
                                             ['type' => 'widget', 'name' => 'content', 'class' => 'backend\modules\filemanager\widgets\TinyMce', 'options' => [

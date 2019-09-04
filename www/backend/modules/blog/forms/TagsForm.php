@@ -32,11 +32,11 @@ class TagsForm extends Model
 
     public function tagsList(): array
     {
-        $tag = Tag::find()->andWhere(['status' => Tag::STATUS_ACTIVE])->with('title')->asArray()->all();
+        $tag = Tag::find()->andWhere(['status' => Tag::STATUS_ACTIVE])->with('oneLang')->asArray()->all();
         $preparedTagList = [];
 
         foreach($tag as $oneElement){
-            $title = $oneElement['title'][0]['title'];
+            $title = $oneElement['oneLang']['title'];
             $preparedTagList[$title] = $title;
         }
 
@@ -46,10 +46,10 @@ class TagsForm extends Model
     public function checkTagList($post_id)
     {
         $tagAssignment = ArrayHelper::map(TagAssignment::find()->where(['post_id' => $post_id])->asArray()->all(),'tag_id','tag_id');
-        $tag = Tag::find()->where(['in','id',$tagAssignment])->andWhere(['status' => Tag::STATUS_ACTIVE])->with('title')->asArray()->all();
+        $tag = Tag::find()->where(['in','id',$tagAssignment])->andWhere(['status' => Tag::STATUS_ACTIVE])->with('oneLang')->asArray()->all();
 
         foreach($tag as $oneElement){
-            $title = $oneElement['title'][0]['title'];
+            $title = $oneElement['oneLang']['title'];
             $preparedTagList[$title] = $title;
         }
         return $preparedTagList;

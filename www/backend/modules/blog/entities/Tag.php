@@ -5,6 +5,7 @@ namespace backend\modules\blog\entities;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use Ausi\SlugGenerator\SlugGenerator;
+use common\models\Lang;
 
 /**
  * @property integer $id
@@ -66,13 +67,18 @@ class Tag extends ActiveRecord
         return $this->hasMany(Post::class, ['id' => 'post_id'])->orderBy(['published_at' => SORT_DESC])->via('tagAssignments');
     }
 
-    public function getLangRow(int $lang_id = 1)
+    public function getOneLang()
     {   
-        return $this->hasOne(TagLang::class, ['tag_id' => 'id'])->andWhere(['lang_id' => $lang_id]);
+        return $this->hasOne(TagLang::class, ['tag_id' => 'id']);
     }
 
-    public function getTitle(int $lang_id = 1)
+    public function getManyLang()
     {   
         return $this->hasMany(TagLang::class, ['tag_id' => 'id']);
+    }
+
+    public function getAliasLang()
+    {   
+        return $this->hasMany(Lang::class, ['id' => 'lang_id'])->via('manyLang');
     }
 }

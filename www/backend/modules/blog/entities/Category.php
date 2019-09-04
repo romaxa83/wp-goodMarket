@@ -6,7 +6,7 @@ use yii\db\ActiveRecord;
 use paulzi\nestedsets\NestedSetsBehavior;
 use backend\modules\blog\forms\queries\CategoryQuery;
 use backend\modules\blog\entities\CategoryLang;
-
+use common\models\Lang;
 /**
  * @property integer $id
  * @property string $title
@@ -77,13 +77,18 @@ class Category extends ActiveRecord
         return new CategoryQuery(static::class);
     }
 
-    public function getLangRow(int $lang_id = 1)
+    public function getOneLang()
     {   
-        return $this->hasOne(CategoryLang::class, ['category_id' => 'id'])->andWhere(['lang_id' => $lang_id]);
+        return $this->hasOne(CategoryLang::class, ['category_id' => 'id']);
     }
 
-    public function getTitle(int $lang_id = 1)
+    public function getManyLang()
     {   
         return $this->hasMany(CategoryLang::class, ['category_id' => 'id']);
+    }
+
+    public function getAliasLang()
+    {   
+        return $this->hasMany(Lang::class, ['id' => 'lang_id'])->via('manyLang');
     }
 }

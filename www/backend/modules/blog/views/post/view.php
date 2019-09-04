@@ -7,22 +7,22 @@ use yii\helpers\Url;
 use yii\widgets\DetailView;
 use yii\helpers\ArrayHelper;
 use backend\modules\blog\helpers\ImageHelper;
-
+use backend\modules\blog\entities\TagLang;
 /* @var $this yii\web\View */
 /* @var $post backend\modules\blog\entities\Post */
 /* @var $modificationsProvider yii\data\ActiveDataProvider */
 /* @var $access backend\modules\user\useCase\Access */
 
-$this->title = $langData[0]->title;
+$this->title = $model->manyLang[0]->title;
 $this->params['breadcrumbs'][] = ['label' => 'Список постов', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $langData[0]->title;
+$this->params['breadcrumbs'][] = $model->manyLang[0]->title;
 ?>
 <div class="user-view">
 
     <p>
-        <?= Html::a('Редактировать', ['update', 'id' => $post->id], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Редактировать', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Вернуться', Yii::$app->request->referrer, ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Удалить', ['delete', 'id' => $post->id], [
+        <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Вы уверены ,что хотите удалить этот пост?',
@@ -35,31 +35,41 @@ $this->params['breadcrumbs'][] = $langData[0]->title;
             <div class="box">
                 <div class="box-body">
                     <?= DetailView::widget([
-                        'model' => $post,
+                        'model' => $model,
                         'attributes' => [
                             'id',
                             [
                                 'label' => 'Статус',
                                 'format' =>'raw',
-                                'value' => StatusHelper::label($post->status),
+                                'value' => StatusHelper::label($model->status),
                             ],
                             [
                                 'label' => 'Название поста',
-                                'value' => function() use ($langData){
-                                    return $langData[0]->title;
+                                'value' => function($model){
+                                    return $model->manyLang[0]->title;
                                 },
                             ],
                             [
                                 'label' => 'Алиас',
-                                'value' => $post->alias,
+                                'value' => $model->alias,
                             ],
                             [
                                 'label' => 'Категория',
-                                'value' => $category->title,
+                                'value' => function($model){
+                                    return $model->categoryTitle->title;
+                                },
                             ],
                             [
                                 'label' => 'Теги',
-                                'value' => implode(', ', ArrayHelper::getColumn($post->tags, 'title')),
+                                'value' => function($model){
+                                    $tag = $model->tags;
+
+                                    foreach($tag as $one){
+                                        $tagID[] = $one->id;
+                                    }
+
+                                    return implode(ArrayHelper::getColumn(TagLang::find()->where(['in','tag_id',$tagID])->asArray()->andWhere(['lang_id' => 1])->all(),'title'),' , ');
+                                }
                             ],
                         ],
                     ]) ?>
@@ -70,31 +80,31 @@ $this->params['breadcrumbs'][] = $langData[0]->title;
             <div class="box">
                 <div class="box-body">
                     <?= DetailView::widget([
-                        'model' => $post,
+                        'model' => $model,
                         'attributes' => [
                             [
                                 'label' => 'Просмотры',
-                                'value' => $post->views,
+                                'value' => $model->views,
                             ],
                             [
                                 'label' => 'Лайки',
-                                'value' => $post->likes . ' (в разработке)',
+                                'value' => $model->likes . ' (в разработке)',
                             ],
                             [
                                 'label' => 'Ссылки',
-                                'value' => $post->links . ' (в разработке)',
+                                'value' => $model->links . ' (в разработке)',
                             ],
                             [
                                 'label' => 'Создана',
-                                'value' => DateHelper::convertDateTime($post->created_at)
+                                'value' => DateHelper::convertDateTime($model->created_at)
                             ],
                             [
                                 'label' => 'Опубликована',
-                                'value' => DateHelper::convertDateTime($post->published_at)
+                                'value' => DateHelper::convertDateTime($model->published_at)
                             ],
                             [
                                 'label' => 'Автор',
-                                'value' => ArrayHelper::getValue($post, 'author.username')
+                                'value' => ArrayHelper::getValue($model, 'author.username')
 
                             ]
                         ],
@@ -108,8 +118,8 @@ $this->params['breadcrumbs'][] = $langData[0]->title;
             <div class="box">
                 <div class="box-header with-border">Обложка</div>
                 <div class="box-body">
-                    <?php if($post->media_id !== null){
-                        echo ImageHelper::renderImg($post->media->thumbs,'large');
+                    <?php if($model->media_id !== null){
+                        echo ImageHelper::renderImg($model->media->thumbs,'large');
                     } else {
                         echo ImageHelper::notImg();
                     } ?>
@@ -120,7 +130,13 @@ $this->params['breadcrumbs'][] = $langData[0]->title;
             <div class="box">
                 <div class="box-header with-border">Описание</div>
                 <div class="box-body">
-                    <?= Yii::$app->formatter->asNtext($langData[0]->description) ?>
+                    <?= Yii::$app->formatter->asHtml($model->manyLang[0]->description, [
+                        'Attr.AllowedRel' => array('nofollow'),
+                        'HTML.SafeObject' => true,
+                        'Output.FlashCompat' => true,
+                        'HTML.SafeIframe' => true,
+                        'URI.SafeIframeRegexp'=>'%^(https?:)?//(www\.youtube(?:-nocookie)?\.com/embed/|player\.vimeo\.com/video/)%',
+                    ]) ?>
                 </div>
             </div>
         </div>
@@ -130,7 +146,7 @@ $this->params['breadcrumbs'][] = $langData[0]->title;
     <div class="box">
         <div class="box-header with-border">Контент</div>
         <div class="box-body">
-            <?= Yii::$app->formatter->asHtml($langData[0]->content, [
+            <?= Yii::$app->formatter->asHtml($model->manyLang[0]->content, [
                 'Attr.AllowedRel' => array('nofollow'),
                 'HTML.SafeObject' => true,
                 'Output.FlashCompat' => true,
@@ -144,27 +160,27 @@ $this->params['breadcrumbs'][] = $langData[0]->title;
         <div class="box-header with-border">Seo</div>
         <div class="box-body">
             <?= DetailView::widget([
-                'model' => $post->getSeo(),
+                'model' => $model->getSeo(),
                 'attributes' => [
                     [
                         'label' => 'H1',
-                        'value' => $post->seo->h1,
+                        'value' => $model->seo->h1,
                     ],
                     [
                         'label' => 'title',
-                        'value' => $post->seo->title,
+                        'value' => $model->seo->title,
                     ],
                     [
                         'label' => 'keywords',
-                        'value' => $post->seo->keywords,
+                        'value' => $model->seo->keywords,
                     ],
                     [
                         'label' => 'description',
-                        'value' => $post->seo->description,
+                        'value' => $model->seo->description,
                     ],
                     [
                         'label' => 'seo_text',
-                        'value' => $post->seo->seo_text,
+                        'value' => $model->seo->seo_text,
                     ],
                 ],
             ]) ?>

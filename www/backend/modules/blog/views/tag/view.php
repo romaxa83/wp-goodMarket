@@ -9,7 +9,7 @@ use backend\widgets\langwidget\LangWidget;
 /* @var $tag backend\modules\blog\entities\Tag */
 /* @var $access backend\modules\user\useCase\Access */
 
-$this->title = $tag->title;
+$this->title = $tag->manyLang[0]->title;
 $this->params['breadcrumbs'][] = ['label' => 'Список тегов', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -41,10 +41,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format' => 'raw',
                                 'value' => function() use ($tag){
                                     $html = '<ul>';
-                                    foreach(LangWidget::getActiveLanguageData(['id','alias']) as $oneLang) {
-                                        $langModel = $tag->getLangRow($oneLang['id'])->one();
-                
-                                        $html .= '<li><b>' . $oneLang['alias'] . '</b> : ' . $langModel->title . '</li>'; 
+                                    foreach($tag->manyLang as $keyLang => $oneLang) {
+                                        $html .= '<li><b>' . $tag->aliasLang[$keyLang]->alias . '</b> : ' . $tag->alias . '</li>'; 
                                     }               
                                     return $html . '</ul>';
                                 }
