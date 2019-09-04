@@ -3,8 +3,8 @@ include:
     - common
     - frontend
     - backend
-#    - backend/modules/category
-#    - backend/modules/product
+    - backend/modules/category
+    - backend/modules/product
     - backend/modules/banners
 paths:
     log: console/runtime/logs
