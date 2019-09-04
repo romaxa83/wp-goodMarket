@@ -35,6 +35,11 @@ class TinyMce extends InputWidget
     private $tinyMCE = '';
 
     /**
+     * @var string TinyMCE widget
+     */
+    private $defaultTag = '';
+
+    /**
      * @inheritdoc
      */
     public function init()
@@ -86,6 +91,7 @@ class TinyMce extends InputWidget
             'frameId' => $this->options['id'] . '-frame',
             'frameSrc' => Url::to(['/filemanager/file/filemanager']),
             'thumb' => $this->thumb,
+            'defaultTag' => $this->defaultTag
         ]);
 
         return $this->tinyMCE . $modal;

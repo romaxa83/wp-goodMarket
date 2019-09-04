@@ -1,2 +1,7 @@
 suite_namespace: backend\modules\category\tests\unit
 actor: UnitTester
+modules:
+  enabled:
+    - Asserts
+    - Yii2:
+        configFile: '../config/test-local.php'
