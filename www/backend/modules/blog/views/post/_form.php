@@ -172,8 +172,8 @@ BlogAsset::register($this);
                 </div>
             </div>
             <div class="form-group">
-                <?= Html::submitButton('Сохранить',['class' => 'btn btn-primary mr-15',]) ?>
-                <?= Html::resetButton('Сбросить', ['class' => 'btn btn-primary mr-15']) ?>
+                <?= Html::submitButton('Сохранить',['class' => 'btn btn-success mr-15',]) ?>
+                <?= Html::resetButton('Сбросить', ['class' => 'btn btn-danger mr-15']) ?>
                 <a href="<?php echo Url::to(['index']) ?>" class="btn btn-primary">Вернуться к списку</a>
             </div>
             <?php ActiveForm::end(); ?>

@@ -22,7 +22,7 @@ BlogAsset::register($this);
             <?php $form = ActiveForm::begin(); ?>
             <div class="box-body">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <div class="box">
                             <div class="box-header with-border">
                                 <h3 class="box-title">Основные поля</h3>
@@ -43,8 +43,8 @@ BlogAsset::register($this);
                 </div>
 
                 <div class="form-group">
-                    <?= Html::submitButton('Сохранить',['class' => 'btn btn-primary mr-15',]) ?>
-                    <?= Html::resetButton('Сбросить', ['class' => 'btn btn-primary mr-15']) ?>
+                    <?= Html::submitButton('Сохранить',['class' => 'btn btn-success mr-15',]) ?>
+                    <?= Html::resetButton('Сбросить', ['class' => 'btn btn-danger mr-15']) ?>
                     <a href="<?= Url::to(['index']) ?>" class="btn btn-primary">Вернуться к списку</a>
                 </div>
                 <?php ActiveForm::end(); ?>
