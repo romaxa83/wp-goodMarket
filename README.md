@@ -95,3 +95,12 @@ $ docker-compose up -d
 ```
 $ set -a && . ./.env && set +a && docker exec -ti $(docker ps -f name=goodmarket_mariadb_ -q) sh -c "mysqldump -u$MYSQL_USER -p$MYSQL_PASSWORD -hmariadb $MYSQL_DATABASE > /docker-entrypoint-initdb.d/dump.sql"
 ```
+
+#Codeception Test 
+
+```
+www/codeception.yml - добавляем namespace (прм - backend/modules/blog)
+
+саму структуру тестов берем с любого метода 
+
+\Codeception\Util\Debug::debug(<data>); - вывод в консоль при выполнений (нужно к команде вызова добавить флаг -d )
