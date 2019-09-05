@@ -17,6 +17,7 @@ class m190827_120623_create_product_lang_table extends Migration {
             'id' => $this->primaryKey(),
             'product_id' => $this->integer(),
             'lang_id' => $this->integer(),
+            'alias' => $this->string(255),
             'name' => $this->string(255),
             'description' => $this->text(),
             'price' => $this->decimal(24, 13),

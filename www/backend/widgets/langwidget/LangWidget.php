@@ -80,7 +80,7 @@ class LangWidget extends Widget {
             }
             if ($params['on'] == $model->scenario) {
                 $name = $model->getAttributeLabel($name);
-                $model->addError($attr, $params['message'] . ' ' . $name);
+                $model->addError($attr, $params['message'] . ' «' . $name . '».');
             }
         }
     }

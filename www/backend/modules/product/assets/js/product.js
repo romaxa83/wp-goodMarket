@@ -300,4 +300,119 @@ $(document).ready(function () {
         });
     });
 
+    // manufacturer
+    function manufacturerShow(data) {
+        $('#manufacturer-show .modal-title').text(data.title);
+        $('#manufacturer-show input[type="text"]').val(data.name)
+        $('#manufacturer-show').modal('show');
+    }
+    $('.manufacturer').on('click', function () {
+        var data = {
+            id: null,
+            name: null,
+            title: 'Добавление производителя'
+        };
+        $('#manufacturer').val(null).trigger('change');
+        manufacturerShow(data);
+        return false;
+    });
+    $('.add-manufacturer').on('click', function () {
+        var id = $('#manufacturer').select2('val');
+        var name = $('#manufacturer-show input[type="text"]').val();
+        $.ajax({
+            url: '/admin/product/product/ajax-add-manufacturer',
+            type: 'post',
+            dataType: 'json',
+            data: {id: id, name: name},
+            success: function (obj) {
+                if (obj.type == 'error') {
+                    $('#manufacturer-show .form-group').addClass('has-error');
+                    $('#manufacturer-show .help-block-error').text(obj.msg);
+                } else {
+                    if ($("#manufacturer").find("option[value=" + obj.id + "]").length) {
+                        $("#manufacturer").select2('data')[0].text = name;
+                        $("#manufacturer").select2('data')[0].id = obj.id;
+                        $("#manufacturer").trigger("change");
+                    } else {
+                        var newState = new Option(name, obj.id, true, true);
+                        $("#manufacturer").append(newState).trigger('change');
+                    }
+                    $('#manufacturer-show .form-group').removeClass('has-error');
+                    $('#manufacturer-show .help-block-error').empty();
+                    $('#manufacturer-show input[type="text"]').val('');
+                    $('#manufacturer-show').modal('hide');
+                }
+            }
+        });
+    });
+    if ($('.manufacturer-position-relative').length > 0) {
+        if (!$('#manufacturer').val()) {
+            $('.manufacturer-edit, .manufacturer-delete').attr('disabled', 'disabled');
+        }
+        $('#manufacturer').on('change', function () {
+            if ($('#manufacturer').val()) {
+                $('.manufacturer-edit, .manufacturer-delete').removeAttr('disabled');
+            }
+        });
+    }
+    $('.manufacturer-edit').on('click', function () {
+        var data = {
+            id: $('#manufacturer').select2('data')[0].id,
+            name: $('#manufacturer').select2('data')[0].text,
+            title: 'Редактирование производителя'
+        };
+        manufacturerShow(data);
+        return false;
+    });
+    $('.manufacturer-delete').on('click', function () {
+        var id = $('#manufacturer').select2('val');
+        $.ajax({
+            url: '/admin/product/product/ajax-delete-manufacturer',
+            type: 'post',
+            data: {id: id},
+            success: function (obj) {
+                $('#manufacturer option[value="' + id + '"]').remove();
+            }
+        });
+        return false;
+    });
+    // /manufacturer
+
+    // gallery-box
+    if ($('.gallery-box-content').length) {
+        $('#sortable').sortable({
+            placeholder: '',
+            containment: $('.gallery-box-content'),
+            update: function (event, ui) {
+                var gallery = getGalleryJSON();
+                setGalleryJSON(gallery);
+                $.ajax({
+                    type: 'POST',
+                    url: host + '/admin/product/product/update-position',
+                    data: {'gallery': gallery}
+                });
+            }
+        }).disableSelection();
+    }
+    $('body').on('click', '.gallery-box-item-delete', function () {
+        $(this).parents('.gallery-box-item').remove();
+        var gallery = getGalleryJSON();
+        setGalleryJSON(gallery);
+        return false;
+    });
+    $('body').on('click', '.gallery-box-item-search', function () {
+        var id = $(this).parents('.gallery-box-item').find('img').data('id');
+        $.ajax({
+            url: '/admin/product/product/show-gallery-item',
+            type: 'post',
+            data: {id: id},
+            success: function (obj) {
+                var obj = JSON.parse(obj);
+                $('#gallery-show').modal('show');
+                $('#gallery-show-img').empty().append('<img width="100%" src="' + host + '/admin' + obj.url + '">');
+            }
+        });
+        return false;
+    });
+    // /gallery-box
 });
