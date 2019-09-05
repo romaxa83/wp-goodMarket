@@ -9,6 +9,7 @@ use common\models\Curl;
 use backend\modules\product\models\Product;
 use backend\widgets\langwidget\LangWidget;
 use backend\modules\category\models\Category;
+use backend\modules\category\models\CategoryLang;
 use dosamigos\transliterator\TransliteratorHelper;
 use backend\modules\product\models\ProductSearch;
 use backend\modules\product\models\Manufacturer;
@@ -65,49 +66,78 @@ class ProductController extends BaseController {
 
     public function actionCreate() {
         $this->view->title = 'Создание продукта';
+        $this->view->params['breadcrumbs'][] = $this->view->title;
+        $tabs = [
+            ['href' => 'tab_2', 'name' => 'Продукт'],
+            ['href' => 'tab_3', 'name' => 'Галерея'],
+            ['href' => 'tab_4', 'name' => 'SEO'],
+            ['href' => 'tab_5', 'name' => 'Характеристики']
+        ];
+        $model = new Product();
+        $modelLang = new ProductLang();
         $searchModel = new VProductSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $manufacturer = ArrayHelper::map(Manufacturer::find()->asArray()->where(['status' => 1])->all(), 'id', 'name');
         $group = ArrayHelper::map(Group::find()->where(['status' => 1])->all(), 'id', 'name');
+        $category = ArrayHelper::map(CategoryLang::find()->asArray()->all(), 'category_id', 'name');
+        if (Yii::$app->request->isPost) {
+            $post = Yii::$app->request->post();
+            $model->type = 'GoodMarket';
+            $post['Product']['action'] = Yii::$app->controller->action->id;
+            if (ProductLang::saveAll($model, $modelLang, $post)) {
+                Yii::$app->session->setFlash('success', 'Продукт успешно добавлен');
+                return $this->redirect(['/product/product']);
+            }
+        }
         $options = [
-            'model' => new Product(),
-            'product' => new Product(),
+            'tabs' => $tabs,
+            'model' => $model,
+            'modelLang' => $modelLang,
+            'product' => $model,
             'characteristic' => new Characteristic(),
             'characteristic_list' => [],
             'product_characteristic' => new ProductCharacteristic(),
             'dataProvider' => $dataProvider,
             'manufacturer' => $manufacturer,
-            'group' => $group
+            'group' => $group,
+            'category' => $category,
+            'id' => 0
         ];
         return $this->render('form', $options);
     }
 
     public function actionUpdate() {
         $id = Yii::$app->request->get('id');
-
+        $this->view->title = 'Редактирование продукта';
+        $this->view->params['breadcrumbs'][] = $this->view->title;
+        $tabs = [
+            ['href' => 'tab_1', 'name' => 'Поставщики'],
+            ['href' => 'tab_2', 'name' => 'Продукт'],
+            ['href' => 'tab_3', 'name' => 'Галерея'],
+            ['href' => 'tab_4', 'name' => 'SEO'],
+            ['href' => 'tab_5', 'name' => 'Характеристики'],
+            ['href' => 'tab_6', 'name' => 'Атрибуты'],
+            ['href' => 'tab_7', 'name' => 'Акции']
+        ];
         $model = $product = Product::find()->where(['id' => $id])->with('category')->with('productLang.lang')->one();
-        if ($product->stock_publish == 0) {
-            Yii::$app->session->setFlash('error', 'Продукт отключен на складе');
-            return $this->redirect('index');
-        }
-
+        $modelLang = ProductLang::find()->where(['product_id' => $id])->one();
         $characteristic = new Characteristic();
         $product_characteristic = new ProductCharacteristic();
 
         $provider = Product::find()->where(['vendor_code' => $product->vendor_code])->with('category')->all();
-        $category = ArrayHelper::map(Category::find()->asArray()->all(), 'id', 'name');
+        $category = ArrayHelper::map(CategoryLang::find()->asArray()->all(), 'category_id', 'name');
         $manufacturer = ArrayHelper::map(Manufacturer::find()->asArray()->where(['status' => 1])->all(), 'id', 'name');
         $group = ArrayHelper::map(Group::find()->where(['status' => 1])->all(), 'id', 'name');
 
-        $data['Language'] = [];
-        foreach ($product->productLang as $v) {
+        $data = [];
+        foreach ($model->productLang as $v) {
             foreach ($v as $k1 => $v1) {
-                $data['Language'][$v->lang->alias][$k1] = $v1;
+                $data[$v->lang->alias][$k1] = $v1;
             }
         }
-        $product->languageData = $data;
+        $modelLang->languageData = $data;
         if (empty($product->alias)) {
-            $product->alias = preg_replace("/[^a-z0-9-]/", '', str_replace(' ', '-', mb_strtolower(TransliteratorHelper::process($product->productLang[0]->name, '?', 'en'))));
+            $modelLang->alias = preg_replace("/[^a-z0-9-]/", '', str_replace(' ', '-', mb_strtolower(TransliteratorHelper::process($product->productLang[0]->name, '?', 'en'))));
             $product->languageData[0]['language'] = 'ru';
         }
 
@@ -115,28 +145,15 @@ class ProductController extends BaseController {
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         if (Yii::$app->request->isPost) {
-            $data = Yii::$app->request->post();
-            $prod = Product::findOne($product->id);
-            $data['Product']['gallery'] = $data['Product']['gallery_serialize'];
-            $prod->attributes = $data['Product'];
-            if ($prod->validate()) {
-                if ($prod->save()) {
-                    foreach ($data['Product']['Language'] as $key => $item) {
-                        $lang = ProductLang::find()->where(['product_id' => $prod->id, 'lang_id' => $item['lang_id']])->one();
-                        $lang->attributes = $item;
-                        if ($lang->validate()) {
-                            $lang->save();
-                        }
-                    }
-                    SeoWidget::save($prod->id, 'product', $data['SEO']);
-                }
+            $post = Yii::$app->request->post();
+            $post['Product']['action'] = Yii::$app->controller->action->id;
+            if (ProductLang::saveAll($model, $modelLang, $post)) {
+                Yii::$app->session->setFlash('success', 'Продукт успешно отредактирован');
+                return $this->redirect(['/product/product']);
             }
-            Yii::$app->session->setFlash('success', 'Продукт успешно отредактирован');
-            return $this->redirect([$data['save']]);
         }
 
-
-        // Пересмотреть после оптимизации модуля Акции BEGIN
+// Пересмотреть после оптимизации модуля Акции BEGIN
 //        if (!empty($stock_data = StocksProducts::getProductStocks($id))) {
 //            for ($i = 0; $i < count($stock_data); $i++) {
 //                $vproduct_id = $stock_data[$i]['vproduct_id'];
@@ -161,9 +178,10 @@ class ProductController extends BaseController {
 //            'allModels' => $stock_data
 //        ]);
 //        $stockDataProvider->getModels();
-        //Пересмотреть после оптимизации модуля Акции END
+//Пересмотреть после оптимизации модуля Акции END
 
         $options = [
+            'tabs' => $tabs,
             'id' => $id,
             'model' => $model,
             'product' => $product,
@@ -176,12 +194,18 @@ class ProductController extends BaseController {
             'group' => $group,
             'characteristic' => $characteristic,
             'product_characteristic' => $product_characteristic,
-            // Пересмотреть
-            //'stockDataProvider' => $stockDataProvider,
-            //'stock_data' => $stock_data,
-            //'stock_exist' => $stock_exist,
+            'modelLang' => $modelLang
+                // Пересмотреть
+//'stockDataProvider' => $stockDataProvider,
+//'stock_data' => $stock_data,
+//'stock_exist' => $stock_exist,
         ];
         return $this->render('form', $options);
+    }
+
+    public function actionUpdatePosition() {
+        $gallery = Yii::$app->request->post('gallery');
+        $gallery = Json::decode($gallery);
     }
 
     public function actionUpdateStatus() {
@@ -273,11 +297,7 @@ class ProductController extends BaseController {
     }
 
     private function getProductCharacteristic($id) {
-        $request = ProductCharacteristic::find()->select('product_characteristic.*, characteristic.*')
-                ->leftJoin('characteristic', 'product_characteristic.characteristic_id = characteristic.id')
-                ->where(['or', ['product_characteristic.product_id' => $id], ['product_import_id' => $id]])
-                ->asArray()
-                ->all();
+        $request = ProductCharacteristic::find()->select('product_characteristic.*, characteristic.*')->leftJoin('characteristic', 'product_characteristic.characteristic_id = characteristic.id')->where(['or', ['product_characteristic.product_id' => $id], ['product_import_id' => $id]])->asArray()->all();
         return $request;
     }
 
@@ -285,16 +305,12 @@ class ProductController extends BaseController {
         $id = Yii::$app->request->post('id');
         $dataProvider = new ActiveDataProvider([
             'query' => ProductCharacteristic::find()->select(''
-                            . '`product_characteristic`.`id` AS `id`, '
-                            . '`group`.`name` AS `group_name`, '
-                            . '`characteristic`.`name` AS `characteristic_name`,'
-                            . '`product_characteristic`.`product_import_id` AS `product_import_id`,'
-                            . '`product_characteristic`.`value` AS `product_characteristic_value`, '
-                            . '`characteristic`.`type` AS `characteristic_type`')->asArray()
-                    ->leftJoin('characteristic', 'product_characteristic.characteristic_id = characteristic.id')
-                    ->leftJoin('group', 'product_characteristic.group_id = group.id')
-                    ->where(['or', ['product_characteristic.product_id' => $id], ['product_import_id' => $id]])
-                    ->orderBy(['product_characteristic.group_id' => 'ASC', 'characteristic.id' => 'ASC']),
+                    . '`product_characteristic`.`id` AS `id`, '
+                    . '`group`.`name` AS `group_name`, '
+                    . '`characteristic`.`name` AS `characteristic_name`,'
+                    . '`product_characteristic`.`product_import_id` AS `product_import_id`,'
+                    . '`product_characteristic`.`value` AS `product_characteristic_value`, '
+                    . '`characteristic`.`type` AS `characteristic_type`')->asArray()->leftJoin('characteristic', 'product_characteristic.characteristic_id = characteristic.id')->leftJoin('group', 'product_characteristic.group_id = group.id')->where(['or', ['product_characteristic.product_id' => $id], ['product_import_id' => $id]])->orderBy(['product_characteristic.group_id' => 'ASC', 'characteristic.id' => 'ASC']),
             'pagination' => FALSE,
             'sort' => FALSE,
         ]);
@@ -434,13 +450,13 @@ class ProductController extends BaseController {
      */
 
     static function getVProductList($render = FALSE) {
-        // пингуем сервер не работоспасобность
+// пингуем сервер не работоспасобность
         $ping = Curl::curl('GET', '/api/ping');
         if ($ping['status'] !== 200) {
             return die('Ошибка сервера: ' . $ping['status']);
         }
 
-        // удаляем кеш если надо
+// удаляем кеш если надо
         if ($render == TRUE) {
             if (Yii::$app->cache->exists('vproduct_list_key')) {
                 foreach (Yii::$app->cache->get('vproduct_list_key') as $v) {
@@ -520,12 +536,7 @@ class ProductController extends BaseController {
         foreach ($fields as $k => $v) {
             $temp[] = $v['fields'];
         }
-        $sp_product = Product::find()->select(implode(', ', $temp) . ' ')->asArray()
-                ->leftJoin('category', 'category.stock_id = product.category_id')
-                ->leftJoin('seo_meta', 'seo_meta.page_id = product.seo_id')
-                ->leftJoin('filemanager_mediafile', 'filemanager_mediafile.id = product.media_id')
-                ->leftJoin('manufacturer', 'manufacturer.id = product.manufacturer_id')
-                ->all();
+        $sp_product = Product::find()->select(implode(', ', $temp) . ' ')->asArray()->leftJoin('category', 'category.stock_id = product.category_id')->leftJoin('seo_meta', 'seo_meta.page_id = product.seo_id')->leftJoin('filemanager_mediafile', 'filemanager_mediafile.id = product.media_id')->leftJoin('manufacturer', 'manufacturer.id = product.manufacturer_id')->all();
         $language = ArrayHelper::map(LangWidget::getActiveLanguageData(['alias', 'lang']), 'alias', 'lang');
         foreach ($products as $k => $v) {
             foreach ($sp_product as $k1 => $v1) {
@@ -554,13 +565,7 @@ class ProductController extends BaseController {
         foreach ($fields as $k => $v) {
             $temp[] = $v['fields'];
         }
-        $sp_product = Product::find()->select(implode(', ', $temp) . ' ')->asArray()
-                ->leftJoin('category', 'category.stock_id = product.category_id')
-                ->leftJoin('seo_meta', 'seo_meta.page_id = product.seo_id')
-                ->leftJoin('filemanager_mediafile', 'filemanager_mediafile.id = product.media_id')
-                ->leftJoin('manufacturer', 'manufacturer.id = product.manufacturer_id')
-                ->where($conditional)
-                ->one();
+        $sp_product = Product::find()->select(implode(', ', $temp) . ' ')->asArray()->leftJoin('category', 'category.stock_id = product.category_id')->leftJoin('seo_meta', 'seo_meta.page_id = product.seo_id')->leftJoin('filemanager_mediafile', 'filemanager_mediafile.id = product.media_id')->leftJoin('manufacturer', 'manufacturer.id = product.manufacturer_id')->where($conditional)->one();
         $language = ArrayHelper::map(LangWidget::getActiveLanguageData(['alias', 'lang']), 'alias', 'lang');
         foreach ($language as $k2 => $v2) {
             if ($k2 == $sp_product['product_language']) {
@@ -647,12 +652,12 @@ class ProductController extends BaseController {
      */
 
     private static function getBazaCache() {
-        // пингуем сервер не работоспособность
+// пингуем сервер не работоспособность
         $ping = Curl::curl('GET', '/api/ping');
         if ($ping['status'] !== 200) {
             return [];
         }
-        //Получаем продукты
+//Получаем продукты
         $data = Curl::curl('GET', '/api/getProducts');
         if ($data['status'] !== 200) {
             return [];
