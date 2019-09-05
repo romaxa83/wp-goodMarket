@@ -128,17 +128,6 @@ ProductAsset::register($this);
                         ],
                         [
                             'format' => 'raw',
-                            'attribute' => 'stock_publish',
-                            'filter' => [0 => 'Выкл.', 1 => 'Вкл.'],
-                            'value' => function($model) {
-                                return (($model->stock_publish == 1) ? '<div style="color: #00a65a;">Вкл.</div>' : '<div style="color: #dd4b39;">Выкл.</div>');
-                            },
-                            'contentOptions' => HideColWidget::setConfig('sklad', $user_settings['hide-col']),
-                            'headerOptions' => HideColWidget::setConfig('sklad', $user_settings['hide-col'], ['width' => '90']),
-                            'filterOptions' => HideColWidget::setConfig('sklad', $user_settings['hide-col']),
-                        ],
-                        [
-                            'format' => 'raw',
                             'attribute' => 'publish',
                             'filter' => [0 => 'Выкл.', 1 => 'Вкл.'],
                             'value' => function($model) {
@@ -148,8 +137,7 @@ ProductAsset::register($this);
                                     'id' => 'cd_' . $model->id,
                                     'class' => 'tgl tgl-light publish-toggle status-toggle',
                                     'data-id' => $model->id,
-                                    'data-url' => Url::to(['update-status']),
-                                    'disabled' => ($model->stock_publish == 0) ? TRUE : FALSE
+                                    'data-url' => Url::to(['update-status'])
                                 ];
                                 return Html::beginTag('div') .
                                         Html::checkbox('status', $checked, $options) .
