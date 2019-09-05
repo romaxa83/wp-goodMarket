@@ -22,13 +22,11 @@ class m190827_104512_create_product_table extends Migration {
             'group_id' => $this->integer(),
             'type' => $this->string(255),
             'vendor_code' => $this->string(255),
-            'alias' => $this->string(255),
             'amount' => $this->integer(),
             'trade_price' => $this->decimal(24, 13),
             'rating' => $this->integer(),
             'gallery' => $this->text(),
             'is_variant' => $this->tinyInteger(),
-            'stock_publish' => $this->tinyInteger(),
             'publish' => $this->tinyInteger()
         ]);
     }

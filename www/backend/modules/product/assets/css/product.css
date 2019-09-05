@@ -140,3 +140,9 @@ body .select2-container--krajee .select2-selection--single {
     padding: 10px;
     border: 1px solid #3c8dbc;
 }
+.form-group .redactor-box {
+    margin-bottom: 0px;
+}
+.form-group.has-error .redactor-box {
+    border: 1px solid red;
+}
