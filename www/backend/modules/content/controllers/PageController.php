@@ -5,6 +5,7 @@ namespace backend\modules\content\controllers;
 use Ausi\SlugGenerator\SlugGenerator;
 use backend\modules\content\models\ContentOptions;
 use backend\modules\content\models\PageMeta;
+use backend\modules\content\models\PageText;
 use backend\modules\content\models\SlugManager;
 //use backend\modules\user\useCase\Access;
 use Yii;
@@ -218,13 +219,7 @@ class PageController extends Controller
 
         $texts = Yii::$app->request->post('block');
         if($texts) {
-            $model->pageText = array_map(function($row) {
-                if(!is_array($row['text'])) {
-                    return $row;
-                }
-                $row['text'] = serialize($row['text']);
-                return $row;
-            }, $texts);
+            $model->pageText = PageText::preparePostData($texts);
         }
         if($model->save()) {
             Yii::$app->session->setFlash('success', "<p>Данные сохранены</p>");

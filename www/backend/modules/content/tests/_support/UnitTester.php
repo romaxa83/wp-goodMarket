@@ -1,5 +1,4 @@
 <?php
-
 namespace backend\modules\content\tests;
 
 /**
@@ -16,11 +15,10 @@ namespace backend\modules\content\tests;
  * @method \Codeception\Lib\Friend haveFriend($name, $actorClass = NULL)
  *
  * @SuppressWarnings(PHPMD)
-*/
+ */
 class UnitTester extends \Codeception\Actor
 {
-    use \backend\modules\content\tests\_generated\UnitTesterActions;
-
+    use _generated\UnitTesterActions;
    /**
     * Define custom actions here
     */

@@ -57,4 +57,14 @@ class PageText extends \yii\db\ActiveRecord {
         return $this->hasOne(Page::className(), ['id' => 'page_id']);
     }
 
+    public static function preparePostData($content)
+    {
+        return array_map(function($row) {
+            if(!is_array($row['text'])) {
+                return $row;
+            }
+            $row['text'] = serialize($row['text']);
+            return $row;
+        }, $content);
+    }
 }

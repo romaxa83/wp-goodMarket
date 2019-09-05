@@ -89,6 +89,12 @@ class Page extends ActiveRecord {
         ];
     }
 
+    public function save($runValidation = true, $attributeNames = null)
+    {
+        if(is_null($this->pageMetas)) return false;
+        return parent::save($runValidation, $attributeNames);
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */

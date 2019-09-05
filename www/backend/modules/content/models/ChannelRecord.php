@@ -71,7 +71,7 @@ class ChannelRecord extends ActiveRecord
     public function rules()
     {
         return [
-            [['channel_id', 'title', 'seo_id', 'created_at', 'updated_at'], 'required'],
+            [['channel_id', 'title', 'seo_id', 'route_id', 'created_at', 'updated_at'], 'required'],
             [['channel_id', 'seo_id', 'cover_id', 'status'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
             [['title'], 'string', 'max' => 255],

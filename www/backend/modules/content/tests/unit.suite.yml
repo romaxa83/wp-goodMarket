@@ -1,8 +1,8 @@
-# Codeception Test Suite Configuration
-#
-# Suite for unit or integration tests.
-
+suite_namespace: backend\modules\content\tests\unit
 actor: UnitTester
 modules:
-    enabled:
-        - Asserts
+  enabled:
+    - Asserts
+    - Yii2:
+        configFile: '../config/test-local.php'
+        cleanup: false

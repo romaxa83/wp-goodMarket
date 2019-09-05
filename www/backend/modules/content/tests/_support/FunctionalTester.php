@@ -1,5 +1,5 @@
 <?php
-
+namespace backend\modules\content\tests;
 
 /**
  * Inherited Methods
@@ -15,11 +15,10 @@
  * @method \Codeception\Lib\Friend haveFriend($name, $actorClass = NULL)
  *
  * @SuppressWarnings(PHPMD)
-*/
+ */
 class FunctionalTester extends \Codeception\Actor
 {
-    use backend\modules\content\tests\_generated\FunctionalTesterActions;
-
+    use _generated\FunctionalTesterActions;
    /**
     * Define custom actions here
     */

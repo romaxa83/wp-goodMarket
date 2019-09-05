@@ -13,4 +13,4 @@ paths:
     support: _support
     log: console/runtime/logs
 settings:
-    colors: false
+    colors: true
