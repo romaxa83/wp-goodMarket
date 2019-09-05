@@ -30,10 +30,10 @@ if (isset($model->id)) {
     $status_disable = false;
     $user_status_disable = ($model->id!=null)?true:false;
     $model->user_status = ($model->user_id!=null)?1:2;
-    $model->id_user = $model->user_id;
+    $model->user_id = $model->user_id;
     $id = $model->id;
 } else{
-    $action = 'add';
+    $action = 'create';
     $submit = 'Сохранить';
     $model->delivary = 2;
     $status_disable = true;
@@ -59,14 +59,23 @@ if($model->status == 5){
     <ul class="nav nav-tabs">
         <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">Заказ</a></li>
         <li><a href="#tab_2" data-toggle="tab" aria-expanded="false">Товары</a></li>
-    </ul>    
+    </ul>
     <div class="tab-content">
         <div class="tab-pane active" id="tab_1">
             <?php echo $form->field($model, 'user_status')->dropDownList($user_status_list, ['disabled'=>$user_status_disable]); ?>
-            <?php 
-                if($model->id_user !== null){
-                    echo $form->field($model, 'id_user')->textInput(['type' => 'number', 'min' => 1, 'step' => 1, 'readonly'=>!$field_visible]); 
-                }
+            <?php
+            echo $form->field($model, 'user_id')->widget(Select2::classname(), [
+                'name' => 'Order[user_id]',
+                'data' => $userList,
+                'value' => $model->user_id,
+                'language' => 'eng',
+                'disabled' => !$field_visible,
+                'hideSearch' => true,
+                'options' => ['placeholder' => 'Пользователь', 'class'=>'warehouse-select'],
+                'pluginOptions' => [
+                    'allowClear' => true
+                ],
+            ]);
             ?>
             <div class="guest">
                 <?php echo $form->field($guest, 'first_name')->textInput();?>
@@ -104,7 +113,7 @@ if($model->status == 5){
             ?>
             <div class="pickup <?=($model->delivary==1)?'':'pickup-hide'?>" data-required="<?=($model->delivary==1)?'true':'false'?>">
                 <div class="form-group">
-                    <?php 
+                    <?php
                         echo $form->field($model, 'address')->widget(Select2::classname(), [
                             'name' => 'Order[address]',
                             //'initValueText' => $model->address,
@@ -160,7 +169,7 @@ if($model->status == 5){
                 <?php echo $this->render('products-table',$order_products_params)?>
             </div>
         </div>
-   </div>     
+   </div>
 </div>
 <div class="form-group">
     <?php echo Html::submitButton('Сохранить и выйти в список', ['class' => 'btn btn-primary save-order', 'name' => 'save', 'value' => '/order/order']) ?>

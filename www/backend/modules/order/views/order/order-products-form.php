@@ -20,7 +20,7 @@
         <tbody>
              <tr>
                 <td>
-                    <?php 
+                    <?php
                         echo Select2::widget([
                             'name' => 'category_list_new',
                             'data' =>  $category_list,
@@ -33,7 +33,7 @@
                     ?>
                 </td>
                 <td>
-                    <?php 
+                    <?php
                         echo Select2::widget([
                             'name' => 'product_list_new',
                             'attribute' =>'product_id',
@@ -47,7 +47,7 @@
                     ?>
                 </td>
                 <td>
-                   <?php 
+                   <?php
                         echo Select2::widget([
                             'name' => 'vproduct_list_new',
                             'language' => 'ru',

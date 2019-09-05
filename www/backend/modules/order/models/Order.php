@@ -38,7 +38,7 @@ class Order extends ActiveRecord {
     const FRONT_ORDER = 'front_order';
 
     public $fullname;
-    public $id_user;
+    public $user_id;
     public $user_status;
     public $order_status;
     public $street;
@@ -52,9 +52,9 @@ class Order extends ActiveRecord {
     public function rules() {
         return [
             [['city', 'street', 'home'], 'required', 'on'=>self::FRONT_ORDER],
-            [['city', 'street', 'home', 'id_user'], 'required', 'on'=>self::DELIVERY_COURIER_USER],
+            [['city', 'street', 'home', 'user_id'], 'required', 'on'=>self::DELIVERY_COURIER_USER],
             [['city', 'street', 'home'], 'required', 'on'=>self::DELIVERY_COURIER_GUEST],
-            [['city', 'address', 'id_user'], 'required', 'on'=>self::DELIVERY_NP_USER],
+            [['city', 'address', 'user_id'], 'required', 'on'=>self::DELIVERY_NP_USER],
             [['city', 'address'], 'required', 'on'=>self::DELIVERY_NP_GUEST],
 
         ];
@@ -70,7 +70,7 @@ class Order extends ActiveRecord {
             'paid' => 'Оплачен',
             'city' => 'Населенный пункт',
             'fullname' => 'Имя пользователя',
-            'id_user' => 'ID пользователя',
+            'user_id' => 'ID пользователя',
             'comment' => 'Комментарии',
             'address' => 'Адрес доставки',
             'user_status' => 'Статус пользователя',
@@ -80,7 +80,7 @@ class Order extends ActiveRecord {
             'flat' => 'Квартира'
         ];
     }
-    
+
     public function beforeSave($insert) {
         if (parent::beforeSave($insert)) {
             if(!$this->isNewRecord){

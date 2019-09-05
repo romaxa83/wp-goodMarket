@@ -84,12 +84,14 @@ class Category extends \yii\db\ActiveRecord {
         return $this->hasMany(CategoryLang::className(), ['category_id' => 'id']);
     }
 
-    public function getSelect2List() {
+    public static function getSelect2List($without = null) {
         $categoryList = Category::find()->select(['id', 'alias'])->with('categoryLang')->where(['publish' => TRUE])->asArray()->all();
         $categoryList = ArrayHelper::map($categoryList, 'id',  function ($element) {
             return isset($element['categoryLang'][0]['name']) ? $element['categoryLang'][0]['name'] : $element['alias'];
         });
-        unset($categoryList[$this->id]);
+        if ($without != null) {
+            unset($categoryList[$without]);
+        }
         return $categoryList;
     }
 

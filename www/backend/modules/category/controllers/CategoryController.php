@@ -74,7 +74,7 @@ class CategoryController extends BaseController {
                 throw $e;
             }
         }
-        return $this->render('form-category', ['model' => $model, 'categoryList' => $model->getSelect2List()]);
+        return $this->render('form-category', ['model' => $model, 'categoryList' => Category::getSelect2List()]);
     }
 
     public function actionEdit() {
@@ -108,7 +108,7 @@ class CategoryController extends BaseController {
         }
         return $this->render('form-category', [
             'model' => $model,
-            'categoryList' => $model->getSelect2List()
+            'categoryList' => Category::getSelect2List($model->id),
         ]);
     }
 

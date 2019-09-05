@@ -28,8 +28,8 @@ $paid_list = ['1'=>'Оплачен', '0'=>'Не оплачен'];
     <div class="col-xs-12">
         <div class="row mb-15">
             <div class="col-xs-6">
-                <?php if(AccessController::isView(Yii::$app->controller, 'add')){
-                        echo Html::a('Добавить заказ', ['add'], ['class' => 'btn btn-primary mr-15']);
+                <?php if(AccessController::isView(Yii::$app->controller, 'create')){
+                        echo Html::a('Добавить заказ', ['create'], ['class' => 'btn btn-primary mr-15']);
                     }
                 ?>
                 <?= HideColWidget::widget([

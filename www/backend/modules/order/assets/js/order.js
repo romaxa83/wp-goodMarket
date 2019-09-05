@@ -7,11 +7,11 @@ var products_table  = $('#order-products-table');
 
 document.addEventListener("DOMContentLoaded", init);
 
-    
+
 $('body').on('select2:select', '.settlement-select', function (e) {
     var data = e.params.data;
     var url = host + '/admin/order/order/ajax-get-warehouses';
-    fillSelect(url, $('.warehouse-select'), {id:data.id});
+    fillSelect(url, $('select[name="Order[address]"]'), {id:data.id});
 });
 
 $('body').on('select2:unselect', '.settlement-select', function (e) {
@@ -34,11 +34,11 @@ $('.field-order-delivary select').on('change', function(){
 
 $('.field-order-user_status select').on('change', function(){
    if($(this).val()==2){
-        $('input[name="Order[id_user]"]').parent().css('display','none');
+        $('select[name="Order[user_id]"]').parent().css('display','none');
         $('.guest').removeClass('guest-hide');
         $('input[name="Guest[phone_one_click]"]').parent().show();
    }else{
-        $('input[name="Order[id_user]"]').parent().show();
+        $('select[name="Order[user_id]"]').parent().show();
         $('.guest').addClass('guest-hide');
         $('input[name="Guest[phone_one_click]"]').parent().hide();
    }
@@ -97,7 +97,7 @@ function getOrderSumm(){
     let summ = 0;
     data = Object.values(data);
     prices = data.map(function(value,index) {
-        return value['price'] * value['count']; 
+        return value['price'] * value['count'];
     });
     summ = prices.reduce((a, b) => a + b, 0);
     return summ;
@@ -142,10 +142,10 @@ function init(){
     var order_status_select = $('.field-order-order_status select');
     var delivary_select = $('.field-order-delivary select');
     if(user_status_select.val()==2){
-        $('input[name="Order[id_user]"]').parent().css('display','none');
+        $('select[name="Order[user_id]"]').parent().css('display','none');
         $('.guest').removeClass('guest-hide');
    }else{
-        $('input[name="Order[id_user]"]').parent().show();
+        $('select[name="Order[user_id]"]').parent().show();
         $('.guest').addClass('guest-hide');
    }
    if($('.warehouse-select option').length > 1){
@@ -178,7 +178,7 @@ function updateProductsData(one_product, all_products){
         data:{'order_id':order_id, 'product':one_product, 'product_list':all_products},
         success: function(data) {
             setProducts(data);
-            reloadProductsTable({data});            
+            reloadProductsTable({data});
         }
     });
 }
@@ -277,8 +277,8 @@ $('.save-product').on('click', function(){
             dataType:'json',
             success: function (data){
                 if(data!=false){
-                    updateProductsData(new_data, data); 
-                }    
+                    updateProductsData(new_data, data);
+                }
             }
         });
     }else{
@@ -303,7 +303,7 @@ $('.save-product').on('click', function(){
                 updateProductsData(new_data, data);
             }
         }
-        
+
     }
 });
 
@@ -325,7 +325,7 @@ $('body').on('click','.edit-order-product',function(){
 function update(data){
     if(data=='empty'){
         data = [];
-    } 
+    }
     setProducts(data);
     reloadProductsTable({data});
 }
@@ -348,7 +348,7 @@ $('body').on('click', '.delete-order-product',function(){
                     success: function (data){
                         if(data){
                             window.location.replace(host + '/admin/order/order/');
-                        }   
+                        }
                     }
                 });
             }
@@ -362,7 +362,7 @@ $('body').on('click', '.delete-order-product',function(){
             success: function (data){
                 if(data!=false){
                     updateProductsData(product, data);
-                }            
+                }
             }
         });
     }else{

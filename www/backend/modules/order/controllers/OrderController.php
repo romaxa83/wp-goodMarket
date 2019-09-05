@@ -2,6 +2,9 @@
 
 namespace backend\modules\order\controllers;
 
+use backend\modules\product\models\ProductLang;
+use common\models\Lang;
+use yii\db\Exception;
 use yii\helpers\StringHelper;
 use backend\modules\order\models\HistoryStatusOrder;
 use backend\modules\order\helpers\SettingsHelper;
@@ -99,6 +102,7 @@ class OrderController extends BaseController {
 
 
     public function actionIndex() {
+        $this->getVProductsByProduct(1);
         $searchModel = new OrderSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $settings = new SettingsHelper();
@@ -111,53 +115,168 @@ class OrderController extends BaseController {
         ]);
     }
 
-//    private function isVProductCache() {
-//        if (!\Yii::$app->cache->exists('vproduct_list')) {
-//            \common\service\CacheService::generateCache('vproduct');
-////            throw new CacheException('В кеше отсутствуют данные вариативных товаров');
-//        }
-//    }
-//
-//    private function isProductCache() {
-//        if (empty(ProductController::getProductList())) {
-//            throw new CacheException('В кеше отсутствуют данные товаров');
-//        }
-//    }
-//
-//    private function isCategoryCache() {
-//        if (!\Yii::$app->cache->exists('category_list')) {
-//            \common\service\CacheService::generateCache('category');
-////            throw new CacheException('В кеше отсутствуют данные категорий');
-//        }
-//    }
-
-    private function correctProductPriceAll($product_list) {
-        foreach ($product_list as $key => $value) {
-            $price = $this->correctProductPrice($key);
-            $product_list[$key]['trade_price'] = (is_null($price) ? $price : $product_list[$key]['trade_price']);
+    public function actionCreate() {
+        $model = new Order();
+        $guest = new Guest();
+        if (Yii::$app->request->post('save')) {
+            $post = Yii::$app->request->post();
+            $model->scenario = $this->getScenario('order', $post);
+            $guest->scenario = $this->getScenario('guest', $post);
+        } else {
+            $model->scenario = Order::DELIVERY_COURIER_USER;
+            $guest->scenario = Guest::REGISTER_ADMIN_IN_ORDER;
         }
-        return $product_list;
+        if (empty($this->getCategories())) {
+            Yii::$app->session->setFlash('error', 'Нету ни одной активной категории');
+            return $this->redirect(['/order/order']);
+        }
+        if ($model->load(Yii::$app->request->post())) {
+            $data = Yii::$app->request->post();
+            $user_status_id = $data['Order']['user_status'];
+            if ($user_status_id == 2) {
+                if ($guest->load(Yii::$app->request->post())) {
+                    if (!$guest_id = $this->saveGuest($guest)) {
+                        return $this->redirect(['/order/order/create']);
+                    }
+                    $data['Order']['user_id'] = $guest_id;
+                }
+            }
+//            var_dump($data);
+//            exit();
+            $user_id = $data['Order']['user_id'];
+            $status = ($user_status_id == 1) ? 'user_id' : 'guest_id';
+            $data['Order'][$status] = $user_id;
+            if (!$model = $this->saveOrder($model, $data)) {
+                return $this->redirect(['/order/order/create']);
+            }
+            $model->date = date('Y-m-d H:i:s');
+            $model->status = 1;
+            if ($model->save()) {
+                //$response = Curl::curl('POST', '/api/createOrder', ['order_id'=>$model->id]);
+                $model->sync = 1;
+                $model->save();
+                if (!$this->saveProducts($model->id)) {
+                    return $this->redirect(['/order/order/create']);
+                }
+                Yii::$app->session->setFlash('success', 'Заказ усешно добавлен');
+            } else {
+                $this->deleteOrder($model->id);
+            }
+            return $this->redirect([$data['save']]);
+        }
+        $order_cost = 0;
+        $dataProvider = $this->createProductTable();
+        $userList = User::find()->select(['id', 'username'])->asArray()->all();
+        $userList = ArrayHelper::map($userList, 'id', 'username');
+        $order_products_params = [
+            'category_list' => Category::getSelect2List(),
+            'dataProvider' => $dataProvider,
+            'type' => 'edit',
+            'order_summ' => 0
+        ];
+        $payment_method_list = $this->settings->getAllList('payment', true);
+        $delivery_list = $this->settings->getAllList('delivery', true);
+        return $this->render('form-order', [
+            'model' => $model,
+            'guest' => $guest,
+            'userList' => $userList,
+            'order_summ' => 0,
+            'field_visible' => true,
+            'payment_method_list' => $payment_method_list,
+            'delivery_list' => $delivery_list,
+            'order_products_params' => $order_products_params]);
     }
 
-    private function correctProductPrice($product_id) {
-        if ($product = Product::find()->where(['stock_id' => $product_id])->one()) {
-            return $product->price;
+    public function actionEdit($id) {
+        $model = Order::findOne($id);
+        $guest = Guest::findOne($model->guest_id);
+        if (Yii::$app->request->post('save')) {
+            $post = Yii::$app->request->post();
+            $post['Order']['user_status'] = (Order::findOne($id)->user_id == null) ? 2 : 1;
+            $model->scenario = $this->getScenario('order', $post);
+            if (!empty($guest)) {
+                $guest->scenario = $this->getScenario('guest', $post);
+            } else {
+                $guest = new Guest();
+            }
+        } else {
+            if (!empty($guest)) {
+                $model->scenario = Order::DELIVERY_COURIER_GUEST;
+                $guest->scenario = Guest::EDIT_GUEST_BACK;
+            } else {
+                $guest = new Guest();
+                $model->scenario = Order::DELIVERY_COURIER_USER;
+                $guest->scenario = 'default';
+            }
         }
-        return null;
+        if ($model->delivary == 2) {
+
+            if ($guest->scenario == 'default') {
+                $model->scenario = Order::DELIVERY_NP_USER;
+            } else {
+                $model->scenario = Order::DELIVERY_NP_GUEST;
+            }
+        }
+        if (empty($this->getCategories())) {
+            Yii::$app->session->setFlash('error', 'Нету ни одной активной категории');
+            return $this->redirect(['/order/order']);
+        }
+        $field_visible = true;
+        if ($model->load(Yii::$app->request->post())) {
+            $data = Yii::$app->request->post();
+            $user_status_id = ($model->user_id != null) ? 1 : 2;
+            if ($user_status_id == 2) {
+                if ($guest->load(Yii::$app->request->post())) {
+                    if (!$guest_id = $this->saveGuest($guest)) {
+                        return $this->redirect(['/order/order/create']);
+                    }
+                }
+            }
+            if (!$model = $this->saveOrder($model, $data)) {
+                return $this->redirect(['/order/order/edit?id=' . $id]);
+            }
+            $prod_count = OrderProduct::find()->where(['order_id' => $id])->count();
+            if (!($prod_count > 0)) {
+                Yii::$app->session->setFlash('error', 'В заказе отсутствуют товары');
+                return $this->redirect(['/order/order/edit?id=' . $id]);
+            }
+            if ($model->save()) {
+                $model->sync = 1;
+                Yii::$app->session->setFlash('success', 'Заказ усешно отредактирован');
+                return $this->redirect([$data['save']]);
+            }
+        }
+        $order_cost = $this->getOrderCost($id);
+        $dataProvider = $this->createProductTable(OrderProduct::getDataByOrderID($id));
+        $order_products_params = [
+            'category_list' => Category::getSelect2List(),
+            'dataProvider' => $dataProvider,
+            'type' => 'edit',
+            'order_summ' => $this->getOrderCost($id)
+        ];
+        $payment_method_list = $this->settings->getAllList('payment', true);
+        $delivery_list = $this->settings->getAllList('delivery', true);
+        return $this->render('form-order', ['model' => $model, 'guest' => $guest, 'field_visible' => $field_visible, 'order_products_params' => $order_products_params, 'payment_method_list' => $payment_method_list, 'delivery_list' => $delivery_list, 'order_summ' => $this->getOrderCost($id)]);
     }
 
-    private function correctVProductPriceAll($v_product_list) {
-        foreach ($v_product_list as $key => $value) {
-            $price = $this->correctVProductPrice($key);
-            $v_product_list[$key]['price'] = $price;
+    public function actionDelete($id) {
+        $model = Order::findOne($id);
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            OrderProduct::deleteAll(['order_id' => $id]);
+            if ($model->delete()) {
+                if ($model->guest_id != null) {
+                    Guest::findOne(['id' => $model->guest_id])->delete();
+                }
+                Yii::$app->session->setFlash('success', 'Заказ успешно удален');
+            } else {
+                throw new \Exception(implode("<br />" , ArrayHelper::getColumn($model->errors,0,false)));
+            }
+        } catch (\Throwable $e) {
+            $transaction->rollBack();
+            Yii::$app->session->setFlash('error', $e->getMessage());
         }
-        return $v_product_list;
-    }
-
-    private function correctVProductPrice($v_product_id) {
-        $v_product = VProduct::find()->where(['stock_id' => $v_product_id])->one();
-        $product_price = Product::find()->where(['stock_id' => $v_product->product_id])->one()->price;
-        return ($v_product->price != 0) ? $v_product->price : $product_price;
+        $this->redirect(['/order/order']);
     }
 
     private function getStockId($model, $id) {
@@ -165,16 +284,14 @@ class OrderController extends BaseController {
     }
 
     private function getVProductsByProduct($product_id) {
-        $v_product_list = VProduct::find()->where(['publish' => 1, 'product_id' => $product_id]);
-        $v_product_list = $this->correctVProductPriceAll($v_product_list);
+        $v_product_list = VProduct::find()->where(['publish' => 1, 'product_id' => $product_id])->asArray()->all();
+        $v_product_list = VProduct::correctVProductPriceAll($v_product_list);
         return $v_product_list;
     }
 
     private function getProductsByCategory($id) {
-        $this->isProductCache();
-        $product_list = ProductController::getProductList();
-        $product_list = $this->selectStockActiveEntities($product_list, new Product(), ['category_id' => $id]);
-        $product_list = $this->correctProductPriceAll($product_list);
+        $product_list = Product::find()->where(['publish' => 1, 'stock_publish' => 1, 'category_id' => $id])->all();
+        $product_list = Product::correctProductPriceAll($product_list);
         return $product_list;
     }
 
@@ -241,7 +358,7 @@ class OrderController extends BaseController {
             $product = $this->getProduct($product_id, $category_id);
             if (!empty($product)) {
                 if ($vproduct_id != 0) {
-                    $vproduct = $this->getVProductsByProduct($category_id, $product_id)[$vproduct_id];
+                    $vproduct = $this->getVProductsByProduct($product_id)[$vproduct_id];
                     $product['variation'] = $vproduct['char_value'];
                 }
                 $product['summ'] = $count * $product_price;
@@ -295,7 +412,7 @@ class OrderController extends BaseController {
         return $result[$model_name];
     }
 
-    private function saveGuest($guest, $id = 0) {
+    private function saveGuest(Guest $guest) {
         $result = false;
         if ($post = Yii::$app->request->post('Guest')) {
             foreach ($post as $key => $value) {
@@ -330,13 +447,6 @@ class OrderController extends BaseController {
             if (!$order_product->save())
                 return false;
         }
-//        $response = Curl::curl('POST', '/api/createOrderProducts', ['order_id'=>$order_id]);
-        //var_dump($response['status']);die();
-//        if ($response['status'] !== 200){
-//            $this->deleteOrder($model->id);
-//            Yii::$app->session->setFlash('error', 'Ошибка синхронизации (добавление продуктов)');
-//            return false;
-//        }
         return true;
     }
 
@@ -361,157 +471,6 @@ class OrderController extends BaseController {
         return $model;
     }
 
-    public function actionAdd() {
-        $model = new Order();
-        $guest = new Guest();
-        if (Yii::$app->request->post('save')) {
-            $post = Yii::$app->request->post();
-            $model->scenario = $this->getScenario('order', $post);
-            $guest->scenario = $this->getScenario('guest', $post);
-        } else {
-            $model->scenario = Order::DELIVERY_COURIER_USER;
-            $guest->scenario = Guest::REGISTER_ADMIN_IN_ORDER;
-        }
-        if (empty($this->getCategories())) {
-            Yii::$app->session->setFlash('error', 'Нету ни одной активной категории');
-            return $this->redirect(['/order/order']);
-        }
-        if ($model->load(Yii::$app->request->post())) {
-            $data = Yii::$app->request->post();
-            $user_status_id = $data['Order']['user_status'];
-            if ($user_status_id == 2) {
-                if ($guest->load(Yii::$app->request->post())) {
-                    if (!$guest_id = $this->saveGuest($guest)) {
-                        return $this->redirect(['/order/order/add']);
-                    }
-                    $data['Order']['id_user'] = $guest_id;
-                }
-            }
-            $user_id = $data['Order']['id_user'];
-            $status = ($user_status_id == 1) ? 'user_id' : 'guest_id';
-            $data['Order'][$status] = $user_id;
-            if (!$model = $this->saveOrder($model, $data)) {
-                return $this->redirect(['/order/order/add']);
-            }
-            $model->date = date('Y-m-d H:i:s');
-            $model->status = 1;
-            if ($model->save()) {
-                //$response = Curl::curl('POST', '/api/createOrder', ['order_id'=>$model->id]);
-                $model->sync = 1;
-                $model->save();
-                if (!$this->saveProducts($model->id)) {
-                    return $this->redirect(['/order/order/add']);
-                }
-                Yii::$app->session->setFlash('success', 'Заказ усешно добавлен');
-                // if ($response['status'] !== 200){
-                //     $this->deleteOrder($model->id);
-                //     Yii::$app->session->setFlash('error', 'Ошибка синхронизации');
-                //     return $this->redirect(['/order/order/add']);
-                // }else{
-                //     $model->sync = 1;
-                //     $model->save();
-                //     if(!$this->saveProducts($model->id)){
-                //         return $this->redirect(['/order/order/add']);
-                //     }
-                //     Yii::$app->session->setFlash('success', 'Заказ усешно добавлен');
-                // }
-            } else {
-                $this->deleteOrder($model->id);
-            }
-            return $this->redirect([$data['save']]);
-        }
-        $order_cost = 0;
-        $dataProvider = $this->createProductTable();
-        $order_products_params = [
-            'category_list' => ArrayHelper::getColumn($this->getCategories(), 'name'),
-            'dataProvider' => $dataProvider,
-            'type' => 'edit',
-            'order_summ' => 0
-        ];
-        $payment_method_list = $this->settings->getAllList('payment', true);
-        $delivery_list = $this->settings->getAllList('delivery', true);
-        return $this->render('form-order', ['model' => $model, 'guest' => $guest, 'order_summ' => 0, 'field_visible' => true, 'payment_method_list' => $payment_method_list, 'delivery_list' => $delivery_list, 'order_products_params' => $order_products_params]);
-    }
-
-    public function actionEdit($id) {
-        $model = Order::findOne($id);
-        $guest = Guest::findOne($model->guest_id);
-        if (Yii::$app->request->post('save')) {
-            $post = Yii::$app->request->post();
-            $post['Order']['user_status'] = (Order::findOne($id)->user_id == null) ? 2 : 1;
-            $model->scenario = $this->getScenario('order', $post);
-            if (!empty($guest)) {
-                $guest->scenario = $this->getScenario('guest', $post);
-            } else {
-                $guest = new Guest();
-            }
-        } else {
-            if (!empty($guest)) {
-                $model->scenario = Order::DELIVERY_COURIER_GUEST;
-                $guest->scenario = Guest::EDIT_GUEST_BACK;
-            } else {
-                $guest = new Guest();
-                $model->scenario = Order::DELIVERY_COURIER_USER;
-                $guest->scenario = 'default';
-            }
-        }
-        if ($model->delivary == 2) {
-
-            if ($guest->scenario == 'default') {
-                $model->scenario = Order::DELIVERY_NP_USER;
-            } else {
-                $model->scenario = Order::DELIVERY_NP_GUEST;
-            }
-        }
-        if (empty($this->getCategories())) {
-            Yii::$app->session->setFlash('error', 'Нету ни одной активной категории');
-            return $this->redirect(['/order/order']);
-        }
-        $field_visible = true;
-        if ($model->load(Yii::$app->request->post())) {
-            $data = Yii::$app->request->post();
-            $user_status_id = ($model->user_id != null) ? 1 : 2;
-            if ($user_status_id == 2) {
-                if ($guest->load(Yii::$app->request->post())) {
-                    if (!$guest_id = $this->saveGuest($guest, $model->guest_id)) {
-                        return $this->redirect(['/order/order/add']);
-                    }
-                }
-            }
-            if (!$model = $this->saveOrder($model, $data)) {
-                return $this->redirect(['/order/order/edit?id=' . $id]);
-            }
-            $prod_count = OrderProduct::find()->where(['order_id' => $id])->count();
-            if (!($prod_count > 0)) {
-                Yii::$app->session->setFlash('error', 'В заказе отсутствуют товары');
-                return $this->redirect(['/order/order/edit?id=' . $id]);
-            }
-            if ($model->save()) {
-//                    $response = Curl::curl('POST', '/api/updateOrder', ['order_id'=>$model->id]);
-//                    if ($response['status'] !== 200){
-//                        $model->sync = 0;
-//                        Yii::$app->session->setFlash('error', 'Ошибка синхронизации');
-//                    }else{
-                $model->sync = 1;
-                $model->save();
-                Yii::$app->session->setFlash('success', 'Заказ усешно отредактирован');
-//                    }
-                return $this->redirect([$data['save']]);
-            }
-        }
-        $order_cost = $this->getOrderCost($id);
-        $dataProvider = $this->createProductTable(OrderProduct::getDataByOrderID($id));
-        $order_products_params = [
-            'category_list' => ArrayHelper::getColumn($this->getCategories(), 'name'),
-            'dataProvider' => $dataProvider,
-            'type' => 'edit',
-            'order_summ' => $this->getOrderCost($id)
-        ];
-        $payment_method_list = $this->settings->getAllList('payment', true);
-        $delivery_list = $this->settings->getAllList('delivery', true);
-        return $this->render('form-order', ['model' => $model, 'guest' => $guest, 'field_visible' => $field_visible, 'order_products_params' => $order_products_params, 'payment_method_list' => $payment_method_list, 'delivery_list' => $delivery_list, 'order_summ' => $this->getOrderCost($id)]);
-    }
-
     private function deleteOrder($id) {
         $model = Order::findOne($id);
         OrderProduct::deleteAll(['order_id' => $id]);
@@ -519,43 +478,21 @@ class OrderController extends BaseController {
             if ($model->guest_id != null) {
                 Guest::findOne(['id' => $model->guest_id])->delete();
             }
-            // $response = Curl::curl('POST', '/api/deleteOrder', ['order_id'=>$model->id]);
-            // if ($response['status'] !== 200){
-            //    return false;
-            // }
             return true;
         }
         return false;
     }
 
-    public function actionDelete($id) {
-        $model = Order::findOne($id);
-        OrderProduct::deleteAll(['order_id' => $id]);
-        if ($model->delete()) {
-            if ($model->guest_id != null) {
-                Guest::findOne(['id' => $model->guest_id])->delete();
-            }
-            // $response = Curl::curl('POST', '/api/deleteOrder', ['order_id'=>$model->id]);
-            // if ($response['status'] !== 200){
-            //     Yii::$app->session->setFlash('error', 'Ошибка синхронизации');
-            // }else{
-            //     Yii::$app->session->setFlash('success', 'Заказ успешно удален');
-            // }
-            Yii::$app->session->setFlash('success', 'Заказ успешно удален');
-        } else {
-            Yii::$app->session->setFlash('error', 'Не удалось удалить заказ');
-        }
-        $this->redirect(['/order/order']);
-    }
-
     public function actionAjaxGetCategoryProducts($category_id) {
         if (Yii::$app->request->isAjax) {
-            $product_list = $this->getProductsByCategory($category_id);
+            $product_list = Product::getProductsData(['id', 'alias'], function ($product_list) {
+                return ArrayHelper::getColumn($product_list, function ($element) {
+                    return ['id' => $element['id'], 'text' => isset($element['productLang'][0]['name']) ? $element['productLang'][0]['name'] : $element['alias']];
+                });
+            });
+
             if (!empty($product_list)) {
-                $products = ArrayHelper::getColumn($product_list, function ($element) {
-                            return ['id' => $element['id'], 'text' => $element['product_name']];
-                        });
-                return Json::encode($products);
+                return Json::encode($product_list);
             } else {
                 return Json::encode([['id' => 0, 'text' => 'Ничего не найдено']]);
             }
@@ -574,9 +511,8 @@ class OrderController extends BaseController {
                 $order_products[$i]['balance'] = $product_cache[$order_product_table_data[$i]['product_id']]['amount'];
                 $order_products[$i]['min_amount'] = $product_cache[$order_product_table_data[$i]['product_id']]['min_amount'] ?? 1;
                 $product_id = $order_product_table_data[$i]['product_id'];
-                $category_id = $this->getCategoryID($product_id);
                 $v_product_id = $order_product_table_data[$i]['vproduct_id'];
-                $v_products = $this->getVProductsByProduct($category_id, $product_id);
+                $v_products = $this->getVProductsByProduct($product_id);
                 $order_products[$i]['category'] = $product_cache[$product_id]['category_name'];
                 $order_products[$i]['product'] = $product_cache[$product_id]['product_name'];
                 if ($v_product_id != 0) {
@@ -611,7 +547,7 @@ class OrderController extends BaseController {
         if (Yii::$app->request->isAjax) {
             if (Yii::$app->request->post()) {
                 $data = Yii::$app->request->post();
-                $v_product_list = $this->getVProductsByProduct($data['category_id'], $data['product_id']);
+                $v_product_list = $this->getVProductsByProduct($data['product_id']);
                 if (!empty($v_product_list)) {
                     $v_products = ArrayHelper::getColumn($v_product_list, function ($element) {
                                 return ['id' => $element['id'], 'text' => $element['char_value']];
@@ -992,7 +928,7 @@ class OrderController extends BaseController {
                     $price = $product['price'];
                 } else {
                     if ($post['vproduct_id'] > 0) {
-                        $vproduct = $this->getVProductsByProduct($post['category_id'], $post['product_id'])[$post['vproduct_id']];
+                        $vproduct = $this->getVProductsByProduct($post['product_id'])[$post['vproduct_id']];
                         $product_price = $vproduct['price'];
                         $sale = $this->getProductSale($post['product_id'], $post['vproduct_id'], $post['products']);
                     } else {
