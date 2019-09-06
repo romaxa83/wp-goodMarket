@@ -33,10 +33,9 @@ class Category extends ActiveRecord
         return '{{%blog_category}}';
     }
 
-    public static function create($title,$alias) : self
+    public static function create($alias) : self
     {
         $category = new static();
-        $category->title = $title;
         $category->alias = $alias;
         $category->created_at = time();
         $category->updated_at = time();
@@ -44,9 +43,8 @@ class Category extends ActiveRecord
         return $category;
     }
 
-    public function edit($title,$alias):void
+    public function edit($alias):void
     {
-        $this->title = $title;
         $this->alias = $alias;
         $this->updated_at = time();
     }
