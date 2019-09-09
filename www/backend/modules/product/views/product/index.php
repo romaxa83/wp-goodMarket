@@ -154,19 +154,12 @@ ProductAsset::register($this);
                             'contentOptions' => HideColWidget::setConfig('action', $user_settings['hide-col']),
                             'headerOptions' => HideColWidget::setConfig('action', $user_settings['hide-col'], ['width' => '1']),
                             'filterOptions' => HideColWidget::setConfig('action', $user_settings['hide-col']),
-                            'template' => '{update}',
+                            'template' => '{view} {update} {delete}',
                             'filter' => '<a href="' . Url::to(['/product/product'], TRUE) . '"><i class="grid-option fa fa-filter" title="Сбросить фильтр"></i></a>',
                             'buttons' => [
-                                'update' => function($url, $model, $index) {
-                                    $access = AccessController::isView(Yii::$app->controller, 'update');
-                                    if ($access) {
-                                        return Html::tag('a', '', [
-                                                    'href' => '/admin/product/product/update?id=' . $model['id'],
-                                                    'title' => 'Редактировать',
-                                                    'aria-label' => 'Редактировать',
-                                                    'class' => 'grid-option fa fa-pencil'
-                                        ]);
-                                    }
+                                'view' => function ($url, $model) {
+                                    $url = $_SERVER["REQUEST_SCHEME"] . '://' . $_SERVER["HTTP_HOST"] . '/product/' . $model->productLang[0]->alias;
+                                    return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, ['title' => Yii::t('yii', 'View'), 'data-pjax' => '0', 'target' => '_blank']);
                                 }
                             ]
                         ],

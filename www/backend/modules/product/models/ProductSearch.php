@@ -19,7 +19,7 @@ class ProductSearch extends Product {
     }
 
     public function search($params) {
-        $query = Product::find()->joinWith('categoryLang')->joinWith('productLang')->orderBy(['id' => SORT_DESC]);
+        $query = Product::find()->joinWith('categoryLang')->joinWith('productLang')->orderBy(['id' => SORT_DESC])->distinct();
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort' => FALSE,
@@ -27,7 +27,7 @@ class ProductSearch extends Product {
                 'pageSize' => 10,
             ]
         ]);
-
+        
         $this->load($params);
 
         if (!$this->validate()) {
