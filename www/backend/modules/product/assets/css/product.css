@@ -146,3 +146,13 @@ body .select2-container--krajee .select2-selection--single {
 .form-group.has-error .redactor-box {
     border: 1px solid red;
 }
+.pull-right-submit {
+    margin-top: 3px;
+    margin-right: 6px;
+}
+#product-table1 tr th{
+    vertical-align: middle;
+}
+.spectrum-group .input-group-addon {
+    padding: 0px;
+}

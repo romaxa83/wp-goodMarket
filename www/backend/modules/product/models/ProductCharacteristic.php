@@ -4,6 +4,8 @@ namespace backend\modules\product\models;
 
 use Yii;
 use yii\db\ActiveRecord;
+use backend\modules\product\models\Characteristic;
+use backend\modules\product\models\Group;
 
 class ProductCharacteristic extends ActiveRecord {
 
@@ -27,6 +29,14 @@ class ProductCharacteristic extends ActiveRecord {
         return [
             'value' => 'Значение'
         ];
+    }
+
+    public function getCharacteristic() {
+        return $this->hasOne(Characteristic::className(), ['id' => 'characteristic_id']);
+    }
+
+    public function getGroup() {
+        return $this->hasOne(Group::className(), ['id' => 'group_id']);
     }
 
 }

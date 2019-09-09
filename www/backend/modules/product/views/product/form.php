@@ -33,6 +33,14 @@ Modal::end();
                 <a href="<?php echo '#' . $tab['href']; ?>" data-toggle="tab" aria-expanded="<?php echo ($key == 0) ? TRUE : FALSE ?>"><?php echo $tab['name']; ?></a>
             </li>
         <?php endforeach; ?>
+        <?php if (Yii::$app->controller->action->id === 'create'): ?>
+            <li class="pull-right pt-5">
+                <div class="pull-right-submit">
+                    <?php echo Html::submitButton('<i class="fa fa-puzzle-piece" aria-hidden="true"></i>', ['title' => 'Добавить характеристики', 'class' => 'btn btn-primary', 'name' => 'update', 'value' => 'tab_5']) ?>
+                    <?php //echo Html::submitButton('<i class="fa fa-file" aria-hidden="true"></i>', ['title' => 'Добавить атрибуты', 'class' => 'btn btn-primary', 'name' => 'update', 'value' => 'tab_6']) ?>
+                </div>
+            </li>
+        <?php endif; ?>
     </ul>
     <div class="tab-content">
         <?php if (isset($provider)): ?>
@@ -72,6 +80,14 @@ Modal::end();
                     ['type' => 'text', 'name' => 'alias'],
                     ['type' => 'text', 'name' => 'name'],
                     ['type' => 'number', 'name' => 'price'],
+                    ['type' => 'widget', 'name' => 'currency', 'class' => 'kartik\select2\Select2', 'options' => [
+                            'data' => ['uah' => 'Гривна', 'usd' => 'Доллар'],
+                            'language' => 'ru',
+                            'options' => ['placeholder' => 'Выберите валюту'],
+                            'pluginOptions' => [
+                                'allowClear' => true
+                            ],
+                        ]],
                     ['type' => 'widget', 'name' => 'description', 'class' => 'vova07\imperavi\Widget', 'options' => [
                             'settings' => [
                                 'lang' => 'ru',
@@ -164,8 +180,8 @@ Modal::end();
                         ]);
                         ?>
                         <button class="btn btn-default crud-box-delete" data-id="product-group_id" data-url="<?php echo Url::to('/admin/product/product/ajax-delete-product-group', TRUE); ?>" ><i class="fa fa-trash" aria-hidden="true"></i></button>
-                        <button class="btn btn-default crud-box-edit" data-title="Редактирование группы" data-modal="product-group-modal"><i class="fa fa-pencil" aria-hidden="true"></i></button>
-                        <button class="btn btn-default crud-box-add" data-title="Добавление группы" data-modal="product-group-modal"><i class="fa fa-plus-circle" aria-hidden="true"></i></button>
+                        <button class="btn btn-default crud-box-edit" data-title="Редактирование группы" data-modal="product-group-modal" data-action="update"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+                        <button class="btn btn-default crud-box-add" data-title="Добавление группы" data-modal="product-group-modal" data-action="create"><i class="fa fa-plus-circle" aria-hidden="true"></i></button>
                     </div>
                 </div>
                 <div class="col-md-4 hidden">
@@ -181,8 +197,8 @@ Modal::end();
                         ]);
                         ?>
                         <button class="btn btn-default crud-box-delete" data-id="characteristic-name" data-url="<?php echo Url::to('/admin/product/product/ajax-delete-product-characteristic', TRUE); ?>" ><i class="fa fa-trash" aria-hidden="true"></i></button>
-                        <button class="btn btn-default crud-box-edit" data-title="Редактирование характеристики" data-modal="product-characteristic-modal"><i class="fa fa-pencil" aria-hidden="true"></i></button>
-                        <button class="btn btn-default crud-box-add add-select-group" data-title="Добавление характеристики" data-modal="product-characteristic-modal"><i class="fa fa-plus-circle" aria-hidden="true"></i></button>
+                        <button class="btn btn-default crud-box-edit" data-title="Редактирование характеристики" data-modal="product-characteristic-modal" data-action="update"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+                        <button class="btn btn-default crud-box-add" data-title="Добавление характеристики" data-modal="product-characteristic-modal" data-action="create"><i class="fa fa-plus-circle" aria-hidden="true"></i></button>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -201,11 +217,86 @@ Modal::end();
             </div>
             <div id="product-characteristic"></div>
         </div>
-
         <div class="tab-pane" id="tab_6">
-            <?php if (isset($product->productLang[0]->name)): ?>
-                <div class="mt-15 mb-15"><?php echo $product->categoryLang->name . ' > ' . $product->productLang[0]->name; ?></div>
-            <?php endif; ?>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <?php
+                        echo '<label class="control-label">Характеристика</label>';
+                        echo Select2::widget([
+                            'id' => 'atribute_characteristic',
+                            'name' => 'Atribute[characteristic]',
+                            'data' => [],
+                            'language' => 'ru',
+                            'options' => ['placeholder' => 'Выберите характеристику'],
+                            'pluginOptions' => [
+                                'allowClear' => true
+                            ],
+                        ]);
+                        ?>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group attr-type attr-color hidden">
+                        <?php
+                        echo '<label class="control-label">Цвет</label>';
+                        echo ColorInput::widget([
+                            'name' => 'Atribute[color]',
+                            'attribute' => 'saturation',
+                            'options' => ['placeholder' => 'Выберите цвет'],
+                            'options' => ['readonly' => true]
+                        ]);
+                        ?>
+                    </div>
+                    <div class="form-group attr-type attr-text hidden">
+                        <label class="control-label">Значение</label>
+                        <input type="text" name="Atribute[value]" class="form-control">
+                        <p class="help-block help-block-error"></p>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group form-field hidden">
+                        <label class="control-label">Цена</label>
+                        <input type="number" name="Atribute[price]" class="form-control">
+                        <p class="help-block help-block-error"></p>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group form-field hidden">
+                        <label class="control-label">Количество</label>
+                        <input type="number" name="Atribute[amount]" class="form-control">
+                        <p class="help-block help-block-error"></p>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group form-field hidden">
+                        <label class="control-label">Изображение</label>
+                        <div>
+                            <?php
+                            echo Html::button('<i class="fa fa-plus" aria-hidden="true"></i>', [
+                                'title' => 'Добавить изображение',
+                                'class' => 'btn btn-primary grid-option product-gallery-window',
+                                'data-toggle' => \Yii::t('yii', 'modal'),
+                                'data-target' => \Yii::t('yii', '#product-gallery'),
+                                'data-product_id' => $id,
+                                'data-media' => $model["media_id"],
+                                'data-id' => $model['id']
+                            ]) . '<span class="media_id"> ' . $model["media_id"] . '<span>';
+                            ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group form-field hidden">
+                        <label class="control-label"></label>
+                        <div>
+                            <button type="button" class="btn btn-default" data-edit="0" title="Сохранить атрибут">
+                                <i class="fa fa fa-floppy-o" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <?php
             echo GridView::widget([
                 'dataProvider' => $dataProvider,
@@ -312,10 +403,9 @@ Modal::end();
                     ],
                     [
                         'class' => CustomActionColumn::className(),
-                        'header' => '',
+                        'header' => Html::button('<i class="fa fa fa-plus"></i>', ['title' => 'Добавить атрибут', 'class' => 'btn btn-primary add-atribute', 'style' => 'cursor: pointer']),
                         'headerOptions' => ['width' => '1'],
                         'template' => '',
-                        'filter' => '<a href="' . Url::to(['/product/product/update?id=' . $id], TRUE) . '"><i class="grid-option fa fa-filter" title="Сбросить фильтр"></i></a>',
                         'buttons' => [
                         ]
                     ],
@@ -382,85 +472,4 @@ Modal::end();
     <a href="<?php echo Url::to(['/product/product']) ?>" class="btn btn-danger">Отмена</a>
 </div>
 <?php ActiveForm::end(); ?>
-<div class="modal fade bd-example-modal-lg" id="gallery-show" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div id="gallery-show-img"></div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="manufacturer-show" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Производитель</h4>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="recipient-name" class="control-label">Производитель</label>
-                    <input type="text" class="form-control" id="refacturer">
-                    <p class="help-block help-block-error"></p>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary add-manufacturer">Сохранить</button>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="product-group-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="exampleModalLabel"></h4>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="form-group">
-                        <label class="control-label">Группа</label>
-                        <input type="text" name="group" class="form-control">
-                        <p class="help-block help-block-error"></p>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary crud-box-save" data-id="product-group_id" data-url="<?php echo Url::to('/admin/product/product/ajax-add-product-group', TRUE); ?>">Сохранить</button>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="product-characteristic-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="exampleModalLabel"></h4>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <input type="hidden" name="group_id" readonly="readonly" class="form-control">
-                    <div class="form-group">
-                        <label class="control-label">Название</label>
-                        <input type="text" name="name" class="form-control">
-                        <p class="help-block help-block-error"></p>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label">Тип</label>
-                        <select name="type" class="form-control">
-                            <option value="">Выберите тип</option>
-                            <?php foreach (Yii::$app->getModule('product')->params['characteristic_type'] as $k => $v): ?>
-                                <option value="<?php echo $k; ?>"><?php echo $v; ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                        <p class="help-block help-block-error"></p>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary crud-box-save" data-id="characteristic-name" data-url="<?php echo Url::to('/admin/product/product/ajax-add-product-characteristic', TRUE); ?>                                                      ">Сохранить</button>
-            </div>
-        </div>
-    </div>
-</div>
+<?php echo $this->render('modal'); ?>

@@ -30,6 +30,7 @@ use common\controllers\AccessController;
 use yii\filters\AccessControl;
 use yii\web\ForbiddenHttpException;
 use backend\modules\product\models\ProductLang;
+use backend\modules\seo\models\SeoMeta;
 
 class ProductController extends BaseController {
 
@@ -70,8 +71,7 @@ class ProductController extends BaseController {
         $tabs = [
             ['href' => 'tab_2', 'name' => 'Продукт'],
             ['href' => 'tab_3', 'name' => 'Галерея'],
-            ['href' => 'tab_4', 'name' => 'SEO'],
-            ['href' => 'tab_5', 'name' => 'Характеристики']
+            ['href' => 'tab_4', 'name' => 'SEO']
         ];
         $model = new Product();
         $modelLang = new ProductLang();
@@ -86,6 +86,9 @@ class ProductController extends BaseController {
             $post['Product']['action'] = Yii::$app->controller->action->id;
             if (ProductLang::saveAll($model, $modelLang, $post)) {
                 Yii::$app->session->setFlash('success', 'Продукт успешно добавлен');
+                if (isset($post['update'])) {
+                    return $this->redirect(['/product/product/update?id=' . $model->id . '&tab=' . $post['update']]);
+                }
                 return $this->redirect(['/product/product']);
             }
         }
@@ -116,8 +119,8 @@ class ProductController extends BaseController {
             ['href' => 'tab_3', 'name' => 'Галерея'],
             ['href' => 'tab_4', 'name' => 'SEO'],
             ['href' => 'tab_5', 'name' => 'Характеристики'],
-            ['href' => 'tab_6', 'name' => 'Атрибуты'],
-            ['href' => 'tab_7', 'name' => 'Акции']
+            // ['href' => 'tab_6', 'name' => 'Атрибуты'], - 
+            //['href' => 'tab_7', 'name' => 'Акции']
         ];
         $model = $product = Product::find()->where(['id' => $id])->with('category')->with('productLang.lang')->one();
         $modelLang = ProductLang::find()->where(['product_id' => $id])->one();
@@ -203,6 +206,18 @@ class ProductController extends BaseController {
         return $this->render('form', $options);
     }
 
+    public function actionDelete() {
+        $id = Yii::$app->request->get('id');
+        Product::deleteAll(['id' => $id]);
+        ProductLang::deleteAll(['product_id' => $id]);
+        ProductCharacteristic::deleteAll(['product_id' => $id]);
+        VProduct::deleteAll(['product_id' => $id]);
+        SeoMeta::deleteAll(['page_id' => $id, 'alias' => 'product']);
+        //тут добавить удаление акционного товара после преноса модуля Акции
+        Yii::$app->session->setFlash('success', 'Продукт успешно удален');
+        return $this->redirect(['/product/product']);
+    }
+
     public function actionUpdatePosition() {
         $gallery = Yii::$app->request->post('gallery');
         $gallery = Json::decode($gallery);
@@ -264,21 +279,25 @@ class ProductController extends BaseController {
     }
 
     public function actionAjaxAddProductGroup() {
-        $data = Yii::$app->request->post();
-        if (empty($data['group'])) {
-            return Json::encode(['type' => 'error', 'name' => 'group', 'msg' => 'Поле не может быть пустым']);
+        if (Yii::$app->request->isAjax) {
+            $data = Yii::$app->request->post();
+            if (empty($data['name'])) {
+                return Json::encode(['type' => 'error', 'name' => 'name', 'msg' => 'Поле не может быть пустым']);
+            }
+            if (Group::find()->where(['name' => $data['name']])->one()) {
+                return Json::encode(['type' => 'error', 'name' => 'name', 'msg' => 'Группа уже существует']);
+            }
+            if ($data['action'] === 'create') {
+                $product_group = new Group();
+            }
+            if ($data['action'] === 'update') {
+                $product_group = Group::find()->where(['id' => $data['id']])->one();
+            }
+            $product_group->name = $data['name'];
+            $product_group->status = 1;
+            $product_group->save();
+            return Json::encode(['type' => 'success', 'id' => $product_group->id, 'value' => $product_group->name]);
         }
-        if (Group::find()->where(['name' => $data['group']])->one()) {
-            return Json::encode(['type' => 'error', 'name' => 'group', 'msg' => 'Группа уже существует']);
-        }
-        $product_group = Group::find()->where(['id' => $data['id']])->one();
-        if ($product_group === NULL) {
-            $product_group = new Group();
-        }
-        $product_group->name = $data['group'];
-        $product_group->status = 1;
-        $product_group->save();
-        return Json::encode(['type' => 'success', 'id' => $product_group->id, 'value' => $product_group->name]);
     }
 
     public function actionAjaxDeleteProductGroup() {
@@ -338,9 +357,11 @@ class ProductController extends BaseController {
         if (Characteristic::find()->where(['name' => $data['name']])->one()) {
             return Json::encode(['type' => 'error', 'name' => 'name', 'msg' => 'Характеристика уже существует']);
         }
-        $product_сharacteristic = Characteristic::find()->where(['id' => $data['id']])->one();
-        if ($product_сharacteristic === NULL) {
+        if ($data['action'] === 'create') {
             $product_сharacteristic = new Characteristic();
+        }
+        if ($data['action'] === 'apdate') {
+            $product_сharacteristic = Characteristic::find()->where(['id' => $data['id']])->one();
         }
         $product_сharacteristic->group_id = $data['group_id'];
         $product_сharacteristic->name = $data['name'];
@@ -716,6 +737,25 @@ class ProductController extends BaseController {
             return $message;
         }
         return false;
+    }
+
+    public function actionAjaxGetProductAtribute() {
+        if (Yii::$app->request->isAjax) {
+            $id = Yii::$app->request->post('id');
+            $atributes = ProductCharacteristic::find()->select([
+                        'product_characteristic.id',
+                        'product_characteristic.characteristic_id',
+                        'product_characteristic.group_id',
+                        "CONCAT(group.name, ' : ', characteristic.name) as text",
+                        'characteristic.type'
+                    ])
+                    ->where(['product_id' => $id])
+                    ->joinWith('characteristic')
+                    ->joinWith('group')
+                    ->asArray()
+                    ->all();
+            return Json::encode($atributes);
+        }
     }
 
 }
