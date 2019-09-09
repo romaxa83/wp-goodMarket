@@ -3,9 +3,9 @@ include:
     - common
     - frontend
     - backend
-    # - backend/modules/category
-    # - backend/modules/product
-    # - backend/modules/banners
+    - backend/modules/category
+    - backend/modules/product
+    - backend/modules/banners
     - backend/modules/blog
 paths:
     log: console/runtime/logs

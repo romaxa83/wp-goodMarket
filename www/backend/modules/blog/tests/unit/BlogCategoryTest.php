@@ -15,22 +15,26 @@ use backend\modules\blog\tests\fixtures\dbFixture\LangFixture;
 use backend\modules\blog\tests\fixtures\dbFixture\CategoryFixture;
 use backend\modules\blog\tests\fixtures\dbFixture\CategoryLangFixture;
 //array Fixture
-use backend\modules\blog\tests\fixtures\arrayFixture\DataFixture;
-use backend\modules\blog\tests\fixtures\arrayFixture\DataEmptyFixture;
+use backend\modules\blog\tests\fixtures\arrayFixture\DataCategoryFixture;
+use backend\modules\blog\tests\fixtures\arrayFixture\DataEmptyCategoryFixture;
+//array Fixture
+use backend\modules\blog\tests\fixtures\arrayFixture\DataTagFixture;
+use backend\modules\blog\tests\fixtures\arrayFixture\DataEmptyTagFixture;
 
 use Codeception\Test\Unit;
 
-class CategoryTest extends Unit 
+class BlogCategoryTest extends Unit 
 {
-
     public $tester;
     private $service;
 
     public function _fixtures() 
     {
         return [
-            'data' => DataFixture::className(),
-            'dataEmpty' => DataEmptyFixture::className(),
+            'dataCategory' => DataCategoryFixture::className(),
+            'dataEmptyCategory' => DataEmptyCategoryFixture::className(),
+            'dataTag' => DataTagFixture::className(),
+            'dataEmptyTag' => DataEmptyTagFixture::className()
         ];
     }
 
@@ -60,7 +64,7 @@ class CategoryTest extends Unit
 
     public function testSuccessCreate() 
     {
-        $data = $this->tester->grabFixture('data')->data['create'];
+        $data = $this->tester->grabFixture('dataCategory')->data['create'];
         
         $form = new CategoryForm();
         $langModel = new CategoryLang();
@@ -90,7 +94,7 @@ class CategoryTest extends Unit
 
     public function testEmptyCreate() 
     {
-        $data = $this->tester->grabFixture('dataEmpty')->data;
+        $data = $this->tester->grabFixture('dataEmptyCategory')->data;
 
         $form = new CategoryForm();
         $langModel = new CategoryLang();
@@ -105,7 +109,7 @@ class CategoryTest extends Unit
 
     public function testSuccessUpdate() 
     {
-        $data = $this->tester->grabFixture('data')->data['update'];
+        $data = $this->tester->grabFixture('dataCategory')->data['update'];
 
         $baseModel = Category::find()->where(['!=','id',1])->with(['manyLang','aliasLang'])->one();
         $this->assertNotEmpty($baseModel['manyLang']);
@@ -137,7 +141,7 @@ class CategoryTest extends Unit
     
     public function testEmptyUpdate() 
     {
-        $data = $this->tester->grabFixture('dataEmpty')->data;
+        $data = $this->tester->grabFixture('dataEmptyCategory')->data;
 
         $baseModel = Category::find()->where(['!=','id',1])->with(['manyLang','aliasLang'])->one();
         $this->assertNotEmpty($baseModel['manyLang']);
@@ -158,5 +162,6 @@ class CategoryTest extends Unit
         $this->service->remove($category->id);
 
         $this->assertEmpty(Category::find()->where(['id' => $category->id])->one());
+        $this->assertEmpty(CategoryLang::find()->where(['category_id' => $category->id])->all());
     }
 }
