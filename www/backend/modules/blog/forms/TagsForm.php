@@ -48,6 +48,7 @@ class TagsForm extends Model
         $tagAssignment = ArrayHelper::map(TagAssignment::find()->where(['post_id' => $post_id])->asArray()->all(),'tag_id','tag_id');
         $tag = Tag::find()->where(['in','id',$tagAssignment])->andWhere(['status' => Tag::STATUS_ACTIVE])->with('oneLang')->asArray()->all();
 
+        $preparedTagList = [];
         foreach($tag as $oneElement){
             $title = $oneElement['oneLang']['title'];
             $preparedTagList[$title] = $title;

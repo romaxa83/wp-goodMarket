@@ -24,14 +24,6 @@ class BlogTagTest extends Unit
     public $tester;
     private $service;
 
-    public function _fixtures() 
-    {
-        return [
-            'dataTag' => DataTagFixture::className(),
-            'dataEmptyTag' => DataEmptyTagFixture::className()
-        ];
-    }
-
     public function _before() 
     {
         $this->service = new TagService(new TagRepository());

@@ -4,7 +4,7 @@ namespace backend\modules\blog\entities;
 
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
-use Ausi\SlugGenerator\SlugGenerator;
+use yii\helpers\Inflector;
 use common\models\Lang;
 
 /**
@@ -36,8 +36,7 @@ class Tag extends ActiveRecord
 
     public static function generateAlias($tag) : string
     {
-       $generator = new SlugGenerator();
-       return $generator->generate($tag);
+        return Inflector::slug($tag);
     }
 
     public function edit($title,$alias):void

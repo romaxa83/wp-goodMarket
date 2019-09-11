@@ -7,6 +7,7 @@ use backend\modules\blog\repository\PostRepository;
 use backend\modules\blog\repository\TagRepository;
 use backend\modules\blog\services\CategoryService;
 //models
+use backend\modules\blog\entities\Post;
 use backend\modules\blog\entities\Category;
 use backend\modules\blog\entities\CategoryLang;
 use backend\modules\blog\forms\CategoryForm;
@@ -17,9 +18,10 @@ use backend\modules\blog\tests\fixtures\dbFixture\CategoryLangFixture;
 //array Fixture
 use backend\modules\blog\tests\fixtures\arrayFixture\DataCategoryFixture;
 use backend\modules\blog\tests\fixtures\arrayFixture\DataEmptyCategoryFixture;
-//array Fixture
 use backend\modules\blog\tests\fixtures\arrayFixture\DataTagFixture;
 use backend\modules\blog\tests\fixtures\arrayFixture\DataEmptyTagFixture;
+use backend\modules\blog\tests\fixtures\arrayFixture\DataPostFixture;
+use backend\modules\blog\tests\fixtures\arrayFixture\DataEmptyPostFixture;
 
 use Codeception\Test\Unit;
 
@@ -34,7 +36,9 @@ class BlogCategoryTest extends Unit
             'dataCategory' => DataCategoryFixture::className(),
             'dataEmptyCategory' => DataEmptyCategoryFixture::className(),
             'dataTag' => DataTagFixture::className(),
-            'dataEmptyTag' => DataEmptyTagFixture::className()
+            'dataEmptyTag' => DataEmptyTagFixture::className(),
+            'dataPost' => DataPostFixture::className(),
+            'dataEmptyPost' => DataEmptyPostFixture::className()
         ];
     }
 
@@ -57,6 +61,7 @@ class BlogCategoryTest extends Unit
 
     public function _after() 
     {
+        Post::deleteAll();
         Category::deleteAll();
         CategoryLang::deleteAll();
         Lang::deleteAll();

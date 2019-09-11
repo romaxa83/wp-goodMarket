@@ -85,15 +85,14 @@ BlogAsset::register($this);
                                         'language' => 'ru',
                                         'maintainOrder' => true,
                                         'options' => [
-                                            'placeholder' => 'Выберите тег или создайте новый',
+                                            'placeholder' => 'Выберите тег',
                                             'multiple' => true
                                         ],
                                         'pluginOptions' => [
-                                            'tags' => true,
                                             'tokenSeparators' => [',', ' '],
                                             'maximumInputLength' => 10,
                                             'allowClear' => true
-                                        ],
+                                        ]
                                     ])->label('Теги') ?>
                             </div>
                             <div class="col-md-1">

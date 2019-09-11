@@ -271,10 +271,10 @@ class PostService
         $tags = [];
         foreach ($tags_existing as $tag_name) {
             $tag = $this->tag_repository->findByName($tag_name);
-            if(!$tag){
-                $tag = Tag::create($tag_name,Tag::generateAlias($tag_name));
-                $this->tag_repository->save($tag);
-            }
+            // if(!$tag){
+            //     $tag = Tag::create($tag_name,Tag::generateAlias($tag_name));
+            //     $this->tag_repository->save($tag);
+            // }
             $tags [] = $tag->tag_id;
         }
 
