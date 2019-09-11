@@ -13,26 +13,18 @@ use backend\modules\blog\validators\AliasValidator;
 class PostForm extends CompositeForm
 {
     public $category_id;
-    public $country_id;
-    public $title;
     public $alias;
-    public $description;
     public $media_id;
-    public $content;
     public $status;
     public $published_at;
 
-    private $_post;
+    public $_post;
 
     public function __construct(Post $post = null, $config = [])
     {
         if ($post) {
             $this->category_id = $post->category_id;
-            $this->country_id = $post->country_id;
-            $this->title = $post->title;
             $this->alias = $post->alias;
-            $this->description = $post->description;
-            $this->content = $post->content;
             $this->media_id = $post->media_id;
             $this->status = (int)$post->status;
             $this->published_at = DateHelper::convertUnixForPublished($post->published_at);
@@ -51,12 +43,11 @@ class PostForm extends CompositeForm
     public function rules(): array
     {
         return [
-            [['category_id', 'title','alias','content','published_at'], 'required'],
-            [['title','alias','description'], 'string', 'max' => 255],
+            [['category_id','alias','published_at'], 'required'],
+            ['alias', 'string', 'max' => 255],
             [['category_id','media_id'], 'integer'],
-            [['description', 'content'], 'string'],
             ['alias', AliasValidator::class],
-            [['title', 'alias'], 'unique', 'targetClass' => Post::class, 'filter' => $this->_post ? ['<>', 'id', $this->_post->id] : null],
+            ['alias', 'unique', 'targetClass' => Post::class, 'filter' => $this->_post ? ['<>', 'id', $this->_post->id] : null],
             [['published_at','status'], 'safe'],
         ];
     }
@@ -83,15 +74,6 @@ class PostForm extends CompositeForm
         $cat = new CategoryForm();
         return $cat->categoriesList(true);
     }
-
-    /**
-     * @return array
-     */
-    public function countryList(): array
-    {
-        return (new CountryReadRepository(new PostRepository(new CategoryRepository(),new TagRepository())))->getAllOnlyNameForAdmin();
-    }
-
     /**
      * @return array
      */

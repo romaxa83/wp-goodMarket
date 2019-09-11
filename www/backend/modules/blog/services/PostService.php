@@ -31,11 +31,13 @@ class PostService
      * @param TagAssignmentsRepository $tags_rel
      * @param MetaRepository $meta
      */
-    public function __construct(PostRepository $posts,
-                                CategoryRepository $categories,
-                                TagRepository $tags,
-                                TagAssignmentsRepository $tags_rel,
-                                MetaRepository $meta)
+    public function __construct(
+        PostRepository $posts,
+        CategoryRepository $categories,
+        TagRepository $tags,
+        TagAssignmentsRepository $tags_rel,
+        MetaRepository $meta
+    )
     {
         $this->post_repository = $posts;
         $this->category_repository = $categories;
@@ -57,12 +59,8 @@ class PostService
 
         $post = Post::create(
             $category->id,
-            $form->country_id,
             \Yii::$app->user->identity->id??null,
-            $form->title,
             $form->alias,
-            $form->description,
-            $form->content,
             $form->media_id,
             $form->status,
             $form->published_at);
@@ -98,11 +96,7 @@ class PostService
 
         $post->edit(
             $category->id,
-            $form->country_id,
-            $form->title,
             $form->alias,
-            $form->description,
-            $form->content,
             $form->media_id,
             $form->status,
             $form->published_at);
@@ -151,10 +145,6 @@ class PostService
     public function changeStatus($id, $status)
     {
         $post = $this->post_repository->get($id);
-
-        if($post->is_main == 1){
-            return $this->message->errorPost(1);
-        }
 
         $post->status($status);
         $this->post_repository->save($post);
@@ -281,11 +271,11 @@ class PostService
         $tags = [];
         foreach ($tags_existing as $tag_name) {
             $tag = $this->tag_repository->findByName($tag_name);
-            if(!$tag){
-                $tag = Tag::create($tag_name,Tag::generateAlias($tag_name));
-                $this->tag_repository->save($tag);
-            }
-            $tags [] = $tag->id;
+            // if(!$tag){
+            //     $tag = Tag::create($tag_name,Tag::generateAlias($tag_name));
+            //     $this->tag_repository->save($tag);
+            // }
+            $tags [] = $tag->tag_id;
         }
 
         $this->tag_rel_repository->save($tags,$post_id);

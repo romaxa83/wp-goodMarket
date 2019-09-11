@@ -9,17 +9,14 @@ use common\models\User;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use backend\modules\filemanager\models\Mediafile;
-
+use common\models\Lang;
 /**
  * @property integer $id
  * @property integer $category_id
- * @property integer $country_id
  * @property integer $author_id
  * @property integer $seo_id
  * @property string $title
- * @property string $alias
- * @property string $description
- * @property string $content
+ * @property string $alias 
  * @property integer $media_id
  * @property integer $views
  * @property integer $likes
@@ -48,24 +45,17 @@ class Post extends ActiveRecord
 
     public static function create(
         $category_id,
-        $country_id,
         $author_id,
-        $title,
         $alias,
-        $description,
-        $content,
         $media_id,
         $status,
-        $published_at): self
+        $published_at
+    ): self
     {
         $post = new static();
         $post->category_id = $category_id;
-        $post->country_id = $country_id != '' ? $country_id : null;
         $post->author_id = $author_id;
-        $post->title = $title;
         $post->alias = $alias;
-        $post->description = $description;
-        $post->content = $content;
         $post->media_id = $media_id;
         $post->status = self::setStatus((int)$status,DateHelper::convertPublishedForUnix($published_at));
         $post->published_at = ($published_at) ? DateHelper::convertPublishedForUnix($published_at):false;
@@ -77,22 +67,14 @@ class Post extends ActiveRecord
 
     public function edit(
         $category_id,
-        $country_id,
-        $title,
         $alias,
-        $description,
-        $content,
         $media_id,
         $status,
         $published_at): void
     {
 
         $this->category_id = $category_id;
-        $this->country_id = $country_id != '' ? $country_id : null;
-        $this->title = $title;
         $this->alias = $alias;
-        $this->description = $description;
-        $this->content = $content;
         $this->media_id = $media_id;
         $this->status = self::setStatus((int)$status,DateHelper::convertPublishedForUnix($published_at));
         $this->published_at = DateHelper::convertPublishedForUnix($published_at);
@@ -130,12 +112,16 @@ class Post extends ActiveRecord
     }
     //Relation
 
-    /**
-     * @return ActiveQuery
-     */
     public function getCategory(): ActiveQuery
     {
         return $this->hasOne(Category::class, ['id' => 'category_id']);
+    }
+    /**
+     * @return ActiveQuery
+     */
+    public function getCategoryTitle(): ActiveQuery
+    {
+        return $this->hasOne(CategoryLang::class, ['category_id' => 'id'])->via('category');
     }
 
     /**
@@ -157,7 +143,7 @@ class Post extends ActiveRecord
     /**
      * @return ActiveQuery
      */
-    public function getTagAssignments(): ActiveQuery
+    public function getTagAssignment(): ActiveQuery
     {
         return $this->hasMany(TagAssignment::class, ['post_id' => 'id']);
     }
@@ -167,7 +153,7 @@ class Post extends ActiveRecord
      */
     public function getTags(): ActiveQuery
     {
-        return $this->hasMany(Tag::class, ['id' => 'tag_id'])->via('tagAssignments');
+        return $this->hasMany(Tag::class, ['id' => 'tag_id'])->via('tagAssignment');
     }
 
     /**
@@ -186,12 +172,19 @@ class Post extends ActiveRecord
         return $this->hasMany(Comment::class, ['post_id' => 'id']);
     }
 
-    /**
-     * @return ActiveQuery
-     */
-    public function getCountry(): ActiveQuery
-    {
-        return $this->hasOne(Country::class, ['id' => 'country_id']);
+    public function getOneLang()
+    {   
+        return $this->hasOne(PostLang::class, ['post_id' => 'id']);
+    }
+
+    public function getManyLang()
+    {   
+        return $this->hasMany(PostLang::class, ['post_id' => 'id']);
+    }
+
+    public function getAliasLang()
+    {   
+        return $this->hasMany(Lang::class, ['id' => 'lang_id'])->via('manyLang');
     }
 
     public function getArrayPosition():array

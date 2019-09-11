@@ -52,6 +52,11 @@
             "enabled": false
         }
     },
+    "autoload": {
+        "files": [
+            "function.php"
+        ]
+    },
     "repositories": [
         {
             "type": "composer",

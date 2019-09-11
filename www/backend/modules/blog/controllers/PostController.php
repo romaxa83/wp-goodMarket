@@ -15,6 +15,8 @@ use backend\modules\blog\type\MessageType;
 use backend\modules\blog\services\PostService;
 use backend\modules\blog\forms\search\PostSearch;
 use backend\modules\blog\repository\PostRepository;
+use backend\modules\blog\entities\PostLang;
+use backend\widgets\langwidget\LangWidget;
 
 class PostController extends Controller
 {
@@ -26,6 +28,7 @@ class PostController extends Controller
      * @var PostRepository
      */
     private $postRepository;
+    private $postLang;
 
     public function __construct(
         $id, Module $module,
@@ -37,6 +40,7 @@ class PostController extends Controller
         parent::__construct($id, $module, $config);
         $this->post_service = $posts;
         $this->postRepository = $postRepository;
+        $this->postLang = new PostLang();
     }
 
     public function actionIndex()
@@ -53,48 +57,69 @@ class PostController extends Controller
     public function actionView($id)
     {
         return $this->render('view', [
-            'post' => $this->findModel($id)
+            'model' => $this->findModel($id)
         ]);
     }
 
     public function actionCreate()
     {
         $form = new PostForm();
+        $langModel = new PostLang();
+        $post = Yii::$app->request->post();
 
-        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
-            try {
-                $this->post_service->create($form);
-                Yii::$app->session->setFlash('success', 'Пост создан');
-                return $this->redirect(['index']);
-            } catch (\DomainException $e) {
-                Yii::$app->errorHandler->logException($e);
-                Yii::$app->session->setFlash('error', $e->getMessage());
+        if(Yii::$app->request->isPost){
+            if ($form->load($post) && $form->validate() && LangWidget::validate($langModel,$post)) {
+                try {
+                    $postModel = $this->post_service->create($form);
+                    $langModel->saveLang($post['PostLang'],$postModel->id);
+    
+                    Yii::$app->session->setFlash('success', 'Пост создан');
+                    return $this->redirect(['update?id=' . $postModel->id]);
+                } catch (\DomainException $e) {
+                    Yii::$app->errorHandler->logException($e);
+                    Yii::$app->session->setFlash('error', $e->getMessage());
+                }
+            }else{
+                $langModel->languageData = $post['PostLang'];
             }
         }
 
         return $this->render('create', [
             'model' => $form,
+            'langModel' => $langModel
         ]);
     }
 
     public function actionUpdate($id)
     {
-        $post = $this->postRepository->getWithSeo($id);
+        $form = new PostForm($this->findModel($id));
+        $langModel = new PostLang();
 
-        $form = new PostForm($post);
-        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+        foreach ($form->_post['manyLang'] as $indexRow => $oneLang) {
+            $langAlias = $form->_post['aliasLang'][$indexRow]->alias;
+            
+            $langModel->languageData[$langAlias]['title'] = $oneLang->title;
+            $langModel->languageData[$langAlias]['description'] = $oneLang->title;
+            $langModel->languageData[$langAlias]['content'] = $oneLang->title;
+        }
+        $post = Yii::$app->request->post();
+        
+        if ($form->load($post) && $form->validate()) {
             try {
-                $this->post_service->edit($post->id, $form);
+                $this->post_service->edit($id, $form);
+                $this->postLang->updateLang($post['PostLang'],$id);
+
                 Yii::$app->session->setFlash('success', 'Пост отредактирован');
-                return $this->redirect(['index']);
+                return $this->redirect(['update?id=' . $id]);
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
                 Yii::$app->session->setFlash('error', $e->getMessage());
             }
         }
+
         return $this->render('update', [
             'model' => $form,
-            'post' => $post,
+            'langModel' => $langModel
         ]);
     }
 
@@ -104,20 +129,6 @@ class PostController extends Controller
         try{
             $status = $this->post_service->changeStatus($post['id'],$post['checked']);
 
-            $this->setFlash($status);
-
-        } catch (\DomainException $e) {
-            Yii::$app->errorHandler->logException($e);
-            Yii::$app->session->setFlash('error', $e->getMessage());
-        }
-        return $this->redirect(Url::toRoute('/blog/post/index'));
-    }
-
-    public function actionViewMainPage()
-    {
-        $post = Yii::$app->request->post();
-        try{
-            $status = $this->post_service->inMain($post['id'],$post['checked']);
             $this->setFlash($status);
 
         } catch (\DomainException $e) {
@@ -155,7 +166,7 @@ class PostController extends Controller
 
     protected function findModel($id) : Post
     {
-        if (($model = Post::findOne($id)) !== null) {
+        if (($model = Post::find()->where(['id' => $id])->with(['manyLang','aliasLang','categoryTitle'])->one()) !== null) {
             return $model;
         }
 

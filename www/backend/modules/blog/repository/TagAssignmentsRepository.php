@@ -9,7 +9,7 @@ class TagAssignmentsRepository
     public function save($tags,$post_id): void
     {
         \Yii::$app->db->createCommand()->batchInsert(
-            'blog_tag_assignments',['post_id','tag_id'],
+            'blog_tag_assignment',['post_id','tag_id'],
             array_map(function($item) use ($post_id) {
                 return [
                     'post_id' => $post_id,

@@ -2,6 +2,7 @@
 namespace backend\modules\blog\repository;
 
 use backend\modules\blog\entities\Tag;
+use backend\modules\blog\entities\TagLang;
 
 class TagRepository
 {
@@ -30,11 +31,11 @@ class TagRepository
 
     /**
      * @param $title
-     * @return Tag|null
+     * @return TagLang|null
      */
-    public function findByName($title): ?Tag
+    public function findByName($title): ?TagLang
     {
-        return Tag::findOne(['title' => $title]);
+        return TagLang::find()->where(['title' => $title])->with('baseTag')->one();
     }
 
     /**
