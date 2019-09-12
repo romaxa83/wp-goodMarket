@@ -63,4 +63,15 @@ class CategoryLang extends ActiveRecord {
         return true;
     }
 
+    public static function indexLangBy(array $data, string $column = 'lang_id') {
+        foreach ($data as $k => $v) {
+            $categoryLang = [];
+            foreach ($v['categoryLang'] as $k1 => $v1) {
+                $categoryLang[$v1[$column]] = $v1;
+            }
+            $data[$k]['categoryLang'] = $categoryLang;
+        }
+        return $data;
+    }
+
 }

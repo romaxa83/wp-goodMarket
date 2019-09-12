@@ -29,26 +29,25 @@ class VProduct extends ActiveRecord {
         ];
     }
 
-    // если у вариативного товара нет цены устанавливает цену товара
-    public static function correctVProductPriceAll($v_product_list) {
-        if (empty($v_product_list)) {
-            return [];
-        }
-        $product_id = [];
-        foreach ($v_product_list as $key => $value) {
-            $product_id[] = $value['product_id'];
-        }
-        $product_id = array_unique($product_id);
+    public function getVProductLang() {
+        return $this->hasMany(VProductLang::className(), ['vproduct_id' => 'id']);
+    }
 
-        $lang_id = Lang::find()->select(['id'])->where(['alias' => Yii::$app->params['settings']['defaultLanguage']])->one()->id;
-        $product_price_data = ProductLang::find()->select(['product_id', 'price', 'currency'])->where(['lang_id' => $lang_id])->andWhere(['in', 'product_id', $product_id])->asArray()->all();
-        $product_price_data = ArrayHelper::index($product_price_data, 'product_id');
-
-        foreach ($v_product_list as $key => $value) {
-            $v_product_list[$key]['price'] = ($value['price'] != 0 && !is_null($value['price'])) ? $value['price'] : $product_price_data[$value['product_id']]['price'];
-        }
-
+    public static function getVProductsByProduct($product_id) {
+        $v_product_list = VProduct::find()->where(['publish' => 1, 'product_id' => $product_id])->asArray()->all();
+        $v_product_list = ArrayHelper::index($v_product_list, 'id');
         return $v_product_list;
+    }
+
+    public static function indexBy(array $data, string $column = 'id') {
+        foreach ($data as $k => $v) {
+            $vproduct = [];
+            foreach ($v['vproducts'] as $k1 => $v1) {
+                $vproduct[$v1[$column]] = $v1;
+            }
+            $data[$k]['vproducts'] = $vproduct;
+        }
+        return $data;
     }
 
     //    public function getVproductSale() {

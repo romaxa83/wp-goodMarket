@@ -17,6 +17,7 @@ class m180903_090316_create_orders_products_table extends Migration
         $this->createTable('orders_products', [
             'id' => $this->primaryKey(),
             'order_id' => $this->integer(11),
+            'lang_id' => $this->smallInteger()->unsigned(),
             'product_id' => $this->string(),
             'vproduct_id' => $this->integer(11),
             'price'=> $this->decimal(24,13)->defaultValue(0),

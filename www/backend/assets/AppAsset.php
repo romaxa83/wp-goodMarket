@@ -19,7 +19,8 @@ class AppAsset extends AssetBundle {
     public $js = [
         'js/jquery-ui.js',
         'js/icheck.js',
-        'js/main.js'
+        'js/main.js',
+        '//cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

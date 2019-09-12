@@ -1,5 +1,7 @@
 <?php
-    use yii\grid\GridView;
+
+use backend\modules\order\models\Order;
+use yii\grid\GridView;
     use app\modules\order\OrderAsset;
     use yii\helpers\Html;
 
@@ -16,12 +18,6 @@
                 'attribute' => 'category',
             ],
             [
-                'label' => 'Наличие',
-                'value' => function($model){
-                    return getStatusBalance($model['balance'], $model['min_amount']);
-                }
-            ],
-            [
                 'label' => 'Продукт',
                 'attribute' => 'product',
             ],
@@ -32,6 +28,15 @@
             [
                 'label' => 'Количество',
                 'attribute' => 'count',
+            ],
+            [
+                'label' => 'Наличие',
+                'value' => function ($model) {
+                    if (isset($model['amount']) && isset($model['count'])) {
+                        return Order::getStatusBalance($model['amount'], $model['count']);
+                    }
+                    return '';
+                }
             ],
             [
                 'class' => 'yii\grid\ActionColumn',
@@ -48,7 +53,7 @@
                                 'aria-label' => 'Редактировать продукт',
                                 'style' => 'color:rgb(63,140,187)',
                                 'class' => 'grid-option fa fa-pencil edit-order-product',
-                                'data-index' => $index,
+                                'data-index' => $model['product_id'] . '-' . $model['vproduct_id'],
                                 'data-pjax' => '1'
                             ]);
                         }
@@ -63,7 +68,7 @@
                                 'aria-label' => 'Удалить продукт',
                                 'style' => 'color:rgb(63,140,187)',
                                 'class' => 'grid-option fa fa-trash delete-order-product',
-                                'data-index' => $index,
+                                'data-index' => $model['product_id'] . '-' . $model['vproduct_id'],
                                 'data-pjax' => '1'
                             ]);
                         }
@@ -72,11 +77,11 @@
                         return Html::tag(
                             'a',
                             '',[
-                            'title' => 'Удалить продукт',
+                            'title' => 'Подробная информация о продукте',
                             'aria-label' => 'Подробная информация о продукте',
                             'style' => 'color:rgb(63,140,187)',
                             'class' => 'grid-option fa fa-eye show-order-product',
-                            'data-index' => $index,
+                            'data-index' => $model['product_id'] . '-' . $model['vproduct_id'],
                             'data-toggle' => \Yii::t('yii', 'modal'),
                             'data-target' => \Yii::t('yii', '#order-product'),
                             'data-pjax' => '1'
@@ -98,7 +103,7 @@
                 <h4 class="modal-title" id="exampleModalLabel">Информация о продукте</h4>
             </div>
             <div class="modal-body">
-                
+
             </div>
             <div class="modal-footer">
             </div>

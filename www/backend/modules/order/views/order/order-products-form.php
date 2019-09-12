@@ -10,6 +10,7 @@
     <table id="manage-table-order-products" class="table table-hover">
         <thead>
             <tr>
+                <th>Язык</th>
                 <th>Категория</th>
                 <th>Название</th>
                 <th>Вариация</th>
@@ -19,12 +20,24 @@
         </thead>
         <tbody>
              <tr>
+                 <td>
+                     <?php
+                     echo Select2::widget([
+                         'name' => 'lang_list_new',
+                         'data' =>  $lang_list,
+                         'options' => ['placeholder' => 'Выберите язык','class'=>'select-sale', 'width'=>'80px'],
+                         'pluginOptions' => [
+                             'allowClear' => true
+                         ],
+                     ]);
+                     ?>
+                 </td>
                 <td>
                     <?php
                         echo Select2::widget([
                             'name' => 'category_list_new',
-                            'data' =>  $category_list,
-                            'language' => 'ru',
+                            'attribute' =>'category_id',
+                            'disabled' => true,
                             'options' => ['placeholder' => 'Выберите категорию','class'=>'select-sale', 'width'=>'200px'],
                             'pluginOptions' => [
                                 'allowClear' => true
@@ -37,7 +50,6 @@
                         echo Select2::widget([
                             'name' => 'product_list_new',
                             'attribute' =>'product_id',
-                            'language' => 'ru',
                             'disabled' => true,
                             'options' => ['placeholder' => 'Выберите продукт', 'class'=>'select-sale','width'=>'200px' ],
                             'pluginOptions' => [
@@ -50,7 +62,6 @@
                    <?php
                         echo Select2::widget([
                             'name' => 'vproduct_list_new',
-                            'language' => 'ru',
                             'disabled' => true,
                             'options' => ['placeholder' => 'Выберите вариацию', 'class'=>'select-sale','width'=>'200px' ],
                             'pluginOptions' => [
@@ -66,7 +77,7 @@
                     <?=Html::tag(
                         'span',
                         '',[
-                            'style' => 'color:rgb(63,140,187), margin:10px',
+                            'style' => 'color:rgb(63,140,187); margin:10px; cursor:pointer',
                             'class' => 'grid-option fa fa-floppy-o save-product',
                             'data-pjax' => '1'
                         ]);?>

@@ -5,7 +5,7 @@ use yii\db\Migration;
 /**
  * Handles the creation of table `guest`.
  */
-class m180906_090333_create_guest_table extends Migration
+class m160906_090333_create_guest_table extends Migration
 {
     /**
      * {@inheritdoc}

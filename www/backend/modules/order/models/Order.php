@@ -44,18 +44,18 @@ class Order extends ActiveRecord {
     public $street;
     public $home;
     public $flat;
-    public static function tableName()
-    {
+
+    public static function tableName() {
         return 'order';
     }
 
     public function rules() {
         return [
-            [['city', 'street', 'home'], 'required', 'on'=>self::FRONT_ORDER],
-            [['city', 'street', 'home', 'user_id'], 'required', 'on'=>self::DELIVERY_COURIER_USER],
-            [['city', 'street', 'home'], 'required', 'on'=>self::DELIVERY_COURIER_GUEST],
-            [['city', 'address', 'user_id'], 'required', 'on'=>self::DELIVERY_NP_USER],
-            [['city', 'address'], 'required', 'on'=>self::DELIVERY_NP_GUEST],
+            [['city', 'street', 'home'], 'required', 'on' => self::FRONT_ORDER],
+            [['city', 'street', 'home', 'user_id'], 'required', 'on' => self::DELIVERY_COURIER_USER],
+            [['city', 'street', 'home'], 'required', 'on' => self::DELIVERY_COURIER_GUEST],
+            [['city', 'address', 'user_id'], 'required', 'on' => self::DELIVERY_NP_USER],
+            [['city', 'address'], 'required', 'on' => self::DELIVERY_NP_GUEST],
 
         ];
     }
@@ -83,7 +83,7 @@ class Order extends ActiveRecord {
 
     public function beforeSave($insert) {
         if (parent::beforeSave($insert)) {
-            if(!$this->isNewRecord){
+            if (!$this->isNewRecord) {
                 $oldAttributes = $this->getOldAttributes();
                 $model = new HistoryStatusOrder();
                 $model->status = $oldAttributes['status'];
@@ -107,5 +107,18 @@ class Order extends ActiveRecord {
 
     public function getOrderProduct() {
         return $this->hasMany(OrderProduct::className(), ['order_id' => 'id']);
+    }
+
+    public static function getStatusBalance($amount = 0, $min_amount = 0) {
+        if ($amount > 0) {
+            if (!empty($min_amount)) {
+                $text = ($amount < $min_amount) ? 'количество ограничено' : 'в наличии';
+            } else {
+                $text = ($amount >= 1) ? 'в наличии' : 'нет в наличии';
+            }
+        } else {
+            $text = 'нет в наличии';
+        }
+        return $text;
     }
 }

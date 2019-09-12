@@ -86,4 +86,15 @@ class ProductLang extends ActiveRecord {
         return $success;
     }
 
+    public static function indexLangBy(array $data, string $column = 'lang_id') {
+        foreach ($data as $k => $v) {
+            $productLang = [];
+            foreach ($v['productLang'] as $k1 => $v1) {
+                $productLang[$v1[$column]] = $v1;
+            }
+            $data[$k]['productLang'] = $productLang;
+        }
+        return $data;
+    }
+
 }

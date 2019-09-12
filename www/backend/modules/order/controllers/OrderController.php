@@ -2,8 +2,11 @@
 
 namespace backend\modules\order\controllers;
 
+use backend\modules\category\models\CategoryLang;
 use backend\modules\product\models\ProductLang;
+use backend\modules\product\models\VProductLang;
 use common\models\Lang;
+use frontend\assets\AppAsset;
 use yii\db\Exception;
 use yii\helpers\StringHelper;
 use backend\modules\order\models\HistoryStatusOrder;
@@ -38,6 +41,7 @@ use DateTime;
 use common\controllers\AccessController;
 use yii\filters\AccessControl;
 use yii\web\ForbiddenHttpException;
+use function GuzzleHttp\Promise\all;
 
 class OrderController extends BaseController {
 
@@ -102,7 +106,6 @@ class OrderController extends BaseController {
 
 
     public function actionIndex() {
-        $this->getVProductsByProduct(1);
         $searchModel = new OrderSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $settings = new SettingsHelper();
@@ -141,8 +144,7 @@ class OrderController extends BaseController {
                     $data['Order']['user_id'] = $guest_id;
                 }
             }
-//            var_dump($data);
-//            exit();
+
             $user_id = $data['Order']['user_id'];
             $status = ($user_status_id == 1) ? 'user_id' : 'guest_id';
             $data['Order'][$status] = $user_id;
@@ -169,7 +171,7 @@ class OrderController extends BaseController {
         $userList = User::find()->select(['id', 'username'])->asArray()->all();
         $userList = ArrayHelper::map($userList, 'id', 'username');
         $order_products_params = [
-            'category_list' => Category::getSelect2List(),
+            'lang_list' => Lang::getSelect2List(),
             'dataProvider' => $dataProvider,
             'type' => 'edit',
             'order_summ' => 0
@@ -246,17 +248,27 @@ class OrderController extends BaseController {
                 return $this->redirect([$data['save']]);
             }
         }
+        $userList = User::find()->select(['id', 'username'])->asArray()->all();
+        $userList = ArrayHelper::map($userList, 'id', 'username');
         $order_cost = $this->getOrderCost($id);
         $dataProvider = $this->createProductTable(OrderProduct::getDataByOrderID($id));
         $order_products_params = [
-            'category_list' => Category::getSelect2List(),
+            'lang_list' => Lang::getSelect2List(),
             'dataProvider' => $dataProvider,
             'type' => 'edit',
             'order_summ' => $this->getOrderCost($id)
         ];
         $payment_method_list = $this->settings->getAllList('payment', true);
         $delivery_list = $this->settings->getAllList('delivery', true);
-        return $this->render('form-order', ['model' => $model, 'guest' => $guest, 'field_visible' => $field_visible, 'order_products_params' => $order_products_params, 'payment_method_list' => $payment_method_list, 'delivery_list' => $delivery_list, 'order_summ' => $this->getOrderCost($id)]);
+        return $this->render('form-order', [
+            'model' => $model,
+            'guest' => $guest,
+            'userList' => $userList,
+            'field_visible' => $field_visible,
+            'order_products_params' => $order_products_params,
+            'payment_method_list' => $payment_method_list,
+            'delivery_list' => $delivery_list,
+            'order_summ' => $this->getOrderCost($id)]);
     }
 
     public function actionDelete($id) {
@@ -268,6 +280,7 @@ class OrderController extends BaseController {
                 if ($model->guest_id != null) {
                     Guest::findOne(['id' => $model->guest_id])->delete();
                 }
+                $transaction->commit();
                 Yii::$app->session->setFlash('success', 'Заказ успешно удален');
             } else {
                 throw new \Exception(implode("<br />" , ArrayHelper::getColumn($model->errors,0,false)));
@@ -281,26 +294,6 @@ class OrderController extends BaseController {
 
     private function getStockId($model, $id) {
         return $model->className()::find()->select('stock_id')->where(['id' => $id])->asArray()->one()['stock_id'];
-    }
-
-    private function getVProductsByProduct($product_id) {
-        $v_product_list = VProduct::find()->where(['publish' => 1, 'product_id' => $product_id])->asArray()->all();
-        $v_product_list = VProduct::correctVProductPriceAll($v_product_list);
-        return $v_product_list;
-    }
-
-    private function getProductsByCategory($id) {
-        $product_list = Product::find()->where(['publish' => 1, 'stock_publish' => 1, 'category_id' => $id])->all();
-        $product_list = Product::correctProductPriceAll($product_list);
-        return $product_list;
-    }
-
-    private function getProduct($product_id, $category_id) {
-        $product_list = $this->getProductsByCategory($category_id);
-        if (!array_key_exists($product_id, $product_list)) {
-            return [];
-        }
-        return $product_list[$product_id];
     }
 
     private function getCategories() {
@@ -355,10 +348,10 @@ class OrderController extends BaseController {
         $poduct = [];
         $vproduct = [];
         if ($product_id != 0) {
-            $product = $this->getProduct($product_id, $category_id);
+            $product = Product::getProduct($product_id, $category_id);
             if (!empty($product)) {
                 if ($vproduct_id != 0) {
-                    $vproduct = $this->getVProductsByProduct($product_id)[$vproduct_id];
+                    $vproduct = VProduct::getVProductsByProduct($product_id)[$vproduct_id];
                     $product['variation'] = $vproduct['char_value'];
                 }
                 $product['summ'] = $count * $product_price;
@@ -472,23 +465,67 @@ class OrderController extends BaseController {
     }
 
     private function deleteOrder($id) {
-        $model = Order::findOne($id);
-        OrderProduct::deleteAll(['order_id' => $id]);
-        if ($model->delete()) {
-            if ($model->guest_id != null) {
-                Guest::findOne(['id' => $model->guest_id])->delete();
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $model = Order::findOne($id);
+            OrderProduct::deleteAll(['order_id' => $id]);
+            if ($model->delete()) {
+                if ($model->guest_id != null) {
+                    Guest::findOne(['id' => $model->guest_id])->delete();
+                }
+                $transaction->commit();
+                return true;
+            } else {
+                return false;
             }
-            return true;
+        } catch (\Throwable $e) {
+            $transaction->rollBack();
+            return false;
         }
-        return false;
     }
 
-    public function actionAjaxGetCategoryProducts($category_id) {
+    // В админке возвращает данные для select2 (категории) на основе выбранного языка
+    public function actionAjaxGetCategories($lang_id) {
         if (Yii::$app->request->isAjax) {
-            $product_list = Product::getProductsData(['id', 'alias'], function ($product_list) {
-                return ArrayHelper::getColumn($product_list, function ($element) {
-                    return ['id' => $element['id'], 'text' => isset($element['productLang'][0]['name']) ? $element['productLang'][0]['name'] : $element['alias']];
-                });
+            $category_list = Category::find()->select(['id'])->with(['categoryLang' => function ($query) use ($lang_id) {
+                $query->where(['lang_id' => $lang_id]);
+            }])->where(['publish' => 1])->asArray()->all();
+
+            foreach ($category_list as $k => $v) {
+                if (empty($v['categoryLang'])) {
+                    unset($category_list[$k]);
+                }
+            }
+            $category_list = ArrayHelper::getColumn($category_list, function ($element) {
+                if (isset($element['categoryLang'][0])) {
+                    return ['id' => $element['id'], 'text' => $element['categoryLang'][0]['name']];
+                }
+            });
+
+            if (!empty($category_list)) {
+                return Json::encode($category_list);
+            } else {
+                return Json::encode([['id' => 0, 'text' => 'Ничего не найдено']]);
+            }
+        }
+    }
+
+    // В админке возвращает данные для select2 (продукты) на основе выбранной категории и языка
+    public function actionAjaxGetCategoryProducts($category_id, $lang_id) {
+        if (Yii::$app->request->isAjax) {
+            $product_list = Product::find()->select(['id'])->with(['productLang' => function ($query) use ($lang_id) {
+                $query->where(['lang_id' => $lang_id]);
+            }])->where(['publish' => 1, 'category_id' => $category_id])->asArray()->all();
+
+            foreach ($product_list as $k => $v) {
+                if (empty($v['productLang'])) {
+                    unset($product_list[$k]);
+                }
+            }
+            $product_list = ArrayHelper::getColumn($product_list, function ($element) {
+                if (isset($element['productLang'][0])) {
+                    return ['id' => $element['id'], 'text' => $element['productLang'][0]['name']];
+                }
             });
 
             if (!empty($product_list)) {
@@ -500,28 +537,53 @@ class OrderController extends BaseController {
     }
 
     private function getCategoryID($product_id) {
-        return Product::find()->select('category_id')->where(['or', ['stock_id' => $product_id], ['import_id' => $product_id]])->one()->category_id;
+        return Product::find()->select('category_id')->where(['id' => $product_id])->one()->category_id;
     }
 
-    private function createProductTable($order_product_table_data = []) {
+    // создает $dataProvider для products-table view
+    private function createProductTable($data = []) {
         $order_products = [];
-        if (!empty($order_product_table_data)) {
-            for ($i = 0; $i < count($order_product_table_data); $i++) {
-                $product_cache = ProductController::getProductList();
-                $order_products[$i]['balance'] = $product_cache[$order_product_table_data[$i]['product_id']]['amount'];
-                $order_products[$i]['min_amount'] = $product_cache[$order_product_table_data[$i]['product_id']]['min_amount'] ?? 1;
-                $product_id = $order_product_table_data[$i]['product_id'];
-                $v_product_id = $order_product_table_data[$i]['vproduct_id'];
-                $v_products = $this->getVProductsByProduct($product_id);
-                $order_products[$i]['category'] = $product_cache[$product_id]['category_name'];
-                $order_products[$i]['product'] = $product_cache[$product_id]['product_name'];
-                if ($v_product_id != 0) {
-                    $order_products[$i]['variation'] = $v_products[$v_product_id]['char_value'];
+        if (!empty($data)) {
+//            print_r($data);
+//            exit();
+
+            $products = Product::find()->select(['id', 'amount', 'category_id'])->where(['in', 'id', ArrayHelper::getColumn($data, 'product_id')])
+                ->with([
+                    'productLang' => function ($query) {
+                        $query->select('product_id, lang_id, name, price');
+                    }])
+                ->with([
+                    'categoryLang' => function ($query) {
+                        $query->select('category_id, lang_id, name');
+                    }])
+                ->with('vproducts.vProductLang')
+                ->asArray()->all();
+            $products = ArrayHelper::index($products, 'id');
+            $products = CategoryLang::indexLangBy($products);
+            $products = ProductLang::indexLangBy($products);
+            $products = VProduct::indexBy($products);
+            $products = VProductLang::indexLangBy($products);
+            $default_lang_id = Lang::getDefaultLangID();
+//            print_r($products);
+//            exit();
+            foreach ($data as $k => $v) {
+                    $pid = $v['product_id'];
+                if (isset($data[$k]['vproduct_id']) && $data[$k]['vproduct_id'] != 0) {
+                    $order_products[$k]['amount'] = $products[$pid]['vproducts'][$data[$k]['vproduct_id']]['amount'];
+                    $order_products[$k]['variation'] = $products[$pid]['vproducts'][$data[$k]['vproduct_id']]['char_value'];
+                    $order_products[$k]['vproduct_id'] = $data[$k]['vproduct_id'];
                 } else {
-                    $order_products[$i]['variation'] = 'Не выбрано';
+                    $order_products[$k]['amount'] = $products[$pid]['amount'];
+                    $order_products[$k]['variation'] = 'Не выбрано';
+                    $order_products[$k]['vproduct_id'] = 0;
                 }
-                $order_products[$i]['count'] = $order_product_table_data[$i]['count'];
+                $order_products[$k]['product_id'] = $data[$k]['product_id'];
+                $order_products[$k]['category'] = isset($products[$pid]['categoryLang'][$data[$k]['lang_id']]['name']) ? $products[$pid]['categoryLang'][$data[$k]['lang_id']]['name'] : $products[$pid]['categoryLang'][$default_lang_id]['name'];
+                $order_products[$k]['product'] = isset($products[$pid]['productLang'][$data[$k]['lang_id']]['name']) ? $products[$pid]['productLang'][$data[$k]['lang_id']]['name'] : $products[$pid]['productLang'][$default_lang_id]['name'];
+                $order_products[$k]['count'] = $data[$k]['count'];
             }
+//            print_r($order_products);
+//            exit();
         }
         $dataProvider = new ArrayDataProvider([
             'allModels' => $order_products,
@@ -536,22 +598,26 @@ class OrderController extends BaseController {
     public function actionAjaxReloadProductsTable() {
         if (Yii::$app->request->isAjax) {
             $data = Yii::$app->request->post('data');
-            //var_dump($data);die();
             $dataProvider = $this->createProductTable($data);
             $order_summ = $this->getOrderCost(0, $data);
-            return $this->renderPartial('products-table', ['dataProvider' => $dataProvider, 'type' => 'edit', 'order_summ' => $order_summ]);
+            return $this->renderPartial('products-table', [
+                'dataProvider' => $dataProvider,
+                'type' => 'edit',
+                'order_summ' => $order_summ]);
         }
     }
 
+    // В админке возвращает данные для select2 (вариация) на основе выбранного продукта
     public function actionAjaxGetProductVariations() {
         if (Yii::$app->request->isAjax) {
             if (Yii::$app->request->post()) {
                 $data = Yii::$app->request->post();
-                $v_product_list = $this->getVProductsByProduct($data['product_id']);
+                $v_product_list = VProduct::getVProductsByProduct($data['product_id']);
                 if (!empty($v_product_list)) {
                     $v_products = ArrayHelper::getColumn($v_product_list, function ($element) {
                                 return ['id' => $element['id'], 'text' => $element['char_value']];
                             });
+                    $v_products[0] = ['id' => 0, 'text' => 'Без вариации'];
                     return Json::encode($v_products);
                 }
             }
@@ -617,14 +683,16 @@ class OrderController extends BaseController {
 
     public function actionAjaxGetWarehousesBySettlement($settlement) {
         if (Yii::$app->request->isAjax) {
-            $settlement_data = $this->searchSettlement($settlement);
-            $warehouses = $this->getWarehouses($settlement_data[0]['Ref']);
-            if (!empty($warehouses)) {
-                $warehouses = ArrayHelper::getColumn($warehouses, function($element) {
-                            return ['id' => $element["Description"],
-                                'text' => $element["Description"]];
-                        });
-                return Json::encode($warehouses);
+            if (!empty($settlement)){
+                $settlement_data = $this->searchSettlement($settlement);
+                $warehouses = $this->getWarehouses($settlement_data[0]['Ref']);
+                if (!empty($warehouses)) {
+                    $warehouses = ArrayHelper::getColumn($warehouses, function($element) {
+                        return ['id' => $element["Description"],
+                            'text' => $element["Description"]];
+                    });
+                    return Json::encode($warehouses);
+                }
             }
             return Json::encode([['id' => 0, 'text' => 'Ничего не найдено']]);
         }
@@ -734,7 +802,6 @@ class OrderController extends BaseController {
             if ($count_product > 0) {
                 if ($order->save()) {
                     $order_id = $order->id;
-                    //$response = Curl::curl('POST', '/api/createOrder', ['order_id'=>$order_id]);
                     if ($post['user_status'] == 'user') {
                         $this->order_service->moveProductForUser($post['user_id'], $order->id);
                         $this->order_service->clearCart($post['user_id']);
@@ -743,10 +810,6 @@ class OrderController extends BaseController {
                         $this->order_service->moveProductForGuest($post['cart'], $order_id);
                         $answer = ['status' => 'delete-cart', 'message' => 'Ваш заказ принят'];
                     }
-                    // if($response['status']==200){
-                    //     Curl::curl('POST', '/api/createOrderProducts', ['order_id'=>$order_id]);
-                    //     $this->updateOrderApi($order_id);
-                    // }
                     return JSON::encode($answer);
                 }
             } else {
@@ -759,7 +822,6 @@ class OrderController extends BaseController {
     public function actionCreateOrderByClick() {
         if (Yii::$app->request->isAjax) {
             $post = Yii::$app->request->post();
-            // $user = $post['user_id'] ? $post['user_id'] : Guest::findOne(['phone' => $post['phone']]);
             $order = new Order();
             $guest = new Guest();
             $guest->phone = $post['phone'];
@@ -771,7 +833,6 @@ class OrderController extends BaseController {
             $order->phone = $post['phone'];
             $order->guest_id = $guest->id;
             if ($order->save()) {
-                //$response = Curl::curl('POST', '/api/createOrder', ['order_id'=>$order->id]);
                 if(empty($post['cart'][0])){
                     return JSON::encode(['status' => 'error', 'message' => 'Оформления заказа без товаров запрещено']);
                 }
@@ -788,10 +849,6 @@ class OrderController extends BaseController {
                     $cart = $post['cart'];
                 }
                 $this->order_service->moveProductForGuest($cart, $order->id);
-                // if($response['status']==200){
-                //     $response = Curl::curl('POST', '/api/createOrderProducts', ['order_id'=>$order->id]);
-                //     $this->updateOrderApi($order->id);
-                // }
             }
             if ($post['product_count'] == 'cart_product' || $post['product_count'] == 'cart_product_modal') {
                 if ($post['user_id']) {
@@ -863,10 +920,12 @@ class OrderController extends BaseController {
                         return [
                             'product_id' => $element['product_id'],
                             'vproduct_id' => $element['vproduct_id'],
+                            'lang_id' => $element['lang_id'],
                             'category_id' => $this->getCategoryID($element['product_id']),
                             'price' => $element['price'],
                             'product_price' => $element['product_price'],
-                            'count' => $element['count']
+                            'count' => $element['count'],
+                            'currency' => $element['currency']
                         ];
                     });
             return Json::encode($request);
@@ -922,35 +981,49 @@ class OrderController extends BaseController {
                 if ($post['products'] == 'empty') {
                     $post['products'] = [];
                 }
-                $product = OrderProduct::getOrderProduct($order_id, $post['product_id'], $post['vproduct_id']);
-                if ($product != null) {
-                    $product_price = $product['product_price'];
-                    $price = $product['price'];
+
+                $product = Product::find()->select(['id'])->where(['id' => $post['product_id']])->with('productLang')->with('vproducts.vProductLang')->asArray()->all();
+                $product = ArrayHelper::index($product, 'id');
+                $product = ProductLang::indexLangBy($product, 'lang_id');
+                $product = VProduct::indexBy($product);
+                $product = VProductLang::indexLangBy($product);
+//                print_r($post);
+//                print_r($product);
+//                exit();
+
+                if ($post['vproduct_id'] > 0) {
+                    $product_price = isset($product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][$post['lang_id']]['price'])
+                    && !empty($product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][$post['lang_id']]['price'])
+                    ? $product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][$post['lang_id']]['price']
+                    : $product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][Lang::getDefaultLangID()]['price'];
+
+                    $currency = isset($product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][$post['lang_id']]['currency'])
+                    && !empty($product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][$post['lang_id']]['currency'])
+                    ? $product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][$post['lang_id']]['currency']
+                    : $product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][Lang::getDefaultLangID()]['currency'];
                 } else {
-                    if ($post['vproduct_id'] > 0) {
-                        $vproduct = $this->getVProductsByProduct($post['product_id'])[$post['vproduct_id']];
-                        $product_price = $vproduct['price'];
-                        $sale = $this->getProductSale($post['product_id'], $post['vproduct_id'], $post['products']);
-                    } else {
-                        $product = $this->getProduct($post['product_id'], $post['category_id']);
-                        $product_price = (isset($product['fields']['ru']['product_price'])) ? $product['fields']['ru']['product_price'] : $product['trade_price'];
-                        $sale = $this->getProductSale($post['product_id'], 0, $post['products']);
-                    }
-                    $price = $product_price - ($sale * $product_price) / 100;
+                    $product_price = isset($product[$post['product_id']]['productLang'][$post['lang_id']]['price'])
+                    && !empty($product[$post['product_id']]['productLang'][$post['lang_id']]['price'])
+                    ? $product[$post['product_id']]['productLang'][$post['lang_id']]['price']
+                    : $product[$post['product_id']]['productLang'][Lang::getDefaultLangID()]['price'];
+
+                    $currency = isset($product[$post['product_id']]['productLang'][$post['lang_id']]['currency'])
+                    && !empty($product[$post['product_id']]['productLang'][$post['lang_id']]['currency'])
+                    ? $product[$post['product_id']]['productLang'][$post['lang_id']]['currency']
+                    : $product[$post['product_id']]['productLang'][Lang::getDefaultLangID()]['currency'];
                 }
-                $data = ['product_price' => $product_price, 'price' => $price];
+
+                // Добавить модуль акций и пересмотреть
+                //$sale = $this->getProductSale($post['product_id'], 0, $post['products']);
+                //$sale = $this->getProductSale($post['product_id'], $post['vproduct_id'], $post['products']);
+                $sale = 0;
+                $price = $product_price - ($sale * $product_price) / 100;
+
+                $data = ['product_price' => $product_price, 'price' => $price, 'currency' => $currency];
                 return Json::encode($data);
             }
         }
         return false;
-    }
-
-    private function updateOrderApi($order_id) {
-        $response = Curl::curl('POST', '/api/updateOrder', ['order_id' => $order_id]);
-        if ($response['status'] !== 200) {
-            return false;
-        }
-        return true;
     }
 
     public function actionAjaxSaveProduct($order_id) {
@@ -974,16 +1047,10 @@ class OrderController extends BaseController {
                 }
                 $order_product->order_id = $order_id;
                 if ($order_product->save()) {
-                    $products_db = OrderProduct::find()->select('product_id, vproduct_id, count, price, product_price')->asArray()->all();
+                    $products_db = OrderProduct::find()->select('product_id, vproduct_id, lang_id, count, price, product_price, currency')->asArray()->all();
                     $products = array_map(function($arr1, $arr2) {
                         return array_merge($arr1, $arr2);
                     }, $products, $products_db);
-//                    $response = Curl::curl('POST', '/api/'.$action, ['order_id'=>$order_product->order_id, 'product_id'=>$order_product->product_id, 'vproduct_id'=>$order_product->vproduct_id]);
-//                    if ($response['status'] !== 200){
-//                        var_dump($response['status']);die();
-//                        return false;
-//                    }
-//                    $this->updateOrderApi($order_id);
                     $products = ($products != false) ? $products : [];
                     return Json::encode($products);
                 }
@@ -995,19 +1062,13 @@ class OrderController extends BaseController {
     public function actionAjaxDeleteProduct($order_id) {
         if (Yii::$app->request->isAjax) {
             if ($post = Yii::$app->request->post()) {
-                $products = $post['products'];
-                $index = $post['index'];
-                $product = $products[$index];
-                $order_product = OrderProduct::find()->where(['order_id' => $order_id, 'product_id' => $product['product_id'], 'vproduct_id' => $product['vproduct_id']])->one();
-//                $response = Curl::curl('POST', '/api/deleteOrderProduct', ['order_id'=>$order_product->order_id, 'product_id'=>$order_product->product_id, 'vproduct_id'=>$order_product->vproduct_id]);
-//                if ($response['status'] !== 200 || !$order_product->delete()){
-//                    return false;
-//                }
-//                $this->updateOrderApi($order_id);
+                $order_product = OrderProduct::find()->where([
+                    'order_id' => $order_id,
+                    'product_id' => $post['index'][0],
+                    'vproduct_id' => $post['index'][1]
+                ])->one();
                 $order_product->delete();
-                unset($products[$index]);
-                $products = array_values($products);
-                return Json::encode($products);
+                return Json::encode(true);
             }
         }
         return false;
@@ -1020,10 +1081,9 @@ class OrderController extends BaseController {
     public function actionAjaxSetKitSale() {
         if (Yii::$app->request->isAjax) {
             if ($post = Yii::$app->request->post()) {
-                $order_id = $post['order_id'];
-                $product = $post['product'];
+//                $order_id = $post['order_id'];
+//                $product = $post['product'];
                 $product_list = $post['product_list'];
-                //var_dump($product_list);die();
 //                return Json::encode($this->setKitSale($product, $product_list, $order_id));
                 return Json::encode($product_list);
             }
@@ -1041,10 +1101,6 @@ class OrderController extends BaseController {
                 $sale = StocksProducts::getSale($product['product_id'], $product['vproduct_id'], $stock_id);
                 if ($order_id > 0) {
                     \Yii::$app->db->createCommand('UPDATE orders_products SET price= (product_price*' . (1 - $sale / 100) . ') WHERE order_id=' . $order_id)->execute();
-//                    $response = Curl::curl('POST', '/api/updateOrderProducts', ['order_id'=>$order_id]);
-//                    if ($response['status'] !== 200){
-//                        return false;
-//                    }
                 }
             } else {
                 $sale = 0;

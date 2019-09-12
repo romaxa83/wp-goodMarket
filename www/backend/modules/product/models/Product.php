@@ -74,7 +74,7 @@ class Product extends ActiveRecord {
     }
 
     public function getCategoryLang() {
-        return $this->hasOne(CategoryLang::className(), ['category_id' => 'category_id']);
+        return $this->hasMany(CategoryLang::className(), ['category_id' => 'category_id']);
     }
 
     public function getMedia() {
@@ -90,7 +90,7 @@ class Product extends ActiveRecord {
     }
 
     public function getVproducts() {
-        return $this->hasMany(VProduct::className(), ['product_id' => 'stock_id']);
+        return $this->hasMany(VProduct::className(), ['product_id' => 'id']);
     }
 
     public function getProductLang() {
@@ -108,13 +108,18 @@ class Product extends ActiveRecord {
         return $product_list;
     }
 
-    public static function getProductsData(array $select, callable $callback, array $condition = []) {
-        $productList = Product::find()->select($select)->with('productLang')->where(['publish' => TRUE]);
-        if (!empty($condition)) {
-            $productList->andWhere($condition);
+    public static function getProductsByCategory($category_id) {
+        $product_list = Product::find()->where(['publish' => 1, 'category_id' => $category_id])->all();
+        $product_list = Product::correctProductPriceAll($product_list);
+        return $product_list;
+    }
+
+    public static function getProduct($product_id, $category_id) {
+        $product_list = Product::getProductsByCategory($category_id);
+        if (!array_key_exists($product_id, $product_list)) {
+            return [];
         }
-        $productList = $productList->asArray()->all();
-        return $callback($productList);
+        return $product_list[$product_id];
     }
 
 }
