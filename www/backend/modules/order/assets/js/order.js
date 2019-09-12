@@ -90,7 +90,6 @@ function clearForm(){
     v_product_select.val(null).empty().trigger('change');
     v_product_select.prop('disabled',true);
     count_products_input.val(1);
-    manage_table.find('tr').attr('data-edit', '');
 }
 
 function getOrderSumm(){
@@ -141,8 +140,6 @@ function init(){
     var params = getUrlParams();
     var order_id = params.id;
     var user_status_select =  $('.field-order-user_status select');
-    var order_status_select = $('.field-order-order_status select');
-    var delivary_select = $('.field-order-delivary select');
     if(user_status_select.val()==2){
         $('select[name="Order[user_id]"]').parent().css('display','none');
         $('.guest').removeClass('guest-hide');
@@ -200,11 +197,12 @@ function getProductPrice(lang_id, category_id, product_id, vproduct_id){
     if(Object.keys(products).length == 0){
         products='empty';
     }
+    console.log('getProductPrice(): ', {products:products, lang_id:lang_id, category_id:category_id, product_id:product_id, vproduct_id:vproduct_id});
     $.ajax({
         type: 'POST',
         url:  host + '/admin/order/order/ajax-get-product-price?order_id='+order_id,
         dataType: 'json',
-        data:{products:products, lang_id:lang_id,category_id:category_id, product_id:product_id, vproduct_id:vproduct_id},
+        data:{products:products, lang_id:lang_id, category_id:category_id, product_id:product_id, vproduct_id:vproduct_id},
         success: function(data) {
             if(data!=false){
                 manage_table.find('tbody tr:first').attr('data-price', data['price']).attr('data-product_price', data['product_price']).attr('data-currency', data['currency']);
@@ -220,7 +218,7 @@ function callProductSelect(product_id){
         product_select.attr('data-selected_id', product_id);
         v_product_id = $(v_product_select).attr('data-selected_id');
         v_product_select.attr('data-selected_id',v_product_id);
-        getProductPrice(lang_select.attr('data-selected_id'),category_id, product_id, v_product_id);
+        getProductPrice(lang_select.attr('data-selected_id'), category_id, product_id, v_product_id);
     });
 }
 
@@ -274,7 +272,7 @@ $(v_product_select).on('select2:select', function (e) {
     var vproduct_id = data.id;
     var lang_id = lang_select.attr('data-selected_id');
     var category_id = category_select.attr('data-selected_id');
-    var product_id = product_select.data('selected_id');
+    var product_id = product_select.attr('data-selected_id');
     v_product_select.attr('data-selected_id', vproduct_id);
     getProductPrice(lang_id, category_id, product_id, vproduct_id);
 });
@@ -282,10 +280,6 @@ $(v_product_select).on('select2:select', function (e) {
 $('.save-product').on('click', function() {
     var params = getUrlParams();
     var order_id = params.id;
-    var edit_index = manage_table.find('tr').attr('data-edit');
-    // console.log('edit_index', edit_index);
-    edit_index = (edit_index!='' && edit_index!=undefined)?edit_index:null;
-    // console.log('edit_index', edit_index);
     var data = getAddedProducts();
     var new_data = {
         product_id: product_select.attr('data-selected_id'),
@@ -301,7 +295,7 @@ $('.save-product').on('click', function() {
         $.ajax({
             type: 'POST',
             url:  host + '/admin/order/order/ajax-save-product?order_id='+order_id,
-            data: {replace_index:edit_index, new_prod:new_data, products:JSON.stringify(data)},
+            data: {new_prod:new_data, products:JSON.stringify(data)},
             dataType:'json',
             success: function (data){
                 if(data!=false){
@@ -310,10 +304,10 @@ $('.save-product').on('click', function() {
                 }
             }
         });
-    } else { // при создании нового
+    } else { // при создании нового заказа
         if(Object.keys(data).length>0){
             for (var i = 0; i < Object.keys(data).length; i++) {
-                if(data[i].product_id==new_data.product_id && (data[i].vproduct_id==new_data.vproduct_id || data[i].vproduct_id==0)){
+                if(data[i].product_id==new_data.product_id && data[i].vproduct_id==new_data.vproduct_id){//если такой товар есть в заказе
                         data[i]=new_data;
                         console.log('data: ',data);
                         console.log('new_data: ',new_data);
@@ -323,41 +317,33 @@ $('.save-product').on('click', function() {
                 }
             }
         }
-        if(edit_index!='' && edit_index!=undefined){
-            data[edit_index] = new_data;
-            console.log(1);
-           // data.splice(edit_index,1);
-        }else{
-            if(typeof new_data.product_id!="undefined" && typeof new_data.vproduct_id!="undefined"){
-                console.log(2);
-                var key = Object.keys(data).length;
-                console.log('key: ', key);
-                console.log('data: ', data);
-                console.log('new_data: ', new_data);
-                data[key] = new_data;
-                updateProductsData(new_data, data);
-            }
+        // если такого товара (product_id + vproduct_id) в заказе ещё нет
+        if(typeof new_data.product_id!="undefined" && typeof new_data.vproduct_id!="undefined"){
+            var key = Object.keys(data).length;
+            data[key] = new_data;
+            updateProductsData(new_data, data);
         }
-
     }
 });
 
 $('body').on('click','.edit-order-product',function(){
     var index = $(this).data('index');
-    console.log(index);
-    manage_table.find('tr').attr('data-edit', index);
-    var data = getAddedProducts();
-    var record = data[index];
+    index = index.split('-');
+    var record = _.find(getAddedProducts(), {'product_id': index[0], 'vproduct_id': index[1]});
     lang_select.val(record.lang_id).trigger('change');
     lang_select.attr('data-selected_id', record.lang_id);
-    category_select.val(record.category_id).trigger('change');
-    category_select.attr('data-selected_id', record.category_id);
-    var url =  host + '/admin/order/order/ajax-get-category-products?category_id='+record.category_id+'&lang_id='+record.lang_id;
-    fillSelect(url, product_select, {}, record.product_id);
-    var url = host + '/admin/order/order/ajax-get-product-variations';
-    fillSelect(url, v_product_select, {category_id:record.category_id, product_id:record.product_id}, record.vproduct_id);
-    count_products_input.val(record['count']);
-    getProductPrice(record.lang_id ,record.category_id, record.product_id, record.vproduct_id);
+
+    var url =  host + '/admin/order/order/ajax-get-categories?lang_id='+record.lang_id;
+    $.when(fillSelect(url, category_select, {}, record.category_id)).then(function(){
+        url =  host + '/admin/order/order/ajax-get-category-products?category_id='+record.category_id+'&lang_id='+record.lang_id;
+        $.when(fillSelect(url, product_select, {}, record.product_id)).then(function(){
+            url = host + '/admin/order/order/ajax-get-product-variations';
+            $.when(fillSelect(url, v_product_select, {category_id:record.category_id, product_id:record.product_id}, record.vproduct_id)).then(function(){
+                count_products_input.val(record['count']);
+                getProductPrice(record.lang_id ,record.category_id, record.product_id, record.vproduct_id);
+            })
+        })
+    });
 });
 
 function update(data){
@@ -376,11 +362,6 @@ $('body').on('click', '.delete-order-product',function(){
     var params = getUrlParams();
     var order_id = params.id;
     var products_count = products.length;
-    // console.log(order_id);
-    // console.log(product);
-    // console.log(products);
-    // console.log(product);
-    // return false;
 
     if(order_id!=undefined){ // при редактировании существующего заказа
         if(parseInt(products_count)==1){
@@ -408,10 +389,7 @@ $('body').on('click', '.delete-order-product',function(){
                         return n['product_id'] == index[0] && n['vproduct_id'] == index[1];
                     });
                     console.log('После удаления осталось в products : ', products);
-                    // return false;
                     updateProductsData(product, products);
-                    // setProducts(products);
-                    // reloadProductsTable(products);
                 }
             }
         });
@@ -420,10 +398,7 @@ $('body').on('click', '.delete-order-product',function(){
             return n['product_id'] == index[0] && n['vproduct_id'] == index[1];
         });
         console.log('После удаления осталось в products : ', products);
-        // return false;
         updateProductsData(product, products);
-        // setProducts(products);
-        // reloadProductsTable(products);
     }
 });
 

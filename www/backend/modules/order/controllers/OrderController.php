@@ -1029,7 +1029,6 @@ class OrderController extends BaseController {
     public function actionAjaxSaveProduct($order_id) {
         if (Yii::$app->request->isAjax) {
             if ($post = Yii::$app->request->post()) {
-                $index = $post['replace_index'];
                 $new = $post['new_prod'];
                 $products = Json::decode($post['products']);
                 $prod = $new;
