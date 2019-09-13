@@ -207,4 +207,47 @@ class User extends ActiveRecord implements IdentityInterface {
         return array_key_exists($entity, JSON::decode($this->settings));
     }
 
+    /*
+     * метод добавляет настройки пользователю
+     * принимает 3 параметра:
+     * - сущьность (для которой будет применяться настройка ,к примеру article-для статей)
+     * - тип настройки (пример hide-col - прячет колонки)
+     * - значение (пример title)
+     */
+
+    public function addSetting($entity, $type, $value) {
+
+        if ($this->settings) {
+            if ($this->hasEntity($entity)) {
+                if ($this->hasType($entity, $type)) {
+                    $this->addValue($entity, $type, $value);
+                }
+            } else {
+                $this->newSetting($entity, $type, $value);
+            }
+        } else {
+            $this->settings = JSON::encode($this->createSettings($entity, $type, $value));
+        }
+        $this->update();
+    }
+
+    public function removeSetting($entity, $type, $value) {
+        $this->deleteValue($entity, $type, $value);
+        $this->update();
+    }
+
+    private function createSettings($entity, $type, $value) {
+        return [$entity => [$type => [$value]]];
+    }
+
+    private function deleteValue($entity, $type, $value) {
+        if (in_array($value, JSON::decode($this->settings)[$entity][$type])) {
+            $temp = JSON::decode($this->settings);
+            unset($temp[$entity][$type][array_search($value, $temp[$entity][$type])]);
+            $temp[$entity][$type] = array_values($temp[$entity][$type]);
+            return $this->settings = JSON::encode($temp);
+        }
+        return $this->settings;
+    }
+
 }

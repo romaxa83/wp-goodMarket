@@ -19,6 +19,18 @@ var getUrlParameter = function getUrlParameter(sParam) {
     }
 };
 
+window.warning = function (title_message, descr_message, type = 'danger') {
+    $('.noty_layout').append('<div class="alert alert-' + type + ' fadeInRight animated"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button><h4>' + title_message + '</h4><p>' + descr_message + '</p></div>');
+    $(".alert.alert-danger, .alert.alert-success").fadeIn("slow", function (event) {
+        var self = this;
+        setTimeout(function () {
+            $(self).removeClass('fadeInRight').addClass('fadeOutRight fadeOutRight').fadeOut("slow", function () {
+                $(self).remove();
+            });
+        }, 2000);
+    });
+};
+
 $(document).ready(function () {
     /* --- iCheck --- */
     $('.custom-checkbox, .custom-radio').iCheck({

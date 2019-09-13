@@ -31,8 +31,10 @@
         "yiisoft/yii2-imagine": "^2.1",
         "guzzlehttp/guzzle": ">=4.1.4 <7.0",
         "paulzi/yii2-nested-sets": "^1.1",
-        "2amigos/yii2-tinymce-widget" : "~1.1",
-        "nesbot/carbon": "^2.6"
+        "2amigos/yii2-tinymce-widget": "~1.1",
+        "nesbot/carbon": "^2.6",
+        "2amigos/yii2-multi-select-widget": "*",
+        "yii2tech/crontab": "^1.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",
