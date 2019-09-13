@@ -13,6 +13,8 @@ use backend\modules\blog\forms\TagForm;
 use backend\modules\blog\services\TagService;
 use backend\modules\blog\helpers\StatusHelper;
 use backend\modules\blog\forms\search\TagSearch;
+use backend\modules\blog\entities\TagLang;
+use backend\widgets\langwidget\LangWidget;
 
 class TagController extends Controller
 {
@@ -20,6 +22,7 @@ class TagController extends Controller
      * @var TagService
      */
     private $tag_service;
+    private $tag_lang;
 
     public function __construct($id, $module, TagService $service, $config = [])
     {
@@ -48,39 +51,64 @@ class TagController extends Controller
     public function actionCreate()
     {
         $form = new TagForm();
+        $langModel = new TagLang();
 
-        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
-            try {
-                $this->tag_service->create($form);
-                return $this->redirect(['index']);
-            } catch (\DomainException $e) {
-                Yii::$app->errorHandler->logException($e);
-                Yii::$app->session->setFlash('error', $e->getMessage());
+        $post = Yii::$app->request->post();
+
+        if(Yii::$app->request->isPost){
+            if ($form->load($post) && $form->validate() && LangWidget::validate($langModel,$post)) {
+                try {
+                    $tag = $this->tag_service->create($form);
+                    $langModel->saveLang($post['TagLang'],$tag->id);
+
+                    Yii::$app->session->setFlash('success', 'Тег создан');
+                    return $this->redirect(['update?id=' . $tag->id]);
+                } catch (\DomainException $e) {
+                    Yii::$app->errorHandler->logException($e);
+                    Yii::$app->session->setFlash('error', $e->getMessage());
+                }
+            }else{
+                $langModel->languageData = $post['TagLang'];
             }
         }
+
         return $this->render('create', [
             'model' => $form,
+            'langModel' => $langModel
         ]);
     }
 
     public function actionUpdate($id)
     {
-        $tag = $this->findModel($id);
-        $form = new TagForm($tag);
+        $form = new TagForm($this->findModel($id));
+        $langModel = new TagLang();
 
-        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
-            try {
-                $this->tag_service->edit($tag->id, $form);
+        foreach ($form->_tag['manyLang'] as $indexRow => $oneLang) {
+            $langAlias = $form->_tag['aliasLang'][$indexRow]->alias;
+            $langModel->languageData[$langAlias]['title'] = $oneLang->title;
+        }
+        $post = Yii::$app->request->post();
 
-                return $this->redirect(['index']);
-            } catch (\DomainException $e) {
-                Yii::$app->errorHandler->logException($e);
-                Yii::$app->session->setFlash('error', $e->getMessage());
+        if(Yii::$app->request->isPost){
+            if ($form->load($post) && $form->validate() && LangWidget::validate($langModel,$post)) {
+                try {
+                    $this->tag_service->edit($id, $form);
+                    $resultat = $langModel->updateLang($post['TagLang'],$id);
+
+                    Yii::$app->session->setFlash('success', 'Тег обновлен');
+                    return $this->redirect(['update?id=' . $id]);
+                } catch (\DomainException $e) {
+                    Yii::$app->errorHandler->logException($e);
+                    Yii::$app->session->setFlash('error', $e->getMessage());
+                }
+            }else{
+                $langModel->languageData = $post['CategoryLang'];
             }
         }
+
         return $this->render('update', [
             'model' => $form,
-            'tag' => $tag,
+            'langModel' => $langModel
         ]);
     }
 
@@ -111,7 +139,7 @@ class TagController extends Controller
 
     protected function findModel($id): Tag
     {
-        if (($model = Tag::findOne($id)) !== null) {
+        if (($model = Tag::find()->where(['id' => $id])->with(['manyLang','aliasLang'])->one()) !== null) {
             return $model;
         }
         throw new NotFoundHttpException('The requested page does not exist.');

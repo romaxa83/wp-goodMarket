@@ -25,7 +25,7 @@ class CategorySearch extends Model
      */
     public function search(array $params): ActiveDataProvider
     {
-        $query = Category::find()->andWhere(['>', 'depth', 0])->andWhere(['not',['id' => 1]]);
+        $query = Category::find()->andWhere(['>', 'depth', 0])->andWhere(['not',['id' => 1]])->with('oneLang');
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort' => [

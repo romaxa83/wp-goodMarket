@@ -10,7 +10,7 @@ use backend\widgets\langwidget\LangWidget;
 /* @var $category backend\modules\blog\entities\Category */
 /* @var $access backend\modules\user\useCase\Access */
 
-$this->title = $category->title;
+$this->title = $category->manyLang[0]->title;
 $this->params['breadcrumbs'][] = ['label' => 'Список категорий', 'url' => ['index']];
 foreach ($category->parents as $parent){
     if(!$parent->isRoot()){
@@ -48,10 +48,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format' => 'raw',
                                 'value' => function() use ($category){
                                     $html = '<ul>';
-                                    foreach(LangWidget::getActiveLanguageData(['id','alias']) as $oneLang) {
-                                        $langModel = $category->getLangRow($oneLang['id'])->one();
-                
-                                        $html .= '<li><b>' . $oneLang['alias'] . '</b> : ' . $langModel->title . '</li>'; 
+                                    foreach($category->manyLang as $keyLang => $oneLang) {
+                                        $html .= '<li><b>' . $category->aliasLang[$keyLang]->alias . '</b> : ' . $category->alias . '</li>'; 
                                     }               
                                     return $html . '</ul>';
                                 }

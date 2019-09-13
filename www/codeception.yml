@@ -6,6 +6,7 @@ include:
     - backend/modules/category
     - backend/modules/product
     - backend/modules/banners
+    - backend/modules/blog
 paths:
     log: console/runtime/logs
 settings:
