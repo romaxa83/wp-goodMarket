@@ -1,6 +1,7 @@
 <?php
 
 use backend\modules\order\helpers\TotalCostHelper;
+use backend\modules\order\models\OrderProduct;
 use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\grid\GridView;
@@ -130,7 +131,7 @@ $paid_list = ['1'=>'Оплачен', '0'=>'Не оплачен'];
                             'label' => 'Сумма заказа',
                             'format' => 'raw',
                             'value' => function($model){
-                                return TotalCostHelper::getTotalCost($model->id);
+                                return OrderProduct::getOrderCostStr($model->id);
                             },
                             'contentOptions' => HideColWidget::setConfig('total-cost',$user_settings['hide-col']),
                             'headerOptions' => HideColWidget::setConfig('total-cost',$user_settings['hide-col']),

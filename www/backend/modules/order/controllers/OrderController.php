@@ -154,7 +154,6 @@ class OrderController extends BaseController {
             $model->date = date('Y-m-d H:i:s');
             $model->status = 1;
             if ($model->save()) {
-                //$response = Curl::curl('POST', '/api/createOrder', ['order_id'=>$model->id]);
                 $model->sync = 1;
                 $model->save();
                 if (!$this->saveProducts($model->id)) {
@@ -166,7 +165,6 @@ class OrderController extends BaseController {
             }
             return $this->redirect([$data['save']]);
         }
-        $order_cost = 0;
         $dataProvider = $this->createProductTable();
         $userList = User::find()->select(['id', 'username'])->asArray()->all();
         $userList = ArrayHelper::map($userList, 'id', 'username');
@@ -174,7 +172,7 @@ class OrderController extends BaseController {
             'lang_list' => Lang::getSelect2List(),
             'dataProvider' => $dataProvider,
             'type' => 'edit',
-            'order_summ' => 0
+            'order_summ' => ''
         ];
         $payment_method_list = $this->settings->getAllList('payment', true);
         $delivery_list = $this->settings->getAllList('delivery', true);
@@ -182,7 +180,7 @@ class OrderController extends BaseController {
             'model' => $model,
             'guest' => $guest,
             'userList' => $userList,
-            'order_summ' => 0,
+            'order_summ' => '',
             'field_visible' => true,
             'payment_method_list' => $payment_method_list,
             'delivery_list' => $delivery_list,
@@ -250,13 +248,13 @@ class OrderController extends BaseController {
         }
         $userList = User::find()->select(['id', 'username'])->asArray()->all();
         $userList = ArrayHelper::map($userList, 'id', 'username');
-        $order_cost = $this->getOrderCost($id);
+        $order_summ = OrderProduct::getOrderCostStr($id);
         $dataProvider = $this->createProductTable(OrderProduct::getDataByOrderID($id));
         $order_products_params = [
             'lang_list' => Lang::getSelect2List(),
             'dataProvider' => $dataProvider,
             'type' => 'edit',
-            'order_summ' => $this->getOrderCost($id)
+            'order_summ' => $order_summ
         ];
         $payment_method_list = $this->settings->getAllList('payment', true);
         $delivery_list = $this->settings->getAllList('delivery', true);
@@ -268,7 +266,7 @@ class OrderController extends BaseController {
             'order_products_params' => $order_products_params,
             'payment_method_list' => $payment_method_list,
             'delivery_list' => $delivery_list,
-            'order_summ' => $this->getOrderCost($id)]);
+            'order_summ' => $order_summ]);
     }
 
     public function actionDelete($id) {
@@ -362,21 +360,6 @@ class OrderController extends BaseController {
             }
         }
         return $product;
-    }
-
-    private function getOrderCost($id = 0, $products = []) {
-        if ($id != 0) {
-            $products = OrderProduct::getDataByOrderID($id);
-        } else {
-            if (empty($products)) {
-                return 0;
-            }
-        }
-        for ($i = 0, $order_summ = 0; $i < count($products); $i++) {
-            $count = $products[$i]['count'];
-            $order_summ += $count * $products[$i]['price'];
-        }
-        return $order_summ;
     }
 
     private function getScenario($model_name, $post) {
@@ -599,11 +582,13 @@ class OrderController extends BaseController {
         if (Yii::$app->request->isAjax) {
             $data = Yii::$app->request->post('data');
             $dataProvider = $this->createProductTable($data);
-            $order_summ = $this->getOrderCost(0, $data);
-            return $this->renderPartial('products-table', [
+            $order_summ = OrderProduct::getOrderCostStr(0, $data);
+            $response['products_table'] = $this->renderPartial('products-table', [
                 'dataProvider' => $dataProvider,
                 'type' => 'edit',
                 'order_summ' => $order_summ]);
+            $response['order_summ'] = $order_summ;
+            return Json::encode($response);
         }
     }
 
@@ -949,7 +934,7 @@ class OrderController extends BaseController {
             'category_list' => ArrayHelper::getColumn($this->getCategories(), 'name'),
             'dataProvider' => $dataProvider,
             'type' => 'view',
-            'order_summ' => $this->getOrderCost($id)
+            'order_summ' => OrderProduct::getOrderCostStr($id)
         ];
         return $this->render('product-view', ['order_products_params' => $order_products_params]);
     }

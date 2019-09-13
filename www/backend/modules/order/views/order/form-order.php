@@ -160,7 +160,7 @@ if($model->status == 5){
             ?>
             <div class="form-group">
                 <label class="control-label">Сумма</label>
-                <input type="number" class="form-control" name="order_summ" value="<?=$order_summ?>" readonly>
+                <input type="text" class="form-control" name="order_summ" value="<?=$order_summ?>" readonly>
             </div>
         </div>
         <div class="tab-pane" id="tab_2">

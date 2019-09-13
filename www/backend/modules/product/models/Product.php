@@ -97,20 +97,8 @@ class Product extends ActiveRecord {
         return $this->hasMany(ProductLang::className(), ['product_id' => 'id']);
     }
 
-    // если в productLang price==null, то устанавливает price=trade_price товара
-    public static function correctProductPriceAll(array $product_list) {
-        foreach ($product_list as $k => $v) {
-            foreach ($v['productLang'] as $k1 => $v1) {
-                $price = $product_list[$k]['productLang'][$k1]['price'];
-                $product_list[$k]['productLang'][$k1]['price'] = (is_null($price) ? $product_list[$k]['trade_price'] : $price);
-            }
-        }
-        return $product_list;
-    }
-
     public static function getProductsByCategory($category_id) {
         $product_list = Product::find()->where(['publish' => 1, 'category_id' => $category_id])->all();
-        $product_list = Product::correctProductPriceAll($product_list);
         return $product_list;
     }
 

@@ -23,4 +23,32 @@ class OrderProduct extends \yii\db\ActiveRecord
         return ($query['stock_id'] == null) ? $query['import_id'] : $query['stock_id'];
     }
 
+    public static function getOrderCost($id = 0, $products = []) {
+        if ($id != 0) {
+            $products = OrderProduct::getDataByOrderID($id);
+        } else {
+            if (empty($products)) {
+                return 0;
+            }
+        }
+        $order_summ = [];
+        for ($i = 0; $i < count($products); $i++) {
+            if (isset($order_summ[$products[$i]['currency']])) {
+                $order_summ[$products[$i]['currency']] += ($products[$i]['count'] * $products[$i]['price']);
+            } else {
+                $order_summ[$products[$i]['currency']] = ($products[$i]['count'] * $products[$i]['price']);
+            }
+        }
+        return $order_summ;
+    }
+
+    public static function getOrderCostStr($id = 0, $products = []) {
+        $order_summ = self::getOrderCost($id, $products);
+        $summ_str = '';
+        foreach ($order_summ as $k => $v) {
+            $summ_str .= $v . ' ' . $k . '; ';
+        }
+        return  $summ_str;
+    }
+
 }

@@ -92,27 +92,16 @@ function clearForm(){
     count_products_input.val(1);
 }
 
-function getOrderSumm(){
-    let data = getAddedProducts();
-    let prices = [];
-    let summ = 0;
-    data = Object.values(data);
-    prices = data.map(function(value,index) {
-        return value['price'] * value['count'];
-    });
-    summ = prices.reduce((a, b) => a + b, 0);
-    return summ;
-}
-
 function reloadProductsTable(data){
     clearForm();
     $.ajax({
         type: 'POST',
         url:  host + '/admin/order/order/ajax-reload-products-table',
         data: data,
-        success: function (html) {
-            $('.products-table').html(html);
-            $('input[name="order_summ"]').val(parseFloat(getOrderSumm()).toFixed(4));
+        success: function (response) {
+            response = JSON.parse(response);
+            $('.products-table').html(response.products_table);
+            $('input[name="order_summ"]').val(response.order_summ);
         }
     });
 }
@@ -177,7 +166,6 @@ function updateProductsData(one_product, all_products){
         dataType:'json',
         data:{'order_id':order_id, 'product':one_product, 'product_list':all_products},
         success: function(data) {
-            console.log('Данные что вернул ajax-set-kit-sale: ', data);
             setProducts(data);
             reloadProductsTable({data});
         }
@@ -186,7 +174,6 @@ function updateProductsData(one_product, all_products){
 
 function setProducts(data){
     manage_table.parent().find('input[name="products_data"]').val(JSON.stringify(data));
-    console.log('Данные в input[name="products_data"]: ', getAddedProducts());
 }
 
 function getProductPrice(lang_id, category_id, product_id, vproduct_id){
@@ -197,7 +184,6 @@ function getProductPrice(lang_id, category_id, product_id, vproduct_id){
     if(Object.keys(products).length == 0){
         products='empty';
     }
-    console.log('getProductPrice(): ', {products:products, lang_id:lang_id, category_id:category_id, product_id:product_id, vproduct_id:vproduct_id});
     $.ajax({
         type: 'POST',
         url:  host + '/admin/order/order/ajax-get-product-price?order_id='+order_id,
@@ -299,7 +285,6 @@ $('.save-product').on('click', function() {
             dataType:'json',
             success: function (data){
                 if(data!=false){
-                    console.log('Данные что вернул ajax-save-product: ', data);
                     updateProductsData(new_data, data);
                 }
             }
@@ -309,9 +294,6 @@ $('.save-product').on('click', function() {
             for (var i = 0; i < Object.keys(data).length; i++) {
                 if(data[i].product_id==new_data.product_id && data[i].vproduct_id==new_data.vproduct_id){//если такой товар есть в заказе
                         data[i]=new_data;
-                        console.log('data: ',data);
-                        console.log('new_data: ',new_data);
-                        // return false;
                         updateProductsData(new_data, data);
                         return;
                 }
@@ -354,11 +336,9 @@ function update(data){
     reloadProductsTable({data});
 }
 
-
 $('body').on('click', '.delete-order-product',function(){
     var index = $(this).data('index').split('-');
     var products = getAddedProducts();
-    var product = _.find(products, {'product_id': index[0], 'vproduct_id': index[1]});
     var params = getUrlParams();
     var order_id = params.id;
     var products_count = products.length;
@@ -388,7 +368,6 @@ $('body').on('click', '.delete-order-product',function(){
                     product = _.remove(products, function(n) {
                         return n['product_id'] == index[0] && n['vproduct_id'] == index[1];
                     });
-                    console.log('После удаления осталось в products : ', products);
                     updateProductsData(product, products);
                 }
             }
@@ -397,7 +376,6 @@ $('body').on('click', '.delete-order-product',function(){
         product = _.remove(products, function(n) {
             return n['product_id'] == index[0] && n['vproduct_id'] == index[1];
         });
-        console.log('После удаления осталось в products : ', products);
         updateProductsData(product, products);
     }
 });
@@ -420,7 +398,6 @@ $('body').on('click', '.show-order-product',function(e){
         }
     });
 });
-
 
 $('.attribut-order').on('change',function(){
     var value = $(this).val();
