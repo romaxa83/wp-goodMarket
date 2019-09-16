@@ -61,17 +61,14 @@ class CategoryController extends BaseController {
         if (($post = Yii::$app->request->post()) && $model->load($post)) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
-                if ($model->save() && CategoryLang::saveAll($model->id, $post['Category']['Language']) && SeoWidget::save($model->id, 'category', $post['SEO']) > 0) {
+                if ($model->save() && CategoryLang::saveAll($model->id, $post['Category']) && SeoWidget::save($model->id, 'category', $post['SEO']) > 0) {
                     $transaction->commit();
                     Yii::$app->session->setFlash('success', 'Пункт успешно добавлен');
                     return $this->redirect([$post['save']]);
                 }
-            } catch (\Exception $e) {
-                $transaction->rollBack();
-                throw $e;
             } catch (\Throwable $e) {
+                Yii::$app->session->setFlash('error', $e->getMessage());
                 $transaction->rollBack();
-                throw $e;
             }
         }
         return $this->render('form-category', ['model' => $model, 'categoryList' => Category::getSelect2List()]);
@@ -82,28 +79,27 @@ class CategoryController extends BaseController {
         $model = Category::find()->where(['id' => $id])->with('categoryLang')->with('categoryLang.lang')->one();
         $model->scenario = Category::SAVED_CATEGORY;
 
-        $data['Language'] = [];
+        $data = [];
         foreach ($model->categoryLang as $v) {
             foreach ($v as $k1 => $v1) {
-                $data['Language'][$v->lang->alias][$k1] = $v1;
+                $data[$v->lang->alias][$k1] = $v1;
             }
         }
         $model->languageData = $data;
 
         if (($post = Yii::$app->request->post()) && $model->load($post)){
+//            print_r($post);
+//            exit();
             $transaction = Yii::$app->db->beginTransaction();
             try {
-                if ($model->save() && CategoryLang::saveAll($model->id, $post['Category']['Language']) && SeoWidget::save($id, 'category', $post['SEO']) > 0) {
+                if ($model->save() && CategoryLang::saveAll($model->id, $post['Category']) && SeoWidget::save($id, 'category', $post['SEO']) > 0) {
                     $transaction->commit();
                     Yii::$app->session->setFlash('success', 'Категория успешно отредактирована');
-                    $this->redirect(['/category/category']);
+                    return $this->redirect(['/category/category']);
                 }
-            } catch(\Exception $e) {
-                $transaction->rollBack();
-                throw $e;
             } catch(\Throwable $e) {
+                Yii::$app->session->setFlash('error', $e->getMessage());
                 $transaction->rollBack();
-                throw $e;
             }
         }
         return $this->render('form-category', [
@@ -120,12 +116,9 @@ class CategoryController extends BaseController {
             SeoMeta::deleteAll(['page_id' => $id, 'alias' => 'category']);
             CategoryLang::deleteAll(['category_id' => $id]);
             $transaction->commit();
-        } catch (\Exception $e) {
-            $transaction->rollBack();
-            throw $e;
         } catch (\Throwable $e) {
+            Yii::$app->session->setFlash('error', $e->getMessage());
             $transaction->rollBack();
-            throw $e;
         }
         Yii::$app->session->setFlash('success', 'Пункт успешно удален');
         $this->redirect(['/category/category']);

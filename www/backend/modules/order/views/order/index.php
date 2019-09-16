@@ -96,7 +96,7 @@ $paid_list = ['1'=>'Оплачен', '0'=>'Не оплачен'];
                                     if($model->status != 5){
                                         unset($status_list[5]);
                                     }
-                                    return Html::dropDownList('statusOrder',$model->status,$status_list,['class'=>'form-control attribut-order attribut-status','data-field' => 'status']);
+                                    return Html::dropDownList('statusOrder',$model->status,$status_list,['class'=>'form-control attribut-order attribut-status', 'data-field' => 'status', 'disabled' => ($model->status == 3) ? 'disabled' : false]);
                                 }
                             },
                             'contentOptions' => HideColWidget::setConfig('status',$user_settings['hide-col']),
@@ -159,7 +159,12 @@ $paid_list = ['1'=>'Оплачен', '0'=>'Не оплачен'];
                                     if($model->payment_method != 0){
                                         unset($payment_list[0]);
                                     }
-                                    return  Html::dropDownList('paymentMethodOrder',$model->payment_method,$payment_list,['class'=>'form-control attribut-order','data-field' => 'payment_method']) . '<br/>'. Html::dropDownList('paymentMethodOrder',$model->paid,$paid_list,['class'=>'form-control attribut-order','data-field' => 'paid']);
+                                    return  Html::dropDownList('paymentMethodOrder',$model->payment_method, $payment_list, [
+                                        'class'=>'form-control attribut-order',
+                                        'data-field' => 'payment_method', 'disabled' => ($model->status != 1) ? 'disabled' : false])
+                                        . '<br/>'. Html::dropDownList('paymentMethodOrder', $model->paid, $paid_list, [
+                                        'class'=>'form-control attribut-order',
+                                        'data-field' => 'paid', 'disabled' => ($model->status != 1) ? 'disabled' : false]);
                                 }
 
                             },

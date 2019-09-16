@@ -86,7 +86,7 @@ class OrderSearch extends Order
         }
         return $dataProvider;
     }
-    
+
     public function getStatusHistory(){
         return HistoryStatusOrder::find()->where(['order_id' => $this->id])->asArray()->all();
     }

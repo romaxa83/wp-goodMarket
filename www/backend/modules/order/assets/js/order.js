@@ -400,6 +400,7 @@ $('body').on('click', '.show-order-product',function(e){
 });
 
 $('.attribut-order').on('change',function(){
+    var attributOrder = $(this);
     var value = $(this).val();
     var orderId = $(this).closest('tr').attr('data-key');
     var field = $(this).attr('data-field');
@@ -412,6 +413,17 @@ $('.attribut-order').on('change',function(){
         },
         complete : function(){
             $('body').fadeTo( "slow", 1 );
+            if (field == 'status' && value != 1) {
+                let payment = attributOrder.closest('tr').find('td[data-attr="payment"]');
+                $(payment).children('select').each(function () {
+                    $(this).attr('disabled', 'disabled');
+                });
+            } else if (field == 'status' && value == 1) {
+                let payment = attributOrder.closest('tr').find('td[data-attr="payment"]');
+                $(payment).children('select').each(function () {
+                    $(this).removeAttr('disabled');
+                });
+            }
         }
     });
 });

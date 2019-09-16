@@ -189,6 +189,11 @@ class OrderController extends BaseController {
 
     public function actionEdit($id) {
         $model = Order::findOne($id);
+        if ($model->status != Order::STATUS_NEW) {
+            Yii::$app->session->setFlash('warning', 'Только новый заказ можно редактировать');
+            return $this->redirect(['/order/order']);
+        }
+
         $guest = Guest::findOne($model->guest_id);
         if (Yii::$app->request->post('save')) {
             $post = Yii::$app->request->post();
@@ -287,7 +292,7 @@ class OrderController extends BaseController {
             $transaction->rollBack();
             Yii::$app->session->setFlash('error', $e->getMessage());
         }
-        $this->redirect(['/order/order']);
+        return $this->redirect(['/order/order']);
     }
 
     private function getStockId($model, $id) {

@@ -204,7 +204,7 @@ Modal::end();
 
         <div class="tab-pane" id="tab_6">
             <?php if (isset($product->productLang[0]->name)): ?>
-                <div class="mt-15 mb-15"><?php echo $product->categoryLang->name . ' > ' . $product->productLang[0]->name; ?></div>
+                <div class="mt-15 mb-15"><?php echo $product->categoryLang[0]->name . ' > ' . $product->productLang[0]->name; ?></div>
             <?php endif; ?>
             <?php
             echo GridView::widget([
