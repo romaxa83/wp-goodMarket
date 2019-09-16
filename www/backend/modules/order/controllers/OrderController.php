@@ -162,12 +162,13 @@ class OrderController extends BaseController {
                 Yii::$app->session->setFlash('success', 'Заказ усешно добавлен');
             } else {
                 $this->deleteOrder($model->id);
+                Yii::$app->session->setFlash('error', ArrayHelper::getColumn($model->errors, 0, false));
+                return $this->redirect(['/order/order/create']);
             }
             return $this->redirect([$data['save']]);
         }
         $dataProvider = $this->createProductTable();
-        $userList = User::find()->select(['id', 'username'])->asArray()->all();
-        $userList = ArrayHelper::map($userList, 'id', 'username');
+        $userList = ArrayHelper::map(User::find()->select(['id', 'username'])->asArray()->all(), 'id', 'username');
         $order_products_params = [
             'lang_list' => Lang::getSelect2List(),
             'dataProvider' => $dataProvider,
@@ -233,7 +234,7 @@ class OrderController extends BaseController {
             if ($user_status_id == 2) {
                 if ($guest->load(Yii::$app->request->post())) {
                     if (!$guest_id = $this->saveGuest($guest)) {
-                        return $this->redirect(['/order/order/create']);
+                        return $this->redirect(['/order/order/edit?id=' . $id]);
                     }
                 }
             }
@@ -249,10 +250,12 @@ class OrderController extends BaseController {
                 $model->sync = 1;
                 Yii::$app->session->setFlash('success', 'Заказ усешно отредактирован');
                 return $this->redirect([$data['save']]);
+            } else {
+                Yii::$app->session->setFlash('error', ArrayHelper::getColumn($model->errors, 0, false));
+                return $this->redirect(['/order/order/edit?id=' . $id]);
             }
         }
-        $userList = User::find()->select(['id', 'username'])->asArray()->all();
-        $userList = ArrayHelper::map($userList, 'id', 'username');
+        $userList = ArrayHelper::map(User::find()->select(['id', 'username'])->asArray()->all(), 'id', 'username');
         $order_summ = OrderProduct::getOrderCostStr($id);
         $dataProvider = $this->createProductTable(OrderProduct::getDataByOrderID($id));
         $order_products_params = [
@@ -405,7 +408,8 @@ class OrderController extends BaseController {
             $result = $guest->save();
         }
         if ($result == false) {
-            Yii::$app->session->setFlash('error', 'Не удалось сохранить гостя');
+            Yii::$app->session->setFlash('error', implode("<br />" , ArrayHelper::getColumn($guest->errors,0,false)));
+            return false;
         }
         return $guest->id;
     }
@@ -532,9 +536,6 @@ class OrderController extends BaseController {
     private function createProductTable($data = []) {
         $order_products = [];
         if (!empty($data)) {
-//            print_r($data);
-//            exit();
-
             $products = Product::find()->select(['id', 'amount', 'category_id'])->where(['in', 'id', ArrayHelper::getColumn($data, 'product_id')])
                 ->with([
                     'productLang' => function ($query) {
@@ -552,8 +553,6 @@ class OrderController extends BaseController {
             $products = VProduct::indexBy($products);
             $products = VProductLang::indexLangBy($products);
             $default_lang_id = Lang::getDefaultLangID();
-//            print_r($products);
-//            exit();
             foreach ($data as $k => $v) {
                     $pid = $v['product_id'];
                 if (isset($data[$k]['vproduct_id']) && $data[$k]['vproduct_id'] != 0) {
@@ -570,8 +569,6 @@ class OrderController extends BaseController {
                 $order_products[$k]['product'] = isset($products[$pid]['productLang'][$data[$k]['lang_id']]['name']) ? $products[$pid]['productLang'][$data[$k]['lang_id']]['name'] : $products[$pid]['productLang'][$default_lang_id]['name'];
                 $order_products[$k]['count'] = $data[$k]['count'];
             }
-//            print_r($order_products);
-//            exit();
         }
         $dataProvider = new ArrayDataProvider([
             'allModels' => $order_products,
@@ -939,9 +936,13 @@ class OrderController extends BaseController {
             'category_list' => ArrayHelper::getColumn($this->getCategories(), 'name'),
             'dataProvider' => $dataProvider,
             'type' => 'view',
-            'order_summ' => OrderProduct::getOrderCostStr($id)
+            'order_summ' => OrderProduct::getOrderCostStr($id),
+            'lang_list' => Lang::getSelect2List(),
         ];
-        return $this->render('product-view', ['order_products_params' => $order_products_params]);
+        return $this->render('product-view', [
+            'order_products_params' => $order_products_params,
+            'userList' => ArrayHelper::map(User::find()->select(['id', 'username'])->asArray()->all(), 'id', 'username')
+        ]);
     }
 
     public function actionValidation($id = 0) {
@@ -977,9 +978,6 @@ class OrderController extends BaseController {
                 $product = ProductLang::indexLangBy($product, 'lang_id');
                 $product = VProduct::indexBy($product);
                 $product = VProductLang::indexLangBy($product);
-//                print_r($post);
-//                print_r($product);
-//                exit();
 
                 if ($post['vproduct_id'] > 0) {
                     $product_price = isset($product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][$post['lang_id']]['price'])
@@ -1036,7 +1034,7 @@ class OrderController extends BaseController {
                 }
                 $order_product->order_id = $order_id;
                 if ($order_product->save()) {
-                    $products_db = OrderProduct::find()->select('product_id, vproduct_id, lang_id, count, price, product_price, currency')->asArray()->all();
+                    $products_db = OrderProduct::find()->select('product_id, vproduct_id, lang_id, count, price, product_price, currency')->where(['order_id' => $order_id])->asArray()->all();
                     $products = array_map(function($arr1, $arr2) {
                         return array_merge($arr1, $arr2);
                     }, $products, $products_db);

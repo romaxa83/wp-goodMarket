@@ -271,7 +271,7 @@ $('.save-product').on('click', function() {
         product_id: product_select.attr('data-selected_id'),
         lang_id: lang_select.attr('data-selected_id'),
         vproduct_id: v_product_select.attr('data-selected_id'),
-        category_id:category_select.attr('data-selected_id'),
+        category_id: category_select.attr('data-selected_id'),
         count: manage_table.find('tbody tr input').val(),
         product_price: manage_table.find('tbody tr').attr('data-product_price'),
         price: manage_table.find('tbody tr').attr('data-price'),

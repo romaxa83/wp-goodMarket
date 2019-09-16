@@ -88,8 +88,6 @@ class CategoryController extends BaseController {
         $model->languageData = $data;
 
         if (($post = Yii::$app->request->post()) && $model->load($post)){
-//            print_r($post);
-//            exit();
             $transaction = Yii::$app->db->beginTransaction();
             try {
                 if ($model->save() && CategoryLang::saveAll($model->id, $post['Category']) && SeoWidget::save($id, 'category', $post['SEO']) > 0) {

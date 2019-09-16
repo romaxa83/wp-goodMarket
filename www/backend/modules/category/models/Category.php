@@ -95,4 +95,10 @@ class Category extends \yii\db\ActiveRecord {
         return $categoryList;
     }
 
+    public function save($runValidation = true, $attributeNames = null) {
+        if (!parent::save($runValidation, $attributeNames)) {
+            throw new \Exception(implode("<br />" , ArrayHelper::getColumn ($this->errors, 0, false )));
+        }
+        return true;
+    }
 }
