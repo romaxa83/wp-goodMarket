@@ -141,7 +141,7 @@ $paid_list = ['1'=>'Оплачен', '0'=>'Не оплачен'];
                             'attribute' => 'delivary',
                             'format' => 'raw',
                             'value'=>function($model) use ($delivery_list){
-                                return $delivery_list[$model->delivary];
+                                return $delivery_list[intval($model->delivary)];
                             },
                             'contentOptions' => HideColWidget::setConfig('delivery',$user_settings['hide-col']),
                             'headerOptions' => HideColWidget::setConfig('delivery',$user_settings['hide-col']),

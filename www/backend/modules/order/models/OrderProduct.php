@@ -45,10 +45,13 @@ class OrderProduct extends \yii\db\ActiveRecord
     public static function getOrderCostStr($id = 0, $products = []) {
         $order_summ = self::getOrderCost($id, $products);
         $summ_str = '';
+        if (empty($order_summ)) {
+            return $summ_str;
+        }
         foreach ($order_summ as $k => $v) {
             $summ_str .= $v . ' ' . $k . '; ';
         }
-        return  $summ_str;
+        return $summ_str;
     }
 
 }

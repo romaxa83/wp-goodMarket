@@ -243,6 +243,11 @@ class User extends ActiveRecord implements IdentityInterface {
         return array_key_exists($entity, JSON::decode($this->settings));
     }
 
+    public function getFullName()
+    {
+        return ucfirst($this->first_name) .' '.ucfirst($this->last_name);
+    }
+
     public function getUsername()
     {
         return ucfirst($this->username);

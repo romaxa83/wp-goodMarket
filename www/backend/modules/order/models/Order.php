@@ -38,7 +38,7 @@ class Order extends ActiveRecord {
     const FRONT_ORDER = 'front_order';
 
     public $fullname;
-    public $user_id;
+//    public $user_id;
     public $user_status;
     public $order_status;
     public $street;
