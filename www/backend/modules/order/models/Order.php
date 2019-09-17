@@ -38,7 +38,6 @@ class Order extends ActiveRecord {
     const FRONT_ORDER = 'front_order';
 
     public $fullname;
-//    public $user_id;
     public $user_status;
     public $order_status;
     public $street;
@@ -51,6 +50,9 @@ class Order extends ActiveRecord {
 
     public function rules() {
         return [
+            [['user_id', 'guest_id', 'status', 'delivary', 'payment_method', 'paid', 'sync'], 'integer'],
+            [['comment', 'phone'], 'string'],
+            [['city', 'address'], 'string', 'max' => 100],
             [['city', 'street', 'home'], 'required', 'on' => self::FRONT_ORDER],
             [['city', 'street', 'home', 'user_id'], 'required', 'on' => self::DELIVERY_COURIER_USER],
             [['city', 'street', 'home'], 'required', 'on' => self::DELIVERY_COURIER_GUEST],

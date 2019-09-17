@@ -104,7 +104,6 @@ class OrderController extends BaseController {
         return parent::beforeAction($action);
     }
 
-
     public function actionIndex() {
         $searchModel = new OrderSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
@@ -156,7 +155,7 @@ class OrderController extends BaseController {
             if ($model->save()) {
                 $model->sync = 1;
                 $model->save();
-                if (!$this->saveProducts($model->id)) {
+                if (!OrderProduct::saveProducts($model->id, $data['products_data'])) {
                     return $this->redirect(['/order/order/create']);
                 }
                 Yii::$app->session->setFlash('success', 'Заказ усешно добавлен');
@@ -412,27 +411,6 @@ class OrderController extends BaseController {
             return false;
         }
         return $guest->id;
-    }
-
-    private function saveProducts($order_id) {
-        $order_products_data = Json::decode(Yii::$app->request->post('products_data'));
-        if (empty($order_products_data) && (!OrderProduct::find()->where(['order_id' => $order_id])->exists())) {
-            Yii::$app->session->setFlash('error', 'В заказе отсутствуют товары');
-            return false;
-        }
-        for ($i = 0; $i < count($order_products_data); $i++) {
-            $product_id = $order_products_data[$i]['product_id'];
-            $vproduct_id = $order_products_data[$i]['vproduct_id'];
-            $order_product = new OrderProduct();
-            unset($order_products_data[$i]['category_id']);
-            foreach ($order_products_data[$i] as $key => $value) {
-                $order_product->$key = $value;
-            }
-            $order_product->order_id = $order_id;
-            if (!$order_product->save())
-                return false;
-        }
-        return true;
     }
 
     private function saveOrder($model, $data) {
@@ -1017,24 +995,27 @@ class OrderController extends BaseController {
     public function actionAjaxSaveProduct($order_id) {
         if (Yii::$app->request->isAjax) {
             if ($post = Yii::$app->request->post()) {
-                $new = $post['new_prod'];
+                $new_prod = $post['new_prod'];
                 $products = Json::decode($post['products']);
-                $prod = $new;
-                $order_product = OrderProduct::find()->where(['order_id' => $order_id, 'product_id' => $prod['product_id'], 'vproduct_id' => (isset($prod['vproduct_id'])) ? $prod['vproduct_id'] : null])->one();
+                $order_product = OrderProduct::find()->where([
+                    'order_id' => $order_id,
+                    'product_id' => $new_prod['product_id'],
+                    'vproduct_id' => (isset($new_prod['vproduct_id'])) ? $new_prod['vproduct_id'] : null])->one();
                 if (is_null($order_product)) {
                     $order_product = new OrderProduct();
                     $action = 'createOrderProduct';
-                    array_push($products, $prod);
+                    array_push($products, $new_prod);
                 } else {
                     $action = 'updateOrderProduct';
                 }
-                unset($prod['category_id']);
-                foreach ($prod as $key => $value) {
+                unset($new_prod['category_id']);
+                foreach ($new_prod as $key => $value) {
                     $order_product->$key = $value;
                 }
                 $order_product->order_id = $order_id;
                 if ($order_product->save()) {
-                    $products_db = OrderProduct::find()->select('product_id, vproduct_id, lang_id, count, price, product_price, currency')->where(['order_id' => $order_id])->asArray()->all();
+                    $products_db = OrderProduct::find()->select('product_id, vproduct_id, lang_id, count, price, product_price, currency')
+                        ->where(['order_id' => $order_id])->asArray()->all();
                     $products = array_map(function($arr1, $arr2) {
                         return array_merge($arr1, $arr2);
                     }, $products, $products_db);
