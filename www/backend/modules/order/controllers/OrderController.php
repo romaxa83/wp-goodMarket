@@ -457,20 +457,23 @@ class OrderController extends BaseController {
     // В админке возвращает данные для select2 (категории) на основе выбранного языка
     public function actionAjaxGetCategories($lang_id) {
         if (Yii::$app->request->isAjax) {
-            $category_list = Category::find()->select(['id'])->with(['categoryLang' => function ($query) use ($lang_id) {
+            $category = Category::find()->select(['id'])->with(['categoryLang' => function ($query) use ($lang_id) {
                 $query->where(['lang_id' => $lang_id]);
             }])->where(['publish' => 1])->asArray()->all();
 
-            foreach ($category_list as $k => $v) {
+            foreach ($category as $k => $v) {
                 if (empty($v['categoryLang'])) {
-                    unset($category_list[$k]);
+                    unset($category[$k]);
                 }
             }
-            $category_list = ArrayHelper::getColumn($category_list, function ($element) {
+            $category_list[] = ['id' => 0, 'text' => 'Без категории'];
+            $category = ArrayHelper::getColumn($category, function ($element) {
                 if (isset($element['categoryLang'][0])) {
                     return ['id' => $element['id'], 'text' => $element['categoryLang'][0]['name']];
                 }
             });
+            $category = array_filter($category);
+            $category_list = array_merge($category_list, $category);
 
             if (!empty($category_list)) {
                 return Json::encode($category_list);
@@ -543,8 +546,12 @@ class OrderController extends BaseController {
                     $order_products[$k]['vproduct_id'] = 0;
                 }
                 $order_products[$k]['product_id'] = $data[$k]['product_id'];
-                $order_products[$k]['category'] = isset($products[$pid]['categoryLang'][$data[$k]['lang_id']]['name']) ? $products[$pid]['categoryLang'][$data[$k]['lang_id']]['name'] : $products[$pid]['categoryLang'][$default_lang_id]['name'];
-                $order_products[$k]['product'] = isset($products[$pid]['productLang'][$data[$k]['lang_id']]['name']) ? $products[$pid]['productLang'][$data[$k]['lang_id']]['name'] : $products[$pid]['productLang'][$default_lang_id]['name'];
+                $order_products[$k]['category'] = $products[$pid]['category_id'] > 0 ? (isset($products[$pid]['categoryLang'][$data[$k]['lang_id']]['name'])
+                    ? $products[$pid]['categoryLang'][$data[$k]['lang_id']]['name']
+                    : $products[$pid]['categoryLang'][$default_lang_id]['name']) : 'Без категории';
+                $order_products[$k]['product'] = isset($products[$pid]['productLang'][$data[$k]['lang_id']]['name'])
+                    ? $products[$pid]['productLang'][$data[$k]['lang_id']]['name']
+                    : $products[$pid]['productLang'][$default_lang_id]['name'];
                 $order_products[$k]['count'] = $data[$k]['count'];
             }
         }
