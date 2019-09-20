@@ -24,6 +24,7 @@ return [
                 'backend\modules\product\migrations',
                 'backend\modules\blog\migrations',
                 'backend\modules\banners\migrations',
+                'backend\modules\reviews\migrations',
                 'backend\modules\import\migrations'
             ],
         ],
