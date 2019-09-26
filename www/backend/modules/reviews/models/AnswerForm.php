@@ -4,6 +4,7 @@ namespace backend\modules\reviews\models;
 
 use Yii;
 use yii\base\Model;
+
 /**
  * This is the model class for table "settings".
  *
@@ -11,16 +12,14 @@ use yii\base\Model;
  * @property string $name
  * @property string $body
  */
-class AnswerForm extends Model
-{
+class AnswerForm extends Model {
     public $text;
 
-    public function rules()
-    {
-    return [
+    public function rules() {
+        return [
             [['text'], 'string'],
             [['text'], 'required', 'message' => 'Запоните поле'],
         ];
     }
-    
+
 }

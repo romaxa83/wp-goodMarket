@@ -22,6 +22,8 @@ class m180707_140811_create_reviews_table extends Migration
             'rating' => $this->float(),
             'text' => $this->text(),
             'publication' => $this->integer(),
+            'answer_id' => $this->integer(11),
+            'answered' => $this->integer(11)
         ]);
     }
 

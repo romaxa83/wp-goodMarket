@@ -5,6 +5,7 @@ namespace backend\modules\reviews\models;
 use Yii;
 use yii\base\Model;
 use yii\helpers\Url;
+
 /**
  * This is the model class for table "settings".
  *
@@ -12,19 +13,15 @@ use yii\helpers\Url;
  * @property string $name
  * @property string $body
  */
-class ReviewForm extends Model
-{
+class ReviewForm extends Model {
     public $text;
     public $rating;
-    public $verifyCode;
-    
-    public function rules()
-    {
-    return [
+
+    public function rules() {
+        return [
             [['text'], 'string'],
-            [['text','verifyCode'], 'required', 'message' => 'Запоните поле'],
-            ['verifyCode', 'captcha']
+            [['text'], 'required', 'message' => 'Запоните поле'],
         ];
     }
-    
+
 }

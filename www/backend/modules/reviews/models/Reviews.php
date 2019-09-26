@@ -28,6 +28,15 @@ class Reviews extends \yii\db\ActiveRecord {
         return 'reviews';
     }
 
+    public function rules() {
+        return [
+            [['product_id', 'user_id', 'date', 'text', 'answer_id'], 'required'],
+            [['product_id', 'user_id', 'answer_id', 'rating', 'publication'], 'number'],
+            [['text'], 'string'],
+            [['date'], 'datetime', 'format' => 'php:Y-m-d H:i:s'],
+        ];
+    }
+
     public static function getBackReviews() {
         $request = self::find()
                 ->select(['concat(user.first_name," ",user.last_name) as full_name', 'product.*','reviews.*'])

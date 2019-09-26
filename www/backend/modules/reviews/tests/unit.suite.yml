@@ -1,0 +1,8 @@
+suite_namespace: backend\modules\reviews\tests\unit
+actor: UnitTester
+bootstrap: false
+modules:
+  enabled:
+    - Asserts
+    - Yii2:
+        configFile: '../config/test-local.php'
