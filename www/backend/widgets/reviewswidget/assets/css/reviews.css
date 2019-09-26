@@ -1,0 +1,38 @@
+.row-description .row-reviews .item.review-answer{
+    margin-left: 20px;
+    width: 96.4%;
+}
+.row-description .wrap-border, .row-description .row-reviews .item {
+    width: 100%;
+}
+.row-description .wrap-border.wrap-reviews .rating .fa {
+    font-size: 19px;
+    width: 18px;
+    line-height: 20px;
+    height: 25px;
+}
+.row-description .wrap-border.wrap-reviews .input-group .btn {
+    margin-left: auto;
+    padding: 0;
+    font-size: 12px;
+}
+.help-block .help-block-error p{
+    font-size: 12px;
+}
+.theme-krajee-svg .empty-stars .krajee-icon-star{
+    width:12px;
+    height:12px;
+}
+
+.theme-krajee-svg .filled-stars .krajee-icon-star{
+    width:12px;
+    height:12px;
+}
+.col-reviews .rating-container .filled-stars {
+    color: #85d746;
+    -webkit-text-stroke: transparent;
+    text-shadow: none;
+}
+.col-reviews .rating-container .star {
+    margin: 0 1.5px;
+}

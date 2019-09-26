@@ -32,6 +32,9 @@ return [
         'seo' => [
             'class' => 'backend\modules\seo\Seo',
         ],
+        'reviews' => [
+            'class' => 'backend\modules\reviews\Reviews',
+        ],
         'filemanager' => [
             'class' => 'backend\modules\filemanager\FileManager',
             'rename' => true,

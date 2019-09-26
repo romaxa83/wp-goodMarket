@@ -34,7 +34,8 @@
         "2amigos/yii2-tinymce-widget": "~1.1",
         "nesbot/carbon": "^2.6",
         "2amigos/yii2-multi-select-widget": "*",
-        "yii2tech/crontab": "^1.0"
+        "yii2tech/crontab": "^1.0",
+        "jino5577/yii2-date-range-picker": "*"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",
