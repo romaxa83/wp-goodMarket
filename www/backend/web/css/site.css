@@ -215,3 +215,11 @@ table.table-bordered {
     cursor: not-allowed;
 }
 /* --- /iCheck ---*/
+
+.noty_layout{
+    position: absolute;
+    right: 0;
+    top: 6%;
+    min-width: 15%;
+    z-index: 1031;
+}

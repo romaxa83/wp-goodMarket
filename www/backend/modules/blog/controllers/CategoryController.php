@@ -14,17 +14,16 @@ use backend\modules\blog\forms\CategoryForm;
 use backend\modules\blog\helpers\StatusHelper;
 use backend\modules\blog\services\CategoryService;
 use backend\modules\blog\forms\search\CategorySearch;
+use backend\widgets\langwidget\LangWidget;
 
 class CategoryController extends Controller
 {
     private $category_service;
-    private $category_lang;
 
     public function __construct($id, Module $module,CategoryService $category_service, array $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->category_service = $category_service;
-        $this->category_lang = new CategoryLang();
     }
  
     public function actionIndex()
@@ -48,60 +47,64 @@ class CategoryController extends Controller
     public function actionCreate()
     {
         $form = new CategoryForm();
+        $langModel = new CategoryLang();
+        
         $post = Yii::$app->request->post();
 
-        if($form->load($post) && $form->validate()){
-            try {
-                $form->title = $post['CategoryForm']['Language']['ru'];
-                $category = $this->category_service->create($form);
-                $resultat = $this->category_lang->saveLang($post['CategoryForm']['Language'],$category->id);
-
-                return $this->redirect(['update?id='.$category->id]);
-            } catch (\DomainException $e) {
-                Yii::$app->errorHandler->logException($e);
-                Yii::$app->session->setFlash('error', $e->getMessage());
+        if(Yii::$app->request->isPost){
+            if($form->load($post) && $form->validate() && LangWidget::validate($langModel,$post)){
+                try {
+                    $category = $this->category_service->create($form);
+                    $langModel->saveLang($post['CategoryLang'],$category->id);
+    
+                    Yii::$app->session->setFlash('success', 'Категория создана');
+                    return $this->redirect(['update?id=' . $category->id]);
+                } catch (\DomainException $e) {
+                    Yii::$app->errorHandler->logException($e);
+                    Yii::$app->session->setFlash('error', $e->getMessage());
+                }
+            }else{
+                $langModel->languageData = $post['CategoryLang'];
             }
         }
+
         return $this->render('create', [
             'model' => $form,
+            'langModel' => $langModel
         ]);
     }
 
     public function actionUpdate($id)
     {
-        //get base model
-        $category = $this->findModel($id);
-        //get by related model with lang
-        $relatedRecord = $category->getRelatedRecords();
-        $form = new CategoryForm($category);
-        //cycle for assembly languageData
-        $data['Language'] = [];
-        foreach ($relatedRecord as $oneLangModel) {
-            foreach ($oneLangModel as $oneLang) {
-                //get by related alias lang
-                $langSetting = $oneLang->getLang()->select('alias')->one();
-                $data['Language'][$langSetting->alias]['title'] = $oneLang->title;
-            }
+        $form = new CategoryForm($this->findModel($id));
+        $langModel = new CategoryLang();
+
+        foreach ($form->_category['manyLang'] as $indexRow => $oneLang) {
+            $langAlias = $form->_category['aliasLang'][$indexRow]->alias;
+            $langModel->languageData[$langAlias]['title'] = $oneLang->title;
         }
-        $form->languageData = $data;
         $post = Yii::$app->request->post();
 
-        if ($form->load($post) && $form->validate()) {
-            try {
-                $form->title = $post['CategoryForm']['Language']['ru'];
-                $this->category_service->edit($category->id, $form);
-                $resultat = $this->category_lang->updateLang($post['CategoryForm']['Language'],$category->id);
+        if(Yii::$app->request->isPost){
+            if ($form->load($post) && $form->validate() && LangWidget::validate($langModel,$post)) {
+                try {
+                    $category = $this->category_service->edit($id, $form);
+                    $langModel->updateLang($post['CategoryLang'],$id);
 
-                return $this->redirect(['update?id='.$category->id]);
-            } catch (\DomainException $e) {
-                Yii::$app->errorHandler->logException($e);
-                Yii::$app->session->setFlash('error', $e->getMessage());
+                    Yii::$app->session->setFlash('success', 'Категория обновлена');
+                    return $this->redirect(['update?id=' . $id]);
+                } catch (\DomainException $e) {
+                    Yii::$app->errorHandler->logException($e);
+                    Yii::$app->session->setFlash('error', $e->getMessage());
+                }
+            }else{
+                $langModel->languageData = $post['CategoryLang'];
             }
         }
 
         return $this->render('update', [
             'model' => $form,
-            'category' => $category,
+            'langModel' => $langModel
         ]);
     }
 
@@ -144,7 +147,7 @@ class CategoryController extends Controller
 
     protected function findModel($id) : Category
     {
-        if (($model = Category::find()->where(['id' => $id])->with('title')->one()) !== null) {
+        if (($model = Category::find()->where(['id' => $id])->with(['manyLang','aliasLang'])->one()) !== null) {
             return $model;
         }
 

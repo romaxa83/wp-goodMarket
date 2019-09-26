@@ -31,6 +31,8 @@ class User extends ActiveRecord implements IdentityInterface {
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
 
+    private $settings;
+
     /**
      * {@inheritdoc}
      */
@@ -93,8 +95,8 @@ class User extends ActiveRecord implements IdentityInterface {
         }
 
         return static::findOne([
-                    'password_reset_token' => $token,
-                    'status' => self::STATUS_ACTIVE,
+            'password_reset_token' => $token,
+            'status' => self::STATUS_ACTIVE,
         ]);
     }
 
@@ -106,8 +108,8 @@ class User extends ActiveRecord implements IdentityInterface {
      */
     public static function findByVerificationToken($token) {
         return static::findOne([
-                    'verification_token' => $token,
-                    'status' => self::STATUS_INACTIVE
+            'verification_token' => $token,
+            'status' => self::STATUS_INACTIVE
         ]);
     }
 
@@ -272,6 +274,16 @@ class User extends ActiveRecord implements IdentityInterface {
         if (strlen(preg_replace("/[^0-9]/", '', $this->phone)) != 12){
             $this->addError($attribute, 'Введите корректно номер телефона (380*********)');
         }
+    }
+
+    private function deleteValue($entity, $type, $value) {
+        if (in_array($value, JSON::decode($this->settings)[$entity][$type])) {
+            $temp = JSON::decode($this->settings);
+            unset($temp[$entity][$type][array_search($value, $temp[$entity][$type])]);
+            $temp[$entity][$type] = array_values($temp[$entity][$type]);
+            return $this->settings = JSON::encode($temp);
+        }
+        return $this->settings;
     }
 
 }

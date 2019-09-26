@@ -4,7 +4,8 @@ namespace backend\modules\blog\entities;
 
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
-use Ausi\SlugGenerator\SlugGenerator;
+use yii\helpers\Inflector;
+use common\models\Lang;
 
 /**
  * @property integer $id
@@ -17,6 +18,8 @@ class Tag extends ActiveRecord
 {
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
+
+    public $title;
 
     public static function tableName():string
     {
@@ -33,8 +36,7 @@ class Tag extends ActiveRecord
 
     public static function generateAlias($tag) : string
     {
-       $generator = new SlugGenerator();
-       return $generator->generate($tag);
+        return Inflector::slug($tag);
     }
 
     public function edit($title,$alias):void
@@ -56,15 +58,6 @@ class Tag extends ActiveRecord
     {
         return $this->hasMany(TagAssignment::class, ['tag_id' => 'id']);
     }
-
-    /**
-     * @return ActiveQuery
-     */
-    public function getTagReviewAssignments(): ActiveQuery
-    {
-        return $this->hasMany(TagReviewAssignment::class, ['tag_id' => 'id']);
-    }
-
     /**
      * @return ActiveQuery
      */
@@ -73,11 +66,18 @@ class Tag extends ActiveRecord
         return $this->hasMany(Post::class, ['id' => 'post_id'])->orderBy(['published_at' => SORT_DESC])->via('tagAssignments');
     }
 
-    /**
-     * @return ActiveQuery
-     */
-    public function getHotelReview(): ActiveQuery
-    {
-        return $this->hasMany(HotelReview::class, ['id' => 'hotel_review_id'])->orderBy(['published_at' => SORT_DESC])->via('tagReviewAssignments');
+    public function getOneLang()
+    {   
+        return $this->hasOne(TagLang::class, ['tag_id' => 'id']);
+    }
+
+    public function getManyLang()
+    {   
+        return $this->hasMany(TagLang::class, ['tag_id' => 'id']);
+    }
+
+    public function getAliasLang()
+    {   
+        return $this->hasMany(Lang::class, ['id' => 'lang_id'])->via('manyLang');
     }
 }

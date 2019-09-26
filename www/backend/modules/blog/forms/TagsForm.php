@@ -32,14 +32,28 @@ class TagsForm extends Model
 
     public function tagsList(): array
     {
-        return ArrayHelper::map(Tag::find()->andWhere(['status' => Tag::STATUS_ACTIVE])->orderBy('title')->asArray()->all(), 'title', 'title');
+        $tag = Tag::find()->andWhere(['status' => Tag::STATUS_ACTIVE])->with('oneLang')->asArray()->all();
+        $preparedTagList = [];
+
+        foreach($tag as $oneElement){
+            $title = $oneElement['oneLang']['title'];
+            $preparedTagList[$title] = $title;
+        }
+
+        return $preparedTagList;
     }
 
     public function checkTagList($post_id)
     {
-        $tags = ArrayHelper::map(TagAssignment::find()->where(['post_id' => $post_id])->asArray()->all(),'tag_id','tag_id');
-       return ArrayHelper::getColumn(Tag::find()->where(['in','id',$tags])->andWhere(['status' => Tag::STATUS_ACTIVE])->asArray()->all(),'title');
+        $tagAssignment = ArrayHelper::map(TagAssignment::find()->where(['post_id' => $post_id])->asArray()->all(),'tag_id','tag_id');
+        $tag = Tag::find()->where(['in','id',$tagAssignment])->andWhere(['status' => Tag::STATUS_ACTIVE])->with('oneLang')->asArray()->all();
 
+        $preparedTagList = [];
+        foreach($tag as $oneElement){
+            $title = $oneElement['oneLang']['title'];
+            $preparedTagList[$title] = $title;
+        }
+        return $preparedTagList;
     }
 
 }

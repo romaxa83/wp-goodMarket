@@ -25,7 +25,8 @@ return [
                 'backend\modules\blog\migrations',
                 'backend\modules\banners\migrations',
                 'backend\modules\order\migrations',
-                'backend\modules\category\migrations'
+                'backend\modules\category\migrations',
+                'backend\modules\import\migrations'
             ],
         ],
     ],

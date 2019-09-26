@@ -26,7 +26,7 @@ class TagSearch extends Model
      */
     public function search(array $params): ActiveDataProvider
     {
-        $query = Tag::find();
+        $query = Tag::find()->with('oneLang');
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort' => [

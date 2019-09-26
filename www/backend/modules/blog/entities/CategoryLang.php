@@ -6,13 +6,12 @@ use yii\db\ActiveRecord;
 use common\models\Lang;
 use backend\widgets\langwidget\LangWidget;
 use yii\web\NotFoundHttpException;
+use backend\modules\blog\entities\Category;
 
 class CategoryLang extends ActiveRecord 
 {
     private $currentLang;
-    // private $title;
-    // private $category_id;
-    // private $lang_id;
+    public $languageData;
 
     public static function tableName() 
     {
@@ -22,7 +21,10 @@ class CategoryLang extends ActiveRecord
     public function rules() 
     {
         return [
-            [['category_id', 'lang_id', 'title'], 'required'],
+            [['category_id', 'lang_id', 'title'], 'required', 'message' => 'Поле не может быть пустым:'],
+            ['title', 'string', 'message' => 'Поле должно быть строкой:'],
+            ['lang_id' , 'exist', 'targetClass' => Lang::class, 'targetAttribute' => ['lang_id' => 'id'], 'message' => 'Ошибка связи с таблицей языков :'],
+            ['category_id' , 'exist', 'targetClass' => Category::class, 'targetAttribute' => ['category_id' => 'id'], 'message' => 'Ошибка связи с таблицей категорий :']
         ];
     }
 
@@ -65,10 +67,8 @@ class CategoryLang extends ActiveRecord
             $this->currentLang = $oneLang['alias'];
             $currentData = $this->existLangKey($data);
 
-            $model[$indexKey]->category_id = $baseId;
-            $model[$indexKey]->lang_id = $oneLang['id'];
             $model[$indexKey]->title = $currentData['title'];
-            $model[$indexKey]->save();
+            $model[$indexKey]->update();
         }
     }
 

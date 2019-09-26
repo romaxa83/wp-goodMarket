@@ -17,6 +17,9 @@ return [
         'category' => [
             'class' => 'backend\modules\category\Category',
         ],
+        'import' => [
+            'class' => 'backend\modules\import\Import',
+        ],
         'product' => [
             'class' => 'backend\modules\product\Product',
         ],

@@ -31,9 +31,7 @@ class m190902_103344_create_table_category_lang extends Migration
      */
     public function safeDown()
     {
-        // echo "m190902_103344_create_table_category_lang cannot be reverted.\n";
-
-        // return false;
+        $this->dropTable('{{%blog_category_lang}}');
     }
 
     /*

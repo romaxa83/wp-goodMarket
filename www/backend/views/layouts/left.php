@@ -21,11 +21,17 @@ use common\controllers\AccessController;
                             'items' => [
                                 ['label' => 'Категорий', 'icon' => 'clone', 'url' => ['/blog/category/index'], 'visible' => AccessController::checkPermission('/blog/category/index')],
                                 ['label' => 'Теги', 'icon' => 'tags', 'url' => ['/blog/tag/index'], 'visible' => AccessController::checkPermission('/category/category/index')],
-                                ['label' => 'Посты','icon' => 'file-text-o','url' => ['/blog/post/index'], 'visible' => AccessController::checkPermission('/category/category/index')]
+                                ['label' => 'Посты', 'icon' => 'file-text-o', 'url' => ['/blog/post/index'], 'visible' => AccessController::checkPermission('/category/category/index')]
                             ],
                             'visible' => AccessController::checkPermission('/category/category/index')
                         ],
                         ['label' => 'Баннера', 'icon' => 'list', 'url' => ['/banners/banners'], 'visible' => AccessController::checkPermission('/banners/banners/index')],
+                        ['label' => 'Импорт', 'icon' => 'gears', 'url' => '#',
+                            'visible' => AccessController::checkPermission('/import/import/index') || AccessController::checkPermission('/import/import/log'),
+                            'items' => [
+                                ['label' => 'Cписок магазинов', 'icon' => 'circle', 'url' => ['/import/import'], 'visible' => AccessController::checkPermission('/import/import/index')],
+                                ['label' => 'Логи иморта', 'icon' => 'circle', 'url' => ['/import/import/log'], 'visible' => AccessController::checkPermission('/import/import/log')],
+                            ]],
                         ['label' => 'Login', 'url' => ['site/login'], 'visible' => Yii::$app->user->isGuest],
                         [
                             'label' => 'Инструменты',

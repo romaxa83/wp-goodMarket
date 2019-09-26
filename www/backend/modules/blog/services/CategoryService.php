@@ -27,7 +27,6 @@ class CategoryService
     {
         $parent = $this->category_repository->get($form->parent_id);
         $category = Category::create(
-            $form->title,
             $form->alias
         );
 
@@ -42,7 +41,6 @@ class CategoryService
         $category = $this->category_repository->get($id);
         $this->assertIsNotRoot($category);
         $category->edit(
-            $form->title,
             $form->alias
         );
         if(isset($form->parent_id) && !empty($form->parent_id)){

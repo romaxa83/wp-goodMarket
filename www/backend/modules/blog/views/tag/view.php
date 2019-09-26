@@ -4,12 +4,12 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\DetailView;
 use backend\modules\blog\helpers\StatusHelper;
-
+use backend\widgets\langwidget\LangWidget;
 /* @var $this yii\web\View */
 /* @var $tag backend\modules\blog\entities\Tag */
 /* @var $access backend\modules\user\useCase\Access */
 
-$this->title = $tag->title;
+$this->title = $tag->manyLang[0]->title;
 $this->params['breadcrumbs'][] = ['label' => 'Список тегов', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -35,14 +35,30 @@ $this->params['breadcrumbs'][] = $this->title;
                         'model' => $tag,
                         'attributes' => [
                             'id',
-                            'title',
-                            'alias',
+                            [
+                                'attribute' => 'title',
+                                'label' => 'Название',
+                                'format' => 'raw',
+                                'value' => function() use ($tag){
+                                    $html = '<ul>';
+                                    foreach($tag->manyLang as $keyLang => $oneLang) {
+                                        $html .= '<li><b>' . $tag->aliasLang[$keyLang]->alias . '</b> : ' . $tag->alias . '</li>'; 
+                                    }               
+                                    return $html . '</ul>';
+                                }
+                            ],
+                            [
+                                'attribute' => 'alias',
+                                'label' => 'Алиас',
+                                'format' => 'raw',
+                                'value' => $tag->alias,
+                            ],
                             [
                                 'attribute' => 'status',
                                 'label' => 'Статус',
                                 'format' => 'raw',
                                 'value' => StatusHelper::label($tag->status),
-                            ]
+                            ],
                         ],
                     ]) ?>
 
