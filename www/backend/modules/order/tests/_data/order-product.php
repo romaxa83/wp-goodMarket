@@ -1,0 +1,43 @@
+<?php
+return [
+    '1' => [
+        'order_id' => 1,
+        'lang_id' => 1,
+        'product_id' => 1,
+        'vproduct_id' => 1,
+        'price' => 10001.0000000000000,
+        'product_price' => 10001.0000000000000,
+        'currency' => 'uah',
+        'count' => 1,
+    ],
+    '2' => [
+        'order_id' => 1,
+        'lang_id' => 1,
+        'product_id' => 2,
+        'vproduct_id' => 2,
+        'price' => 10002.0000000000000,
+        'product_price' => 10002.0000000000000,
+        'currency' => 'uah',
+        'count' => 2,
+    ],
+    '3' => [
+        'order_id' => 2,
+        'lang_id' => 1,
+        'product_id' => 3,
+        'vproduct_id' => 3,
+        'price' => 10003.0000000000000,
+        'product_price' => 10003.0000000000000,
+        'currency' => 'uah',
+        'count' => 3,
+    ],
+    '4' => [
+        'order_id' => 2,
+        'lang_id' => 1,
+        'product_id' => 4,
+        'vproduct_id' => 4,
+        'price' => 10004.0000000000000,
+        'product_price' => 10004.0000000000000,
+        'currency' => 'uah',
+        'count' => 4,
+    ],
+];

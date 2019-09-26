@@ -77,34 +77,34 @@ Modal::end();
                 ]);
             }
             echo LangWidget::widget(['model' => $modelLang, 'fields' => [
-                    ['type' => 'text', 'name' => 'alias'],
-                    ['type' => 'text', 'name' => 'name'],
-                    ['type' => 'number', 'name' => 'price'],
-                    ['type' => 'widget', 'name' => 'currency', 'class' => 'kartik\select2\Select2', 'options' => [
-                            'data' => ['uah' => 'Гривна', 'usd' => 'Доллар'],
-                            'language' => 'ru',
-                            'options' => ['placeholder' => 'Выберите валюту'],
-                            'pluginOptions' => [
-                                'allowClear' => true
-                            ],
-                        ]],
-                    ['type' => 'widget', 'name' => 'description', 'class' => 'vova07\imperavi\Widget', 'options' => [
-                            'settings' => [
-                                'lang' => 'ru',
-                                'minHeight' => 200,
-                                'imageUpload' => Url::to(['image-upload']),
-                                'imageDelete' => Url::to(['file-delete']),
-                                'imageManagerJson' => Url::to(['images-get']),
-                                'plugins' => [
-                                    'clips',
-                                    'fullscreen',
-                                ],
-                            ],
-                            'plugins' => [
-                                'imagemanager' => 'vova07\imperavi\bundles\ImageManagerAsset',
-                            ]
-                        ]
+                ['type' => 'text', 'name' => 'alias'],
+                ['type' => 'text', 'name' => 'name'],
+                ['type' => 'number', 'name' => 'price'],
+                ['type' => 'widget', 'name' => 'currency', 'class' => 'kartik\select2\Select2', 'options' => [
+                    'data' => ['uah' => 'Гривна', 'usd' => 'Доллар'],
+                    'language' => 'ru',
+                    'options' => ['placeholder' => 'Выберите валюту'],
+                    'pluginOptions' => [
+                        'allowClear' => true
+                    ],
+                ]],
+                ['type' => 'widget', 'name' => 'description', 'class' => 'vova07\imperavi\Widget', 'options' => [
+                    'settings' => [
+                        'lang' => 'ru',
+                        'minHeight' => 200,
+                        'imageUpload' => Url::to(['image-upload']),
+                        'imageDelete' => Url::to(['file-delete']),
+                        'imageManagerJson' => Url::to(['images-get']),
+                        'plugins' => [
+                            'clips',
+                            'fullscreen',
+                        ],
+                    ],
+                    'plugins' => [
+                        'imagemanager' => 'vova07\imperavi\bundles\ImageManagerAsset',
                     ]
+                ]
+                ]
             ]]);
             if (Yii::$app->controller->action->id === 'create') {
                 echo $form->field($model, 'amount')->textInput(['type' => 'number']);
@@ -274,14 +274,14 @@ Modal::end();
                         <div>
                             <?php
                             echo Html::button('<i class="fa fa-plus" aria-hidden="true"></i>', [
-                                'title' => 'Добавить изображение',
-                                'class' => 'btn btn-primary grid-option product-gallery-window',
-                                'data-toggle' => \Yii::t('yii', 'modal'),
-                                'data-target' => \Yii::t('yii', '#product-gallery'),
-                                'data-product_id' => $id,
-                                'data-media' => $model["media_id"],
-                                'data-id' => $model['id']
-                            ]) . '<span class="media_id"> ' . $model["media_id"] . '<span>';
+                                    'title' => 'Добавить изображение',
+                                    'class' => 'btn btn-primary grid-option product-gallery-window',
+                                    'data-toggle' => \Yii::t('yii', 'modal'),
+                                    'data-target' => \Yii::t('yii', '#product-gallery'),
+                                    'data-product_id' => $id,
+                                    'data-media' => $model["media_id"],
+                                    'data-id' => $model['id']
+                                ]) . '<span class="media_id"> ' . $model["media_id"] . '<span>';
                             ?>
                         </div>
                     </div>
@@ -362,19 +362,19 @@ Modal::end();
                         'format' => 'raw',
                         'value' => function ($model) use ($id) {
                             return Html::tag(
-                                            'a', '', [
-                                        'href' => '#',
-                                        'title' => 'Добавить превью',
-                                        'aria-label' => 'Добавить превью',
-                                        'style' => 'color:rgb(63,140,187)',
-                                        'class' => 'grid-option fa fa-plus-circle product-gallery-window',
-                                        'data-toggle' => \Yii::t('yii', 'modal'),
-                                        'data-target' => \Yii::t('yii', '#product-gallery'),
-                                        'data-product_id' => $id,
-                                        'data-media' => $model["media_id"],
-                                        'data-id' => $model['id'],
-                                        'data-pjax' => '1'
-                                    ]) . '<span class="media_id">' . $model["media_id"] . '<span>';
+                                    'a', '', [
+                                    'href' => '#',
+                                    'title' => 'Добавить превью',
+                                    'aria-label' => 'Добавить превью',
+                                    'style' => 'color:rgb(63,140,187)',
+                                    'class' => 'grid-option fa fa-plus-circle product-gallery-window',
+                                    'data-toggle' => \Yii::t('yii', 'modal'),
+                                    'data-target' => \Yii::t('yii', '#product-gallery'),
+                                    'data-product_id' => $id,
+                                    'data-media' => $model["media_id"],
+                                    'data-id' => $model['id'],
+                                    'data-pjax' => '1'
+                                ]) . '<span class="media_id">' . $model["media_id"] . '<span>';
                         }
                     ],
                     [
@@ -396,9 +396,9 @@ Modal::end();
                                 'disabled' => !$access
                             ];
                             return Html::beginTag('div') .
-                                    Html::checkbox('status', $checked, $options) .
-                                    Html::label('', 'cd_' . $model['id'], ['class' => 'tgl-btn']) .
-                                    Html::endTag('div');
+                                Html::checkbox('status', $checked, $options) .
+                                Html::label('', 'cd_' . $model['id'], ['class' => 'tgl-btn']) .
+                                Html::endTag('div');
                         }
                     ],
                     [
@@ -435,11 +435,11 @@ Modal::end();
                                         $url = ['/stock/stock/edit-stock?id=' . $model['stock_id']];
                                     }
                                     return Html::tag(
-                                                    'a', $model['title'], [
-                                                'href' => Url::to($url),
-                                                'style' => 'color:rgb(63,140,187)',
-                                                'class' => '',
-                                                'data-pjax' => '0',
+                                        'a', $model['title'], [
+                                        'href' => Url::to($url),
+                                        'style' => 'color:rgb(63,140,187)',
+                                        'class' => '',
+                                        'data-pjax' => '0',
                                     ]);
                                 }
                             ],

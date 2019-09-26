@@ -1,0 +1,7 @@
+suite_namespace: backend\modules\order\tests\unit
+actor: UnitTester
+modules:
+  enabled:
+    - Asserts
+    - Yii2:
+        configFile: '../config/test-local.php'

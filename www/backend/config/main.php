@@ -26,6 +26,9 @@ return [
         'banners' => [
             'class' => 'backend\modules\banners\Banners',
         ],
+        'order' => [
+            'class' => 'backend\modules\order\Order',
+        ],
         'seo' => [
             'class' => 'backend\modules\seo\Seo',
         ],

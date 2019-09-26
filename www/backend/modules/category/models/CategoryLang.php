@@ -2,6 +2,7 @@
 
 namespace backend\modules\category\models;
 
+use backend\widgets\langwidget\LangWidget;
 use common\models\Lang;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
@@ -57,10 +58,21 @@ class CategoryLang extends ActiveRecord {
             $lang->attributes = $item;
             $lang->lang_id = $langs[$key];
             if (!$lang->save()) {
-                return false;
+                throw new \Exception(implode("<br />", ArrayHelper::getColumn($lang->errors, 0, false)));
             }
         }
         return true;
+    }
+
+    public static function indexLangBy(array $data, string $column = 'lang_id') {
+        foreach ($data as $k => $v) {
+            $categoryLang = [];
+            foreach ($v['categoryLang'] as $k1 => $v1) {
+                $categoryLang[$v1[$column]] = $v1;
+            }
+            $data[$k]['categoryLang'] = $categoryLang;
+        }
+        return $data;
     }
 
 }
