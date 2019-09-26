@@ -62,7 +62,7 @@ ProductAsset::register($this);
                         [
                             'attribute' => 'category_id',
                             'value' => function($model) {
-                                return $model->categoryLang['name'];
+                                return $model->categoryLang[0]['name'];
                             },
                             'contentOptions' => HideColWidget::setConfig('category', $user_settings['hide-col']),
                             'headerOptions' => HideColWidget::setConfig('category', $user_settings['hide-col'], ['width' => '110']),

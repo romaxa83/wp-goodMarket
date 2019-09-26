@@ -12,6 +12,8 @@ use common\controllers\AccessController;
                     'items' => [
                         ['label' => 'Каталог', 'icon' => 'list', 'url' => ['/category/category'], 'visible' => AccessController::checkPermission('/category/category/index')],
                         ['label' => 'Продукты', 'icon' => 'list', 'url' => ['/product/product'], 'visible' => AccessController::checkPermission('/product/product/index')],
+                        ['label' => 'Заказы', 'icon' => 'list', 'url' => ['/order/order'], 'visible' => AccessController::checkPermission('/order/order/index'),
+                            'template' => '<a href="{url}">{icon} {label}<span class="pull-right-container"><small class="order-count label pull-right bg-green">0</small><small class="label pull-right bg-green">new</small></span></a>'],
                         [
                             'label' => 'Блог',
                             'icon' => 'book',

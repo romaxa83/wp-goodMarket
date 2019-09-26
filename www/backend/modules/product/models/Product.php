@@ -8,6 +8,7 @@ use backend\modules\seo\models\SeoMeta;
 use backend\modules\product\models\ProductLang;
 use backend\modules\category\models\CategoryLang;
 use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 
 class Product extends ActiveRecord {
 
@@ -73,7 +74,7 @@ class Product extends ActiveRecord {
     }
 
     public function getCategoryLang() {
-        return $this->hasOne(CategoryLang::className(), ['category_id' => 'category_id']);
+        return $this->hasMany(CategoryLang::className(), ['category_id' => 'category_id']);
     }
 
     public function getMedia() {
@@ -89,11 +90,24 @@ class Product extends ActiveRecord {
     }
 
     public function getVproducts() {
-        return $this->hasMany(VProduct::className(), ['product_id' => 'stock_id']);
+        return $this->hasMany(VProduct::className(), ['product_id' => 'id']);
     }
 
     public function getProductLang() {
         return $this->hasMany(ProductLang::className(), ['product_id' => 'id']);
+    }
+
+    public static function getProductsByCategory($category_id) {
+        $product_list = Product::find()->where(['publish' => 1, 'category_id' => $category_id])->all();
+        return $product_list;
+    }
+
+    public static function getProduct($product_id, $category_id) {
+        $product_list = Product::getProductsByCategory($category_id);
+        if (!array_key_exists($product_id, $product_list)) {
+            return [];
+        }
+        return $product_list[$product_id];
     }
 
 }
