@@ -14,12 +14,11 @@ use backend\modules\product\models\CustomActionColumn;
 $this->title = 'Отзывы';
 $this->params['breadcrumbs'][] = $this->title;
 ReviewsAsset::register($this);
-$service = new CacheProductService();
 ?>
 <?php Modal::begin([
     'header' => '<h4>Оставить ответ на отзыв</h4>',
     ]);
-   
+
 Modal::end();?>
 <div class="app-default-index">
     <div class="row">
@@ -63,7 +62,7 @@ Modal::end();?>
                 </div>
                 <div class="box-body">
 
-                    <?= GridView::widget([ 
+                    <?= GridView::widget([
                         'dataProvider' => $dataProvider,
                         'filterModel' => $searchModel,
                         'showFooter'=>true,
@@ -79,8 +78,8 @@ Modal::end();?>
                             else return ['class'=>'answer-row'];
                         },
                         'showFooter' => false,
-                        'summary' => '',                      
-                        'columns' => [ 
+                        'summary' => '',
+                        'columns' => [
                             [
                                 'class' => 'yii\grid\SerialColumn',
                                 'contentOptions' => function($model){
@@ -90,7 +89,7 @@ Modal::end();?>
                                 //'footer_blocks' => 1
 
                             ],
-                            [   
+                            [
                                 'attribute'=>'product_name',
                                 'format'=>'text',
                                 'label'=>'Товар',
@@ -170,7 +169,7 @@ Modal::end();?>
                                  },
                                  'headerOptions' => HideColWidget::setConfig('text',$user_settings['hide-col'],['style' => 'text-align:center']),
                                  'filterOptions' => HideColWidget::setConfig('text',$user_settings['hide-col']),
-                            ],                                                                    
+                            ],
                             [
                                 'attribute'=>'publication',
                                 'format'=>'raw',
@@ -183,10 +182,10 @@ Modal::end();?>
                                             $options = [
                                                 'id' => 'cd_'.$model['id'],
                                                 'class' => 'tgl tgl-light publish-toggle status-toggle',
-                                                'data-id' => $model['id'],              
+                                                'data-id' => $model['id'],
                                                 'data-url' => Url::to(['update-status'])
                                             ];
-                                        
+
                                             return  Html::beginTag('div') .
                                                     Html::checkbox('status', $checked, $options) .
                                                     Html::label('',  'cd_'.$model['id'], ['class' => 'tgl-btn']) .
@@ -234,11 +233,11 @@ Modal::end();?>
                                     },
                                 ]
                             ],
-                            
+
                          ],
 
                     ]);?>
-                    
+
                 </div>
             </div>
         </div>

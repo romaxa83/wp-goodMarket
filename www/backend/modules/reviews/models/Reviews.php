@@ -2,6 +2,8 @@
 
 namespace backend\modules\reviews\models;
 
+use backend\modules\product\models\ProductLang;
+use common\models\User;
 use Yii;
 use \yii\helpers\ArrayHelper;
 use backend\modules\product\models\Product;
@@ -28,7 +30,7 @@ class Reviews extends \yii\db\ActiveRecord {
 
     public static function getBackReviews() {
         $request = self::find()
-                ->select(['user.*', 'concat(user.first_name," ",user.last_name) as full_name', 'product.*','reviews.*'])
+                ->select(['concat(user.first_name," ",user.last_name) as full_name', 'product.*','reviews.*'])
                 ->leftJoin('user', 'user.id=reviews.user_id')
                 ->leftJoin('product', 'product.id=reviews.product_id')
                 ->orderBy('(CASE WHEN reviews.answer_id = 0 THEN reviews.id  ELSE reviews.answer_id END) DESC, reviews.answer_id, reviews.id DESC')
@@ -39,9 +41,10 @@ class Reviews extends \yii\db\ActiveRecord {
 
     public static function getReviews() {
         $request = self::find()
-                ->select(['user.*', 'concat(user.first_name," ",user.last_name) as full_name', 'product.*','reviews.*'])
+                ->select(['concat(user.first_name," ",user.last_name) as full_name', 'reviews.*'])
                 ->leftJoin('user', 'user.id=reviews.user_id')
                 ->leftJoin('product', 'product.id=reviews.product_id')
+                ->joinWith('productLang')
                 ->where(['answer_id' => 0])
                 ->orderBy('reviews.date DESC')
                 ->asArray()
@@ -51,9 +54,10 @@ class Reviews extends \yii\db\ActiveRecord {
 
     public static function getAnswers() {
         $request = self::find()
-                ->select(['user.*', 'concat(user.first_name," ",user.last_name) as full_name', 'product.*','reviews.*'])
+                ->select(['concat(user.first_name," ",user.last_name) as full_name', 'reviews.*'])
                 ->leftJoin('user', 'user.id=reviews.user_id')
                 ->leftJoin('product', 'product.id=reviews.product_id')
+                ->joinWith('productLang')
                 ->where(['!=', 'answer_id', 0])
                 ->asArray()
                 ->all();
@@ -71,7 +75,7 @@ class Reviews extends \yii\db\ActiveRecord {
 
     public static function getFrontReviews($condition) {
         $request = self::find()
-                ->select('user.*,reviews.*')
+                ->select(['user.username', 'user.first_name', 'user.last_name', 'concat(user.first_name," ",user.last_name) as full_name', 'reviews.*'])
                 ->asArray()
                 ->where($condition)
                 ->andWhere('reviews.publication=1')
@@ -83,7 +87,7 @@ class Reviews extends \yii\db\ActiveRecord {
 
     public function getFrontReviewOne() {
         $request = $this->find()
-                ->select('user.*,reviews.*')
+                ->select(['user.username', 'user.first_name', 'user.last_name', 'concat(user.first_name," ",user.last_name) as full_name', 'reviews.*'])
                 ->asArray()
                 ->where('reviews.id=' . $this->id . '')
                 ->leftJoin('user', 'reviews.user_id=user.id')
@@ -131,8 +135,16 @@ class Reviews extends \yii\db\ActiveRecord {
         return new ReviewsQuery(get_called_class());
     }
 
-    public function getProducts() {
+    public function getProduct() {
         return $this->hasOne(Product::className(), ['id' => 'product_id']);
+    }
+
+    public function getUser() {
+        return $this->hasOne(User::className(), ['id' => 'user_id']);
+    }
+
+    public function getProductLang() {
+        return $this->hasMany(ProductLang::className(), ['product_id' => 'product_id']);
     }
 
 }

@@ -8,8 +8,6 @@ use backend\modules\reviews\models\Reviews;
 use backend\modules\product\models\Product;
 use yii\data\ArrayDataProvider;
 use \yii\helpers\ArrayHelper;
-use backend\modules\reviews\models\ReviewProvider;
-use common\service\CacheProductService;
 
 class ReviewsSearch extends Model {
 
@@ -47,15 +45,9 @@ class ReviewsSearch extends Model {
     }
 
     private function processFields($reviews) {
-
-        $product_service = new CacheProductService();
-
         foreach ($reviews as $key => $rw) {
-
             $rw['full_name'] = ($rw['user_id'] == 0) ? 'Гость' : $rw['full_name'];
-            $rw['full_name'] = (($rw['type'] == 0) && empty($rw['full_name'])) ? 'admin' : $rw['full_name'];
-            $id = $rw['stock_id'] ?? $rw['import_id'];
-            $rw['product_name'] = $product_service->getProdName($id, $rw['category_id']);
+            $rw['product_name'] = isset($rw['productLang'][0]['name']) ? $rw['productLang'][0]['name'] : 'Нет имени';
 
             $reviews[$key] = $rw;
         }

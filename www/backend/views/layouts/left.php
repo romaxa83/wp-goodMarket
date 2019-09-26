@@ -30,6 +30,7 @@ use common\controllers\AccessController;
                                 ['label' => 'Cписок магазинов', 'icon' => 'circle', 'url' => ['/import/import'], 'visible' => AccessController::checkPermission('/import/import/index')],
                                 ['label' => 'Логи иморта', 'icon' => 'circle', 'url' => ['/import/import/log'], 'visible' => AccessController::checkPermission('/import/import/log')],
                             ]],
+                        ['label' => 'Отзывы', 'icon' => 'list', 'url' => ['/reviews/reviews/index'], 'visible' => AccessController::checkPermission('/reviews/reviews/index')],
                         ['label' => 'Login', 'url' => ['site/login'], 'visible' => Yii::$app->user->isGuest],
                         [
                             'label' => 'Инструменты',

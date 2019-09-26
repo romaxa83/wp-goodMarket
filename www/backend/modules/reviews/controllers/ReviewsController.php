@@ -53,14 +53,14 @@ class ReviewsController extends BaseController
     // }
 
      public function beforeAction($action)
-    {            
+    {
         if ($action->id == 'add-review' || $action->id == 'show-answer-form' || $action->id == 'validate' || $action->id == 'update-stats') {
             $this->enableCsrfValidation = false;
         }
 
         return parent::beforeAction($action);
     }
-    
+
     private static function getStockId($model, $id){
         return $model->className()::find()->select('stock_id')->where(['id'=>$id])->asArray()->one()['stock_id'];
     }
@@ -131,7 +131,7 @@ class ReviewsController extends BaseController
                 if($model->save()){
                     $new_model = $model->getFrontReviewOne();
                     if($data['action']=='addAnswer'){
-                        $parent = Reviews::getReview($data['parent_id']); 
+                        $parent = Reviews::getReview($data['parent_id']);
                         $parent->answered = 1;
                         $parent->save();
                     }else{
@@ -144,7 +144,11 @@ class ReviewsController extends BaseController
                             }
                         }
                     }
-                    return $this->renderPartial('@backend/widgets/reviewswidget/views/_list_item',['model'=>$new_model, 'type'=>$type, 'user_id'=>$data['user_id']]);
+                    return $this->renderPartial('@backend/widgets/reviewswidget/views/_list_item',[
+                        'model'=>$new_model,
+                        'type'=>$type,
+                        'user_id'=>$data['user_id']
+                    ]);
                 }
             }
         }
@@ -182,7 +186,7 @@ class ReviewsController extends BaseController
                 $review_model->publication = $status;
                 $review_model->save();
             }
-         }   
+         }
     }
 
     public function getCountText($count){
@@ -209,7 +213,14 @@ class ReviewsController extends BaseController
                 $count = Reviews::getProductsCount($product_id);
                 $text = $count.' '.$this->getCountText($count);
                 $avg_rating = Reviews::getAverageRating($product_id);
-                return $this->renderAjax('@backend/widgets/stats_reviews_widget/views/_stats_review',['product_id'=>$product_id, 'text'=>$text, 'avg_rating'=>$avg_rating, 'visible_reviews_count' => true, 'color'=>$color, 'block_name'=>'']);
+                return $this->renderAjax('@backend/widgets/stats_reviews_widget/views/_stats_review',[
+                    'product_id'=>$product_id,
+                    'text'=>$text,
+                    'avg_rating'=>$avg_rating,
+                    'visible_reviews_count' => true,
+                    'color'=>$color,
+                    'block_name'=>''
+                ]);
             }
         }
     }
