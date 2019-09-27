@@ -39,6 +39,9 @@ return [
             'class' => 'backend\modules\filemanager\FileManager',
             'rename' => true,
         ],
+        'content' => [
+            'class' => 'backend\modules\content\Page',
+        ],
         'users' => [
             'class' => 'backend\modules\users\Users',
             'modules' => [
@@ -84,6 +87,19 @@ return [
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
+        ],
+        'urlManagerFrontend' => [
+            'class' => 'yii\web\UrlManager',
+            'baseUrl' => '',
+            'enablePrettyUrl' => true,
+            'enableStrictParsing' => true,
+            'showScriptName' => false,
+            'rules' => [
+                [
+                    'class' => 'backend\modules\content\components\PageRule',
+                    'connectionID' => 'db',
+                ]
+            ]
         ],
 //        'urlManager' => [
 //            'enablePrettyUrl' => true,

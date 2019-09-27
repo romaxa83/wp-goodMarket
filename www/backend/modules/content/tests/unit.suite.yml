@@ -1,0 +1,8 @@
+suite_namespace: backend\modules\content\tests\unit
+actor: UnitTester
+modules:
+  enabled:
+    - Asserts
+    - Yii2:
+        configFile: '../config/test-local.php'
+        cleanup: false

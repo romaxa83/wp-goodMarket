@@ -22,6 +22,9 @@ return [
             'class' => 'yii\console\controllers\MigrateController',
             'migrationNamespaces' => [
                 'backend\modules\product\migrations',
+                'backend\modules\banners\migrations',
+                'backend\modules\content\migrations',
+                'backend\modules\content\migrations\projectMigrations',
                 'backend\modules\blog\migrations',
                 'backend\modules\banners\migrations',
                 'backend\modules\order\migrations',

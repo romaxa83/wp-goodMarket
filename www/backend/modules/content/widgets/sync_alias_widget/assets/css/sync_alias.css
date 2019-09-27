@@ -1,0 +1,15 @@
+/*.input-group-addon {
+    padding: 6px 12px;
+    font-size: 14px;
+    text-align: center;
+}*/
+.generate-alias{
+	cursor: pointer;
+    position: absolute;
+    color: rgb(63,140,187);
+    right: 1px;
+    top: 26px;
+    width: 30px;
+    padding: 9px;
+    border: none;
+}
