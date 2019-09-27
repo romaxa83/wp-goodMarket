@@ -62,7 +62,7 @@ ProductAsset::register($this);
                         [
                             'attribute' => 'category_id',
                             'value' => function($model) {
-                                return $model->categoryLang['name'];
+                                return $model->categoryLang[0]['name'];
                             },
                             'contentOptions' => HideColWidget::setConfig('category', $user_settings['hide-col']),
                             'headerOptions' => HideColWidget::setConfig('category', $user_settings['hide-col'], ['width' => '110']),
@@ -128,17 +128,6 @@ ProductAsset::register($this);
                         ],
                         [
                             'format' => 'raw',
-                            'attribute' => 'stock_publish',
-                            'filter' => [0 => 'Выкл.', 1 => 'Вкл.'],
-                            'value' => function($model) {
-                                return (($model->stock_publish == 1) ? '<div style="color: #00a65a;">Вкл.</div>' : '<div style="color: #dd4b39;">Выкл.</div>');
-                            },
-                            'contentOptions' => HideColWidget::setConfig('sklad', $user_settings['hide-col']),
-                            'headerOptions' => HideColWidget::setConfig('sklad', $user_settings['hide-col'], ['width' => '90']),
-                            'filterOptions' => HideColWidget::setConfig('sklad', $user_settings['hide-col']),
-                        ],
-                        [
-                            'format' => 'raw',
                             'attribute' => 'publish',
                             'filter' => [0 => 'Выкл.', 1 => 'Вкл.'],
                             'value' => function($model) {
@@ -148,8 +137,7 @@ ProductAsset::register($this);
                                     'id' => 'cd_' . $model->id,
                                     'class' => 'tgl tgl-light publish-toggle status-toggle',
                                     'data-id' => $model->id,
-                                    'data-url' => Url::to(['update-status']),
-                                    'disabled' => ($model->stock_publish == 0) ? TRUE : FALSE
+                                    'data-url' => Url::to(['update-status'])
                                 ];
                                 return Html::beginTag('div') .
                                         Html::checkbox('status', $checked, $options) .
@@ -166,19 +154,12 @@ ProductAsset::register($this);
                             'contentOptions' => HideColWidget::setConfig('action', $user_settings['hide-col']),
                             'headerOptions' => HideColWidget::setConfig('action', $user_settings['hide-col'], ['width' => '1']),
                             'filterOptions' => HideColWidget::setConfig('action', $user_settings['hide-col']),
-                            'template' => '{update}',
+                            'template' => '{view} {update} {delete}',
                             'filter' => '<a href="' . Url::to(['/product/product'], TRUE) . '"><i class="grid-option fa fa-filter" title="Сбросить фильтр"></i></a>',
                             'buttons' => [
-                                'update' => function($url, $model, $index) {
-                                    $access = AccessController::isView(Yii::$app->controller, 'update');
-                                    if ($access) {
-                                        return Html::tag('a', '', [
-                                                    'href' => '/admin/product/product/update?id=' . $model['id'],
-                                                    'title' => 'Редактировать',
-                                                    'aria-label' => 'Редактировать',
-                                                    'class' => 'grid-option fa fa-pencil'
-                                        ]);
-                                    }
+                                'view' => function ($url, $model) {
+                                    $url = $_SERVER["REQUEST_SCHEME"] . '://' . $_SERVER["HTTP_HOST"] . '/product/' . $model->productLang[0]->alias;
+                                    return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, ['title' => Yii::t('yii', 'View'), 'data-pjax' => '0', 'target' => '_blank']);
                                 }
                             ]
                         ],

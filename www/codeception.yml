@@ -6,6 +6,9 @@ include:
     - backend/modules/category
     - backend/modules/product
     - backend/modules/content
+    - backend/modules/banners
+    - backend/modules/blog
+    - backend/modules/reviews
 paths:
     tests: .
     output: _output

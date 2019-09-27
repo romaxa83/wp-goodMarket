@@ -231,7 +231,6 @@ INSERT INTO `migration` (`version`, `apply_time`) VALUES
 ('m190124_110200_add_verification_token_column_to_user_table', 1566887623),
 ('m190211_084949_add_prod_count_column_into_category_characteristic_table', 1566887623),
 ('m190306_150813_create_permission_actions_table', 1566887623),
-('m190328_124008_add_column_status_setting', 1566887624),
 ('m190806_110305_add_parent_id_and_publish_status_columns_to_category_table', 1566887624),
 ('m190809_111043_create_lang_table', 1566887625),
 ('m190809_111636_create_category_lang_table', 1566887625),

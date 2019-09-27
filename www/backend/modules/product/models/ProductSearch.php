@@ -14,12 +14,12 @@ class ProductSearch extends Product {
 
     public function rules() {
         return [
-            [['id', 'category_id', 'product_lang_name', 'product_lang_price', 'sale', 'sale_price', 'rating', 'amount', 'stock_publish', 'publish'], 'safe'],
+            [['id', 'category_id', 'product_lang_name', 'product_lang_price', 'sale', 'sale_price', 'rating', 'amount', 'publish'], 'safe'],
         ];
     }
 
     public function search($params) {
-        $query = Product::find()->joinWith('categoryLang')->joinWith('productLang')->orderBy(['id' => SORT_DESC]);
+        $query = Product::find()->joinWith('categoryLang')->joinWith('productLang')->orderBy(['id' => SORT_DESC])->distinct();
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort' => FALSE,
@@ -27,7 +27,7 @@ class ProductSearch extends Product {
                 'pageSize' => 10,
             ]
         ]);
-
+        
         $this->load($params);
 
         if (!$this->validate()) {
@@ -40,7 +40,6 @@ class ProductSearch extends Product {
                 ->andFilterWhere(['like', 'product_lang.price', $this->product_lang_price])
                 ->andFilterWhere(['=', 'product.rating', $this->rating])
                 ->andFilterWhere(['=', 'product.amount', $this->amount])
-                ->andFilterWhere(['=', 'product.stock_publish', $this->stock_publish])
                 ->andFilterWhere(['=', 'product.publish', $this->publish]);
 
         return $dataProvider;

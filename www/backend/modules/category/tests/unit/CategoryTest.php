@@ -155,4 +155,17 @@ class CategoryTest extends Unit {
         expect($seoMeta2->description)->equals($this->data['SEO']['eng']['description']);
         expect($seoMeta2->seo_text)->equals($this->data['SEO']['eng']['seo_text']);
     }
+
+    public function testDelete() {
+        $category = $this->tester->grabFixture('category', 1);
+
+        Category::deleteAll('id = :id', ['id' => $category->id]);
+        SeoMeta::deleteAll(['page_id' => $category->id, 'alias' => 'category']);
+        CategoryLang::deleteAll(['category_id' => $category->id]);
+
+        $this->assertFalse(Category::find()->where(['id' => $category->id])->exists());
+        $this->assertFalse(CategoryLang::find()->where(['category_id' => $category->id])->exists());
+        $this->assertFalse(SeoMeta::find()->where(['page_id' => $category->id, 'alias' => 'category'])->exists());
+    }
+
 }

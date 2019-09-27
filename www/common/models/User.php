@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use backend\modules\users\roles\models\AuthAssignment;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
@@ -29,6 +30,8 @@ class User extends ActiveRecord implements IdentityInterface {
     const STATUS_DELETED = 0;
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
+
+    private $settings;
 
     /**
      * {@inheritdoc}
@@ -92,8 +95,8 @@ class User extends ActiveRecord implements IdentityInterface {
         }
 
         return static::findOne([
-                    'password_reset_token' => $token,
-                    'status' => self::STATUS_ACTIVE,
+            'password_reset_token' => $token,
+            'status' => self::STATUS_ACTIVE,
         ]);
     }
 
@@ -105,8 +108,8 @@ class User extends ActiveRecord implements IdentityInterface {
      */
     public static function findByVerificationToken($token) {
         return static::findOne([
-                    'verification_token' => $token,
-                    'status' => self::STATUS_INACTIVE
+            'verification_token' => $token,
+            'status' => self::STATUS_INACTIVE
         ]);
     }
 
@@ -202,9 +205,85 @@ class User extends ActiveRecord implements IdentityInterface {
         return $this->settings;
     }
 
+    /*
+     * метод добавляет настройки пользователю
+     * принимает 3 параметра:
+     * - сущьность (для которой будет применяться настройка ,к примеру article-для статей)
+     * - тип настройки (пример hide-col - прячет колонки)
+     * - значение (пример title)
+     */
+    public function addSetting($entity,$type,$value)
+    {
+        if($this->settings){
+            if($this->hasEntity($entity)){
+                if($this->hasType($entity,$type)){
+                    $this->addValue($entity,$type,$value);
+                }
+            }else{
+                $this->newSetting($entity,$type,$value);
+            }
+        } else {
+            $this->settings = JSON::encode($this->createSettings($entity,$type,$value));
+        }
+        $this->update();
+
+    }
+
+    public function removeSetting($entity,$type,$value)
+    {
+        $this->deleteValue($entity,$type,$value);
+        $this->update();
+    }
+
+    private function createSettings($entity,$type,$value)
+    {
+        return [$entity => [$type => [$value]]];
+    }
+
     //проверка наличия сущьности
     private function hasEntity($entity) {
         return array_key_exists($entity, JSON::decode($this->settings));
+    }
+
+    public function getFullName()
+    {
+        return ucfirst($this->first_name) .' '.ucfirst($this->last_name);
+    }
+
+    public function getUsername()
+    {
+        return ucfirst($this->username);
+    }
+
+    public function getRole()
+    {
+        return $this->hasOne(AuthAssignment::className(), ['user_id' => 'id']);
+    }
+
+    public function getRoleName() {
+
+        if (isset($this->role->item_name)){
+            return $this->role->item_name;
+        }else{
+            return 'Нет роли';
+        }
+    }
+
+    public function validatePhone($attribute, $params)
+    {
+        if (strlen(preg_replace("/[^0-9]/", '', $this->phone)) != 12){
+            $this->addError($attribute, 'Введите корректно номер телефона (380*********)');
+        }
+    }
+
+    private function deleteValue($entity, $type, $value) {
+        if (in_array($value, JSON::decode($this->settings)[$entity][$type])) {
+            $temp = JSON::decode($this->settings);
+            unset($temp[$entity][$type][array_search($value, $temp[$entity][$type])]);
+            $temp[$entity][$type] = array_values($temp[$entity][$type]);
+            return $this->settings = JSON::encode($temp);
+        }
+        return $this->settings;
     }
 
 }

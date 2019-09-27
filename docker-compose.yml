@@ -2,7 +2,7 @@ version: '3'
 
 services:
   proxy:
-    image: traefik:latest
+    image: traefik:1.7
     command: --web --docker --docker.domain=docker.localhost --logLevel=DEBUG --accesslogsfile=/dev/stdout
     ports:
       - '${HOST_MACHINE_UNSECURE_HOST_PORT}:80'

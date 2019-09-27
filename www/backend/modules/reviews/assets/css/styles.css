@@ -1,0 +1,51 @@
+.answer{
+	padding-left: 30px;
+}
+.not-answered-review-row{
+	background-color: #ffbbbb;
+}
+.answered-review-row{
+	background-color: #9ae6b1;
+}
+
+.answer-row{
+	background-color: #e6ecec;
+}
+
+.not-answered-review-square, .answered-review-square, .answer-square{
+	width: 20px;
+    height: 20px;
+}
+
+.not-answered-review-square{
+	background-color:#fdd6d6;
+}
+
+.answered-review-square{
+	background-color: #c2f7c6;
+}
+
+.answer-square{
+	background-color: #e6ecec;
+}
+
+.designations{
+	max-width: 100%;
+    display: flex;
+}
+
+.mark-txt{
+	margin-left: 10px;
+}
+
+.sign{
+	margin: 10px;
+    display: flex;
+    flex-direction: row-reverse;
+}
+.design{
+	display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}

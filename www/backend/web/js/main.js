@@ -4,6 +4,33 @@ var port = location.port;
 var path = $('body').data('url');
 var host = (port) ? slashes.concat(window.location.hostname) + ':' + port : slashes.concat(window.location.hostname);
 
+var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = window.location.search.substring(1),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+        }
+    }
+};
+
+window.warning = function (title_message, descr_message, type = 'danger') {
+    $('.noty_layout').append('<div class="alert alert-' + type + ' fadeInRight animated"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button><h4>' + title_message + '</h4><p>' + descr_message + '</p></div>');
+    $(".alert.alert-danger, .alert.alert-success").fadeIn("slow", function (event) {
+        var self = this;
+        setTimeout(function () {
+            $(self).removeClass('fadeInRight').addClass('fadeOutRight fadeOutRight').fadeOut("slow", function () {
+                $(self).remove();
+            });
+        }, 2000);
+    });
+};
+
 $(document).ready(function () {
     /* --- iCheck --- */
     $('.custom-checkbox, .custom-radio').iCheck({

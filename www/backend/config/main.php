@@ -11,8 +11,14 @@ return [
     'bootstrap' => ['log'],
     'language' => 'ru',
     'modules' => [
+        'blog' => [
+            'class' => 'backend\modules\blog\Blog',
+        ],
         'category' => [
             'class' => 'backend\modules\category\Category',
+        ],
+        'import' => [
+            'class' => 'backend\modules\import\Import',
         ],
         'product' => [
             'class' => 'backend\modules\product\Product',
@@ -20,8 +26,14 @@ return [
         'banners' => [
             'class' => 'backend\modules\banners\Banners',
         ],
+        'order' => [
+            'class' => 'backend\modules\order\Order',
+        ],
         'seo' => [
             'class' => 'backend\modules\seo\Seo',
+        ],
+        'reviews' => [
+            'class' => 'backend\modules\reviews\Reviews',
         ],
         'filemanager' => [
             'class' => 'backend\modules\filemanager\FileManager',

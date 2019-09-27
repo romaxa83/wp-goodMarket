@@ -4,8 +4,6 @@ namespace backend\widgets\langwidget;
 
 use Yii;
 use yii\base\Widget;
-use yii\helpers\ArrayHelper;
-use backend\modules\settings\models\Settings;
 use backend\widgets\langwidget\LangWidgetAsset;
 use yii\helpers\StringHelper;
 use common\models\Lang;
@@ -22,9 +20,8 @@ class LangWidget extends Widget {
     }
 
     public function run() {
-        $class = StringHelper::basename($this->model->className());
         return $this->render('langs-tab', [
-                    'class' => $class,
+                    'class' => StringHelper::basename($this->model->className()),
                     'model' => $this->model,
                     'fields' => $this->fields,
                     'languages' => self::getActiveLanguageData(['lang', 'alias'])
@@ -33,7 +30,7 @@ class LangWidget extends Widget {
 
     static function getActiveLanguageData($param) {
         $data = [];
-        $languages = Lang::find()->select(['status', 'name as lang', 'alias'])->where(['status' => 1])->orderBy(['priority' => SORT_ASC])->asArray()->all();
+        $languages = Lang::find()->select(['id', 'status', 'name as lang', 'alias'])->where(['status' => 1])->orderBy(['priority' => SORT_ASC])->asArray()->all();
         foreach ($languages as $k => $v) {
             if ($v['status'] == 1) {
                 foreach ($param as $item) {
@@ -44,15 +41,14 @@ class LangWidget extends Widget {
         return $data;
     }
 
-    static function validate($model) {
+    static function validate($model, $data) {
         $rules = $model->rules();
-        $class = strtolower(StringHelper::basename($model->className()));
-        $data = Yii::$app->request->post()[StringHelper::basename($model->className())]['Language'];
-        foreach ($data as $k => $v) {
+        $class = StringHelper::basename($model->className());
+        foreach ($data[$class] as $k => $v) {
             foreach ($v as $k0 => $v0) {
                 foreach ($rules as $rule) {
                     $action = $rule[1];
-                    $attr = $class . '-' . $k0 . '-' . $k;
+                    $attr = strtolower($class) . '-' . $k0 . '-' . $k;
                     if (is_array($rule[0]) && (array_search($k0, $rule[0]) !== FALSE))
                         if (method_exists(self::className(), $action))
                             self::$action($model, $attr, $v0, $k0, $rule);
@@ -84,7 +80,7 @@ class LangWidget extends Widget {
             }
             if ($params['on'] == $model->scenario) {
                 $name = $model->getAttributeLabel($name);
-                $model->addError($attr, $params['message'] . ' ' . $name);
+                $model->addError($attr, $params['message'] . ' «' . $name . '».');
             }
         }
     }

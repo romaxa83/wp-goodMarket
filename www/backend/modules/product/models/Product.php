@@ -7,13 +7,12 @@ use backend\modules\filemanager\models\Mediafile;
 use backend\modules\seo\models\SeoMeta;
 use backend\modules\product\models\ProductLang;
 use backend\modules\category\models\CategoryLang;
-
 use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 
 class Product extends ActiveRecord {
 
     const ADDED_PRODUCT = 'added_product';
-    const SAVED_PRODUCT = 'save_product';
 
     public $languageData;
     public $product_data;
@@ -31,15 +30,8 @@ class Product extends ActiveRecord {
      */
     public function rules() {
         return [
-            /* Добавляемые продукты */
-            [['alias', 'price', 'manufacturer_id', 'media_id', 'publish'], 'required', 'on' => self::ADDED_PRODUCT],
-            [['alias'], 'unique', 'message' => 'Такой алиас уже существует', 'on' => self::ADDED_PRODUCT],
-            ['alias', 'match', 'pattern' => '/^[a-z0-9_-]+$/', 'message' => 'Неверно введен алиас', 'on' => self::ADDED_PRODUCT],
-            [['rating'], 'number', 'min' => 0, 'max' => 100, 'on' => self::ADDED_PRODUCT],
-            /* Редактируемые продукты */
-            [['alias', 'price', 'manufacturer_id', 'media_id', 'publish'], 'required', 'on' => self::SAVED_PRODUCT],
-            ['alias', 'match', 'pattern' => '/^[a-z0-9_-]+$/', 'message' => 'Неверно введен алиас', 'on' => self::SAVED_PRODUCT],
-            [['rating'], 'number', 'min' => 0, 'max' => 100, 'on' => self::SAVED_PRODUCT]
+            [['category_id', 'manufacturer_id', 'amount', 'rating', 'publish'], 'required'],
+            [['rating'], 'number', 'min' => 0, 'max' => 100],
         ];
     }
 
@@ -55,9 +47,8 @@ class Product extends ActiveRecord {
             'media_id' => 'Изображение',
             'manufacturer_id' => 'Производитель',
             'group_id' => 'Группа',
-            'alias' => 'Алиас',
             'gallery' => 'Галерея',
-            'amount' => 'Остаток на складе',
+            'amount' => 'Количество',
             'trade_price' => 'Оптовая цена',
             'stock_publish' => 'Статус на базе',
             'publish' => 'Опубликовать',
@@ -70,7 +61,7 @@ class Product extends ActiveRecord {
 
     public function scenarios() {
         return [
-            self::SCENARIO_DEFAULT => ['stock_id', 'category_id', 'media_id', 'manufacturer_id', 'group_id', 'alias', 'gallery', 'amount', 'trade_price', 'stock_publish', 'publish', 'rating', 'is_variant', 'type', 'vendor_code']
+            self::SCENARIO_DEFAULT => ['stock_id', 'category_id', 'media_id', 'manufacturer_id', 'group_id', 'gallery', 'amount', 'trade_price', 'stock_publish', 'publish', 'rating', 'is_variant', 'type', 'vendor_code']
         ];
     }
 
@@ -83,7 +74,7 @@ class Product extends ActiveRecord {
     }
 
     public function getCategoryLang() {
-        return $this->hasOne(CategoryLang::className(), ['category_id' => 'category_id']);
+        return $this->hasMany(CategoryLang::className(), ['category_id' => 'category_id']);
     }
 
     public function getMedia() {
@@ -99,11 +90,24 @@ class Product extends ActiveRecord {
     }
 
     public function getVproducts() {
-        return $this->hasMany(VProduct::className(), ['product_id' => 'stock_id']);
+        return $this->hasMany(VProduct::className(), ['product_id' => 'id']);
     }
 
     public function getProductLang() {
         return $this->hasMany(ProductLang::className(), ['product_id' => 'id']);
+    }
+
+    public static function getProductsByCategory($category_id) {
+        $product_list = Product::find()->where(['publish' => 1, 'category_id' => $category_id])->all();
+        return $product_list;
+    }
+
+    public static function getProduct($product_id, $category_id) {
+        $product_list = Product::getProductsByCategory($category_id);
+        if (!array_key_exists($product_id, $product_list)) {
+            return [];
+        }
+        return $product_list[$product_id];
     }
 
 }

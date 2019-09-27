@@ -9,12 +9,14 @@ use yii\web\AssetBundle;
  * @see https://www.yiiframework.com/doc/api/2.0/yii-web-assetbundle
  */
 class BannersAsset extends AssetBundle {
+
     /**
      * Содержит исходные файлы ресурсов для модуля
      * @see https://www.yiiframework.com/doc/api/2.0/yii-web-assetbundle#$sourcePath-detail
      * @var string 
      */
     public $sourcePath = '@banners-assets';
+
     /**
      * Список css-файлов подключеных к модулю
      * @see https://www.yiiframework.com/doc/api/2.0/yii-web-assetbundle#$css-detail
@@ -23,6 +25,7 @@ class BannersAsset extends AssetBundle {
     public $css = [
         'css/banners.css'
     ];
+
     /**
      * Список js-файлов подключеных к модулю
      * @see https://www.yiiframework.com/doc/api/2.0/yii-web-assetbundle#$js-detail
@@ -31,6 +34,7 @@ class BannersAsset extends AssetBundle {
     public $js = [
         'js/banners.js'
     ];
+
     /**
      * Список имен классов пакетов-зависимостей для модуля
      * @see https://www.yiiframework.com/doc/api/2.0/yii-web-assetbundle#$depends-detail

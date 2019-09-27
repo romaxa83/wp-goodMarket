@@ -24,7 +24,12 @@ return [
                 'backend\modules\product\migrations',
                 'backend\modules\banners\migrations',
                 'backend\modules\content\migrations',
-                'backend\modules\content\migrations\projectMigrations'
+                'backend\modules\content\migrations\projectMigrations',
+                'backend\modules\blog\migrations',
+                'backend\modules\banners\migrations',
+                'backend\modules\order\migrations',
+                'backend\modules\category\migrations',
+                'backend\modules\import\migrations'
             ],
         ],
     ],

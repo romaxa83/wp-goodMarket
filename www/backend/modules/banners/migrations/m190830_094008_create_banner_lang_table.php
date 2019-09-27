@@ -26,7 +26,6 @@ class m190830_094008_create_banner_lang_table extends Migration {
         $this->createIndex(
                 'idx-banner_lang-banner_id', 'banner_lang', 'banner_id'
         );
-
         // creates index for column `lang_id`
         $this->createIndex(
                 'idx-banner_lang-lang_id', 'banner_lang', 'lang_id'
