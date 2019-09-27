@@ -1,9 +1,12 @@
 <?php
 
+use yii\helpers\Html;
 use yii\helpers\Url;
 use kartik\select2\Select2;
 use kartik\color\ColorInput;
 use backend\modules\filemanager\widgets\FileInput;
+use yii\web\JsExpression;
+
 ?>
 <div class="modal fade bd-example-modal-lg" id="gallery-show" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -99,6 +102,17 @@ use backend\modules\filemanager\widgets\FileInput;
             <div class="modal-body">
                 <div class="form-group">
                     <?php
+                    echo '<label class="control-label">Группа</label>';
+                    echo Select2::widget([
+                        'name' => 'Atribute[group]',
+                        'data' => [],
+                        'language' => 'ru',
+                        'options' => ['placeholder' => 'Выберите группу'],
+                    ]);
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php
                     echo '<label class="control-label">Характеристика</label>';
                     echo Select2::widget([
                         'name' => 'Atribute[characteristic]',
@@ -110,29 +124,44 @@ use backend\modules\filemanager\widgets\FileInput;
                 </div>
                 <div class="form-group">
                     <?php
-                    echo '<label class="control-label">Цвет</label>';
-                    echo ColorInput::widget([
-                        'name' => 'Atribute[color]',
-                        'attribute' => 'saturation',
-                        'options' => ['placeholder' => 'Выберите цвет'],
-                        'options' => ['readonly' => true]
-                    ]);
+                    echo '<label class="control-label">Значение характеристики</label>';
+                    echo Select2::widget([
+                        'name' => 'Atribute[product_characteristic_select]',
+                        'data' => [],
+                        'language' => 'ru',
+                        'options' => ['placeholder' => 'Выберите характеристику'],
+                        ]);
                     ?>
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Значение</label>
-                    <input type="text" name="Atribute[value]" class="form-control">
-                    <p class="help-block help-block-error"></p>
-                </div>
-                <div class="form-group">
-                    <label class="control-label">Цена</label>
-                    <input type="text" name="Atribute[price]" class="form-control">
-                    <p class="help-block help-block-error"></p>
-                </div>
-                <div class="form-group">
-                    <label class="control-label">Количество</label>
-                    <input type="text" name="Atribute[amount]" class="form-control">
-                    <p class="help-block help-block-error"></p>
+                    <?php
+                    echo ColorInput::widget([
+                        'name' => 'Atribute[product_characteristic_color_input]',
+                        'value' => 'red',
+                        'showDefaultPalette' => false,
+                        'options' => ['placeholder' => 'Choose your color ...'],
+                        'pluginOptions' => [
+                            'showInput' => true,
+                            'showInitial' => true,
+                            'showPalette' => true,
+                            'showPaletteOnly' => true,
+                            'showSelectionPalette' => true,
+                            'showAlpha' => false,
+                            'allowEmpty' => false,
+                            'preferredFormat' => 'name',
+                            'palette' => [
+                                [
+                                    "#ffff00", "#ed3333", "#288094", "silver", "gold", "brown",
+                                ],
+                                [
+                                    "red", "orange", "yellow", "indigo", "maroon", "pink"
+                                ],
+                                [
+                                    "blue", "green", "violet", "cyan", "magenta", "purple",
+                                ],
+                            ]
+                        ]
+                    ]);?>
                 </div>
             </div>
             <div class="modal-footer">

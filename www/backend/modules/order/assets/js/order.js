@@ -73,7 +73,7 @@ function fillSelect(url, select, data={}, value=0){
                     value = data[obj_keys[0]]['id'];
                 }
             }else{
-                select.append(new Option('Ничео не найдено', 0, false, false));
+                select.append(new Option('Ничего не найдено', 0, false, false));
             }
             select.removeAttr('disabled');
             $(select).attr('data-selected_id', value);

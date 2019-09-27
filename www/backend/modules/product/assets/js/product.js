@@ -447,20 +447,66 @@ $(document).ready(function () {
     });
     // /gallery-box
 
+    // attribute
+    var attribute_modal_group_select = $('#atribute-modal').find($('select[name="Atribute[group]"]'));
+    var attribute_modal_characteristic_select = $('#atribute-modal').find($('select[name="Atribute[characteristic]"]'));
+    var attribute_modal_product_characteristic_select = $('#atribute-modal').find($('select[name="Atribute[product_characteristic]"]'));
+
     $('.add-atribute').on('click', function () {
         $('#atribute-modal').modal('show');
+        $.ajax({
+            url: host + '/admin/product/product/ajax-get-group-data',
+            type: 'GET',
+            success: function (data) {
+                data = JSON.parse(data);
+                attribute_modal_group_select.empty();
+                for (var i in data) {
+                    var item = new Option(data[i]['name'], data[i]['id'], false, false);
+                    attribute_modal_group_select.append(item);
+                }
+                $(attribute_modal_group_select).trigger('select2:select');
+            }
+        });
     });
 
-    $('#atribute_characteristic').on('change', function () {
-        if ($(this).val()) {
-            $('.attr-type').addClass('hidden');
-            $('.attr-' + $(this).find('option:selected').data('type')).removeClass('hidden');
-            $('.form-field').removeClass('hidden');
-        } else {
-            $('.form-field').addClass('hidden');
-            $('.attr-type').addClass('hidden');
-        }
+    $(attribute_modal_group_select).on('select2:select', function (e) {
+        $.ajax({
+            url: host + '/admin/product/product/ajax-get-product-characteristic-list',
+            type: 'POST',
+            data: {id: attribute_modal_group_select.val()},
+            success: function (data) {
+                data = JSON.parse(data);
+                attribute_modal_characteristic_select.empty();
+                for (var i in data) {
+                    var item = new Option(data[i]['name'], i, false, false);
+                    attribute_modal_characteristic_select.append(item);
+                }
+                $(attribute_modal_characteristic_select).trigger('select2:select');
+            }
+        });
     });
+
+    // $(attribute_modal_characteristic_select).on('select2:select', function (e) {
+    //     $.ajax({
+    //         url: host + '/admin/product/product/ajax-get-characteristic-for-product',
+    //         type: 'POST',
+    //         data: {id: attribute_modal_characteristic_select.val()},
+    //         success: function (data) {
+    //             // data = JSON.parse(data);
+    //             // console.log(attribute_modal_product_characteristic_select.parent());
+    //             // return false;
+    //             attribute_modal_product_characteristic_select.parent().empty().append(data);
+    //             // attribute_modal_product_characteristic_select.empty();
+    //             // for (var i in data) {
+    //             //     var item = new Option(data[i]['value'], i, false, false);
+    //             //     attribute_modal_product_characteristic_select.append(item);
+    //             // }
+    //             // $(attribute_modal_product_characteristic_select).trigger('select2:select');
+    //         }
+    //     });
+    // });
+
+    // /attribute
 
     $('body').on('click', '.select2-selection__clear', function () {
         $('.form-field').addClass('hidden');

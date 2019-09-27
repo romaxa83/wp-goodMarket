@@ -119,7 +119,7 @@ class ProductController extends BaseController {
             ['href' => 'tab_3', 'name' => 'Галерея'],
             ['href' => 'tab_4', 'name' => 'SEO'],
             ['href' => 'tab_5', 'name' => 'Характеристики'],
-            // ['href' => 'tab_6', 'name' => 'Атрибуты'], - 
+            ['href' => 'tab_6', 'name' => 'Атрибуты'],
             //['href' => 'tab_7', 'name' => 'Акции']
         ];
         $model = $product = Product::find()->where(['id' => $id])->with('category')->with('productLang.lang')->one();
@@ -172,7 +172,7 @@ class ProductController extends BaseController {
 //                $sp_id = $stock_data[$i]['id'];
 //                $stock_data[$i] = ['stock_id' => $stock_id, 'sp_id' => $sp_id, 'var' => $var, 'title' => $stock->title, 'type' => $stock->type, 'sale' => $sale, 'sale_price' => $sale_price];
 //            }
-//            $stock_exist = true; 
+//            $stock_exist = true;
 //        } else {
 //            $stock_data = null;
 //            $stock_exist = false;
@@ -316,7 +316,9 @@ class ProductController extends BaseController {
     }
 
     private function getProductCharacteristic($id) {
-        $request = ProductCharacteristic::find()->select('product_characteristic.*, characteristic.*')->leftJoin('characteristic', 'product_characteristic.characteristic_id = characteristic.id')->where(['or', ['product_characteristic.product_id' => $id], ['product_import_id' => $id]])->asArray()->all();
+        $request = ProductCharacteristic::find()->select('product_characteristic.*, characteristic.*')
+            ->leftJoin('characteristic', 'product_characteristic.characteristic_id = characteristic.id')
+            ->where(['or', ['product_characteristic.product_id' => $id], ['product_import_id' => $id]])->asArray()->all();
         return $request;
     }
 
@@ -329,7 +331,11 @@ class ProductController extends BaseController {
                     . '`characteristic`.`name` AS `characteristic_name`,'
                     . '`product_characteristic`.`product_import_id` AS `product_import_id`,'
                     . '`product_characteristic`.`value` AS `product_characteristic_value`, '
-                    . '`characteristic`.`type` AS `characteristic_type`')->asArray()->leftJoin('characteristic', 'product_characteristic.characteristic_id = characteristic.id')->leftJoin('group', 'product_characteristic.group_id = group.id')->where(['or', ['product_characteristic.product_id' => $id], ['product_import_id' => $id]])->orderBy(['product_characteristic.group_id' => 'ASC', 'characteristic.id' => 'ASC']),
+                    . '`characteristic`.`type` AS `characteristic_type`')->asArray()
+                ->leftJoin('characteristic', 'product_characteristic.characteristic_id = characteristic.id')
+                ->leftJoin('group', 'product_characteristic.group_id = group.id')
+                ->where(['or', ['product_characteristic.product_id' => $id], ['product_import_id' => $id]])
+                ->orderBy(['product_characteristic.group_id' => 'ASC', 'characteristic.id' => 'ASC']),
             'pagination' => FALSE,
             'sort' => FALSE,
         ]);
@@ -755,6 +761,25 @@ class ProductController extends BaseController {
                     ->asArray()
                     ->all();
             return Json::encode($atributes);
+        }
+    }
+
+    public function actionAjaxGetGroupData() {
+        if (Yii::$app->request->isAjax) {
+            return Json::encode(Group::find()->select(['id', 'name'])->where(['status' => 1])->asArray()->all());
+        }
+    }
+
+    public function actionAjaxGetCharacteristicForProduct() {
+        if (Yii::$app->request->isAjax) {
+            $id = Yii::$app->request->post('id');
+            $characteristic = ArrayHelper::index(ProductCharacteristic::find()->select(['id', 'characteristic_id', 'value'])->where(['characteristic_id' => $id])->with('characteristic')->asArray()->all(), 'id');
+
+            $render = $this->renderPartial('_attribute_modal_color_input', [
+                'characteristic' => $characteristic
+            ]);
+
+            return $render;
         }
     }
 
