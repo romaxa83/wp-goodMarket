@@ -773,13 +773,30 @@ class ProductController extends BaseController {
     public function actionAjaxGetCharacteristicForProduct() {
         if (Yii::$app->request->isAjax) {
             $id = Yii::$app->request->post('id');
-            $characteristic = ArrayHelper::index(ProductCharacteristic::find()->select(['id', 'characteristic_id', 'value'])->where(['characteristic_id' => $id])->with('characteristic')->asArray()->all(), 'id');
+            $characteristic = ArrayHelper::index(ProductCharacteristic::find()->select(['id', 'characteristic_id', 'value'])
+                ->where(['characteristic_id' => $id])->with('characteristic')->asArray()->all(), 'id');
+            foreach ($characteristic as $k => $v) {
+                $data[] = ['id' => $k, 'text' => $v['characteristic']['type'] == 'color' ? '<div>Цвет: <span style="color:' . $v['value'] .'"> ' . $v['value'] . '</span></div>' : '<div>'. $v['value'] .'</div>' ];
+            }
+            if (isset($data) && !count($data) > 0) {
+                $data[] = ['id' => 0, 'text' => 'Ничего не найдено'];
+            }
+            return Json::encode($data);
+        }
+    }
 
-            $render = $this->renderPartial('_attribute_modal_color_input', [
-                'characteristic' => $characteristic
-            ]);
+    public function actionAjaxGenerateProductsAttributesForModal() {
+        if (Yii::$app->request->isAjax) {
+            $post = Yii::$app->request->post();
+            if (!empty($post['product_attributes'])) {
+                $product_attributes = Json::decode($post['product_attributes']);
+            }
+            $product_attributes[$post['product_characteristic']] = ProductCharacteristic::find()->select(['id', 'characteristic_id', 'value'])
+                ->where(['id' => $post['product_characteristic']])->with('characteristic')->asArray()->one();
 
-            return $render;
+            $render = $this->renderAjax('_modal_attributes', ['product_attributes' => $product_attributes]);
+
+            return Json::encode(['product_attributes' => $product_attributes, 'render' => $render]);
         }
     }
 

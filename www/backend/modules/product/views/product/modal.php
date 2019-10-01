@@ -6,6 +6,7 @@ use kartik\select2\Select2;
 use kartik\color\ColorInput;
 use backend\modules\filemanager\widgets\FileInput;
 use yii\web\JsExpression;
+use yii\web\View;
 
 ?>
 <div class="modal fade bd-example-modal-lg" id="gallery-show" tabindex="-1" role="dialog" aria-hidden="true">
@@ -99,74 +100,44 @@ use yii\web\JsExpression;
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="exampleModalLabel">Добавление атрибутов</h4>
             </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <?php
-                    echo '<label class="control-label">Группа</label>';
-                    echo Select2::widget([
-                        'name' => 'Atribute[group]',
-                        'data' => [],
-                        'language' => 'ru',
-                        'options' => ['placeholder' => 'Выберите группу'],
-                    ]);
-                    ?>
-                </div>
-                <div class="form-group">
-                    <?php
-                    echo '<label class="control-label">Характеристика</label>';
-                    echo Select2::widget([
-                        'name' => 'Atribute[characteristic]',
-                        'data' => [],
-                        'language' => 'ru',
-                        'options' => ['placeholder' => 'Выберите характеристику'],
-                    ]);
-                    ?>
-                </div>
-                <div class="form-group">
-                    <?php
-                    echo '<label class="control-label">Значение характеристики</label>';
-                    echo Select2::widget([
-                        'name' => 'Atribute[product_characteristic_select]',
-                        'data' => [],
-                        'language' => 'ru',
-                        'options' => ['placeholder' => 'Выберите характеристику'],
+            <form action="<?php echo Url::to('/admin/product/product/ajax-generate-products-attributes-for-modal', TRUE); ?>"
+                  method="post" id="form-add-product-characteristic">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <?php
+                        echo '<label class="control-label">Группа</label>';
+                        echo Select2::widget([
+                            'name' => 'Atribute[group]',
+                            'data' => [],
+                            'language' => 'ru',
+                            'options' => ['placeholder' => 'Выберите группу'],
                         ]);
-                    ?>
+                        ?>
+                    </div>
+                    <div class="form-group">
+                        <?php
+                        echo '<label class="control-label">Характеристика</label>';
+                        echo Select2::widget([
+                            'name' => 'Atribute[characteristic]',
+                            'data' => [],
+                            'language' => 'ru',
+                            'options' => ['placeholder' => 'Выберите характеристику'],
+                        ]);
+                        ?>
+                    </div>
+                    <div class="form-group" id="product_characteristic">
+                            <label class="control-label">Значение характеристики</label>
+                            <select class="form-control" name="Atribute[product_characteristic]"></select>
+                    </div>
+
+                    <button type="button" class="btn btn-primary add-product-characteristic">Добавить</button>
                 </div>
-                <div class="form-group">
-                    <?php
-                    echo ColorInput::widget([
-                        'name' => 'Atribute[product_characteristic_color_input]',
-                        'value' => 'red',
-                        'showDefaultPalette' => false,
-                        'options' => ['placeholder' => 'Choose your color ...'],
-                        'pluginOptions' => [
-                            'showInput' => true,
-                            'showInitial' => true,
-                            'showPalette' => true,
-                            'showPaletteOnly' => true,
-                            'showSelectionPalette' => true,
-                            'showAlpha' => false,
-                            'allowEmpty' => false,
-                            'preferredFormat' => 'name',
-                            'palette' => [
-                                [
-                                    "#ffff00", "#ed3333", "#288094", "silver", "gold", "brown",
-                                ],
-                                [
-                                    "red", "orange", "yellow", "indigo", "maroon", "pink"
-                                ],
-                                [
-                                    "blue", "green", "violet", "cyan", "magenta", "purple",
-                                ],
-                            ]
-                        ]
-                    ]);?>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary save-">Сохранить</button>
-            </div>
+            </form>
+            <form class="form-horizontal" action="<?php echo Url::to('/admin/product/product/ajax-', TRUE); ?>"
+                  method="post" id="form-generate-product-attributes">
+
+                <input type="hidden" name="Atribute[product_attributes]">
+            </form>
         </div>
     </div>
 </div>

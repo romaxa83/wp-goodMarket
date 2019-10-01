@@ -448,6 +448,8 @@ $(document).ready(function () {
     // /gallery-box
 
     // attribute
+    var form_add_product_characteristic = $('#form-add-product-characteristic');
+    var form_generate_product_attributes = $('#form-generate-product-attributes');
     var attribute_modal_group_select = $('#atribute-modal').find($('select[name="Atribute[group]"]'));
     var attribute_modal_characteristic_select = $('#atribute-modal').find($('select[name="Atribute[characteristic]"]'));
     var attribute_modal_product_characteristic_select = $('#atribute-modal').find($('select[name="Atribute[product_characteristic]"]'));
@@ -486,25 +488,55 @@ $(document).ready(function () {
         });
     });
 
-    // $(attribute_modal_characteristic_select).on('select2:select', function (e) {
-    //     $.ajax({
-    //         url: host + '/admin/product/product/ajax-get-characteristic-for-product',
-    //         type: 'POST',
-    //         data: {id: attribute_modal_characteristic_select.val()},
-    //         success: function (data) {
-    //             // data = JSON.parse(data);
-    //             // console.log(attribute_modal_product_characteristic_select.parent());
-    //             // return false;
-    //             attribute_modal_product_characteristic_select.parent().empty().append(data);
-    //             // attribute_modal_product_characteristic_select.empty();
-    //             // for (var i in data) {
-    //             //     var item = new Option(data[i]['value'], i, false, false);
-    //             //     attribute_modal_product_characteristic_select.append(item);
-    //             // }
-    //             // $(attribute_modal_product_characteristic_select).trigger('select2:select');
-    //         }
-    //     });
-    // });
+    $(attribute_modal_characteristic_select).on('select2:select', function (e) {
+        $.ajax({
+            url: host + '/admin/product/product/ajax-get-characteristic-for-product',
+            type: 'POST',
+            data: {id: attribute_modal_characteristic_select.val()},
+            success: function (data) {
+                data = JSON.parse(data);
+                if (attribute_modal_product_characteristic_select.data('select2')) {
+                    attribute_modal_product_characteristic_select.empty().trigger("change");
+                }
+
+                attribute_modal_product_characteristic_select.select2({
+                    data: data,
+                    templateResult: function (d) { return $(d.text); },
+                    templateSelection: function (d) { return $(d.text); },
+                });
+        }});
+    });
+
+    $(".add-product-characteristic").on("click", function () {
+        var url = form_add_product_characteristic.attr("action");
+        var group = form_add_product_characteristic.find($('select[name="Atribute[group]"]')).val();
+        var characteristic = form_add_product_characteristic.find($('select[name="Atribute[characteristic]"]')).val();
+        var product_characteristic = form_add_product_characteristic.find($('select[name="Atribute[product_characteristic]"]')).val();
+        var product_attributes = form_generate_product_attributes.find($('input[name="Atribute[product_attributes]"]')).val();
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: {group:group, characteristic:characteristic, product_characteristic:product_characteristic, product_attributes:product_attributes},
+            success: function (data) {
+                var data = JSON.parse(data);
+                // if (data.type == "error") {
+                //     for (var i in data.message) {
+                //         $('#modal-order-tour [name="' + i + '"]').addClass("error");
+                //     }
+                // }
+
+                form_generate_product_attributes.empty().html(data.render);
+            }
+        });
+    });
+
+    $('#form-generate-product-attributes').on("click", ".delete-product-attribute",  function () {
+        var attribute_id = $(this).data('id');
+        var product_attributes = JSON.parse(form_generate_product_attributes.find($('input[name="Atribute[product_attributes]"]')).val());
+        delete product_attributes[attribute_id];
+        form_generate_product_attributes.find($('input[name="Atribute[product_attributes]"]')).val(JSON.stringify(product_attributes));
+        $('div[class="form-group"][data-id='+attribute_id+']').remove();
+    });
 
     // /attribute
 
