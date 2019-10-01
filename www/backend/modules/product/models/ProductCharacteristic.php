@@ -39,4 +39,28 @@ class ProductCharacteristic extends ActiveRecord {
         return $this->hasOne(Group::className(), ['id' => 'group_id']);
     }
 
+    public static function CombinationOfCharacteristics($arr) {
+        $result = array();
+        $total = count($arr);
+        while(true) {
+            $row = array();
+            foreach ($arr as $key => $value) {
+                $row[] = current($value);
+            }
+            $result[] = $row;
+            for ($i = $total - 1; $i >= 0; $i--) {
+                if (next($arr[$i])) {
+                    break;
+                }
+                elseif ($i == 0) {
+                    break 2;
+                }
+                else {
+                    reset($arr[$i]);
+                }
+            }
+        }
+        return $result;
+    }
+
 }

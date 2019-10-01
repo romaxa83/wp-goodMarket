@@ -449,6 +449,7 @@ $(document).ready(function () {
 
     // attribute
     var form_add_product_characteristic = $('#form-add-product-characteristic');
+    var form_pre_generate_product_attributes = $('#form-pre-generate-product-attributes');
     var form_generate_product_attributes = $('#form-generate-product-attributes');
     var attribute_modal_group_select = $('#atribute-modal').find($('select[name="Atribute[group]"]'));
     var attribute_modal_characteristic_select = $('#atribute-modal').find($('select[name="Atribute[characteristic]"]'));
@@ -512,30 +513,72 @@ $(document).ready(function () {
         var group = form_add_product_characteristic.find($('select[name="Atribute[group]"]')).val();
         var characteristic = form_add_product_characteristic.find($('select[name="Atribute[characteristic]"]')).val();
         var product_characteristic = form_add_product_characteristic.find($('select[name="Atribute[product_characteristic]"]')).val();
-        var product_attributes = form_generate_product_attributes.find($('input[name="Atribute[product_attributes]"]')).val();
+        var product_attributes = form_pre_generate_product_attributes.find($('input[name="Atribute[product_attributes]"]')).val();
         $.ajax({
             url: url,
             type: "POST",
             data: {group:group, characteristic:characteristic, product_characteristic:product_characteristic, product_attributes:product_attributes},
             success: function (data) {
                 var data = JSON.parse(data);
-                // if (data.type == "error") {
-                //     for (var i in data.message) {
-                //         $('#modal-order-tour [name="' + i + '"]').addClass("error");
-                //     }
-                // }
-
-                form_generate_product_attributes.empty().html(data.render);
+                form_pre_generate_product_attributes.empty().html(data.render);
             }
         });
     });
 
-    $('#form-generate-product-attributes').on("click", ".delete-product-attribute",  function () {
+    $('#form-pre-generate-product-attributes').on("click", ".delete-product-attribute",  function () {
         var attribute_id = $(this).data('id');
-        var product_attributes = JSON.parse(form_generate_product_attributes.find($('input[name="Atribute[product_attributes]"]')).val());
+        var product_attributes = JSON.parse(form_pre_generate_product_attributes.find($('input[name="Atribute[product_attributes]"]')).val());
         delete product_attributes[attribute_id];
-        form_generate_product_attributes.find($('input[name="Atribute[product_attributes]"]')).val(JSON.stringify(product_attributes));
+        form_pre_generate_product_attributes.find($('input[name="Atribute[product_attributes]"]')).val(JSON.stringify(product_attributes));
         $('div[class="form-group"][data-id='+attribute_id+']').remove();
+    });
+
+    form_pre_generate_product_attributes.on("click", ".pre-generate-product-characteristic", function () {
+        $('#atribute-modal').modal('hide');
+        var url = form_pre_generate_product_attributes.attr("action");
+        var data = form_pre_generate_product_attributes.serialize();
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: data,
+            success: function (data) {
+                $('#generate-atribute-modal').modal('show');
+                form_generate_product_attributes.empty().html(data);
+            }
+        });
+    });
+
+    form_generate_product_attributes.on("click", ".generate-product-characteristic", function () {
+        var url = form_generate_product_attributes.attr("action");
+        var groups = {};
+        let attribute_price = $('input[name="attribute_price"]');
+
+        form_generate_product_attributes.find($('.form-group')).each(function(i, obj) {
+            let data_id = $(this).find(attribute_price).data('id');
+            let price = $(this).find(attribute_price).val();
+            let count = $(this).find($('input[name="attribute_count"]')).val();
+            let product_id = $(this).find(attribute_price).data('product-id');
+            if (data_id !== undefined) {
+                groups[data_id] = {
+                    attribute_price: price,
+                    attribute_count: count,
+                    product_id: product_id,
+                    data_id: data_id
+                };
+            }
+        });
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: {groups:groups},
+            success: function (data) {
+                var data = JSON.parse(data);
+                if (data.type == 'success') {
+                    $('#generate-atribute-modal').modal('hide');
+                    location.reload();
+                }
+            }
+        });
     });
 
     // /attribute

@@ -100,7 +100,7 @@ use yii\web\View;
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="exampleModalLabel">Добавление атрибутов</h4>
             </div>
-            <form action="<?php echo Url::to('/admin/product/product/ajax-generate-products-attributes-for-modal', TRUE); ?>"
+            <form action="<?php echo Url::to('/admin/product/product/ajax-pre-generate-products-attributes-for-modal', TRUE); ?>"
                   method="post" id="form-add-product-characteristic">
                 <div class="modal-body">
                     <div class="form-group">
@@ -133,10 +133,25 @@ use yii\web\View;
                     <button type="button" class="btn btn-primary add-product-characteristic">Добавить</button>
                 </div>
             </form>
-            <form class="form-horizontal" action="<?php echo Url::to('/admin/product/product/ajax-', TRUE); ?>"
-                  method="post" id="form-generate-product-attributes">
+            <form class="form-horizontal" action="<?php echo Url::to('/admin/product/product/ajax-generate-products-attributes-for-modal', TRUE); ?>"
+                  method="post" id="form-pre-generate-product-attributes">
 
                 <input type="hidden" name="Atribute[product_attributes]">
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="generate-atribute-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Заполните значения</h4>
+            </div>
+            <form class="form-horizontal"  action="<?php echo Url::to('/admin/product/product/ajax-save-generated-product-attributes', TRUE); ?>"
+                  method="post" id="form-generate-product-attributes">
+
             </form>
         </div>
     </div>

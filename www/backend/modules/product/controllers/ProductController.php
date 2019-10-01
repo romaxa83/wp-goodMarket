@@ -785,18 +785,79 @@ class ProductController extends BaseController {
         }
     }
 
-    public function actionAjaxGenerateProductsAttributesForModal() {
+    public function actionAjaxPreGenerateProductsAttributesForModal() {
         if (Yii::$app->request->isAjax) {
             $post = Yii::$app->request->post();
             if (!empty($post['product_attributes'])) {
                 $product_attributes = Json::decode($post['product_attributes']);
             }
-            $product_attributes[$post['product_characteristic']] = ProductCharacteristic::find()->select(['id', 'characteristic_id', 'value'])
+            $product_attributes[$post['product_characteristic']] = ProductCharacteristic::find()->select(['id', 'product_id', 'characteristic_id', 'value'])
                 ->where(['id' => $post['product_characteristic']])->with('characteristic')->asArray()->one();
 
             $render = $this->renderAjax('_modal_attributes', ['product_attributes' => $product_attributes]);
 
             return Json::encode(['product_attributes' => $product_attributes, 'render' => $render]);
+        }
+    }
+
+    public function actionAjaxGenerateProductsAttributesForModal() {
+        if (Yii::$app->request->isAjax) {
+            $post = Yii::$app->request->post();
+            $product_attributes = Json::decode($post['Atribute']['product_attributes']);
+
+            foreach ($product_attributes as $k => $v) {
+                $temp[$v['characteristic']['name']][] = $v['id'];
+            }
+            foreach ($temp as $k => $v) {
+                $groups[] = $v;
+            }
+
+            $combination = ProductCharacteristic::CombinationOfCharacteristics($groups);
+            for ($i = 0; $i < count($combination); $i++) {
+                sort($combination[$i]);
+            }
+
+            foreach ($product_attributes as $k => $v){
+                $product_id = $v['product_id'];
+                break;
+            }
+            $vproducts = VProduct::find()->select(['char_value', 'amount', 'price'])->where(['product_id' => $product_id])->asArray()->all();
+            $vproducts = ArrayHelper::index($vproducts, 'char_value');
+            return $this->renderAjax('_generated_modal_attributes', [
+                'combination' => $combination,
+                'product_attributes' => $product_attributes,
+                'vproducts' => $vproducts,
+            ]);
+        }
+    }
+
+    public function actionAjaxSaveGeneratedProductAttributes() {
+        if (Yii::$app->request->isAjax) {
+            $post = Yii::$app->request->post();
+            if (isset($post['groups']) && !empty($post['groups'])) {
+                foreach ($post['groups'] as $k => $v){
+                    $product_id = $v['product_id'];
+                    break;
+                }
+                foreach ($post['groups'] as $k => $v) {
+                    $groups[Json::encode($v['data_id'])] = $v;
+                }
+                $vproducts = ArrayHelper::index(VProduct::find()->where(['product_id' => $product_id])->all(), 'char_value');
+                foreach ($groups as $k => $v) {
+                    if (is_null($v['attribute_price']) || is_null($v['attribute_count']) || $v['attribute_price'] == 0) {
+                        continue;
+                    }
+                    $vproduct = isset($vproducts[$k]) ? $vproducts[$k] : new VProduct();
+                    $vproduct->product_id = $product_id;
+                    $vproduct->amount = $v['attribute_count'];
+                    $vproduct->price = $v['attribute_price'];
+                    $vproduct->publish = is_null($vproduct->publish) ? 1 : $vproduct->publish;
+                    $vproduct->char_value = Json::encode($v['data_id']);
+                    $vproduct->save();
+                }
+                Yii::$app->session->setFlash('success', 'Атрибуты успешно изменены');
+                return Json::encode(['type' => 'success']);
+            }
         }
     }
 
