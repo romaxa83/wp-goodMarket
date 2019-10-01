@@ -8,6 +8,7 @@ use pendalf89\filemanager\behaviors\MediafileBehavior;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use common\models\Lang;
 
 /**
  * This is the model class for table "page".
@@ -67,10 +68,9 @@ class Page extends ActiveRecord {
      */
     public function rules() {
         return [
-            [['title', 'slug_id'], 'required'],
+            [['slug_id'], 'required'],
             [['status', 'slug_id'], 'integer'],
-            [['creation_date', 'modification_date'], 'safe'],
-            [['title', 'lang'], 'string', 'max' => 255],
+            [['creation_date', 'modification_date'], 'safe']
         ];
     }
 
@@ -80,9 +80,7 @@ class Page extends ActiveRecord {
     public function attributeLabels() {
         return [
             'id' => 'ID',
-            'title' => 'Название страницы',
             'alias' => 'Псевдоним',
-            'lang' => 'Язык',
             'status' => 'Статус',
             'creation_date' => 'Дата создания',
             'modification_date' => 'Дата изменения',
@@ -113,4 +111,18 @@ class Page extends ActiveRecord {
         return $this->hasOne(SlugManager::className(), ['id' => 'slug_id']);
     }
 
+    public function getOneLang()
+    {   
+        return $this->hasOne(PageLang::class, ['page_id' => 'id']);
+    }
+
+    public function getManyLang()
+    {   
+        return $this->hasMany(PageLang::class, ['page_id' => 'id']);
+    }
+
+    public function getAliasLang()
+    {   
+        return $this->hasMany(Lang::class, ['id' => 'lang_id'])->via('manyLang');
+    }
 }
