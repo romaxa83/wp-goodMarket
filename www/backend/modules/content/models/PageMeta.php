@@ -3,7 +3,7 @@
 namespace backend\modules\content\models;
 
 use Yii;
-
+use common\models\Lang;
 /**
  * This is the model class for table "page_meta".
  *
@@ -15,23 +15,24 @@ use Yii;
  *
  * @property Page $page
  */
-class PageMeta extends \yii\db\ActiveRecord {
+class PageMeta extends \yii\db\ActiveRecord 
+{
 
     /**
      * {@inheritdoc}
      */
-    public static function tableName() {
+    public static function tableName() 
+    {
         return 'page_meta';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function rules() {
+    public function rules() 
+    {
         return [
-            [['title', 'description'], 'required'],
             [['page_id'], 'integer'],
-            [['title', 'description', 'keywords'], 'string', 'max' => 255],
             [['page_id'], 'exist', 'skipOnError' => true, 'targetClass' => Page::className(), 'targetAttribute' => ['page_id' => 'id']],
         ];
     }
@@ -39,21 +40,35 @@ class PageMeta extends \yii\db\ActiveRecord {
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels() {
+    public function attributeLabels() 
+    {
         return [
             'id' => 'ID',
-            'page_id' => 'Page ID',
-            'title' => 'Title',
-            'description' => 'Description',
-            'keywords' => 'Keywords',
+            'page_id' => 'Page ID'
         ];
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getPage() {
+    public function getPage() 
+    {
         return $this->hasOne(Page::className(), ['id' => 'page_id']);
+    }
+
+    public function getOneLang()
+    {   
+        return $this->hasOne(PageMetaLang::class, ['meta_id' => 'id']);
+    }
+
+    public function getManyLang()
+    {   
+        return $this->hasMany(PageMetaLang::class, ['meta_id' => 'id']);
+    }
+
+    public function getAliasLang()
+    {   
+        return $this->hasMany(Lang::class, ['id' => 'lang_id'])->via('manyLang');
     }
 
 }
