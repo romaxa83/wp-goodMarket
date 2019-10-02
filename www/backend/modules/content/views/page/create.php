@@ -14,7 +14,9 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="page-create">
     <?= $this->render('_form', [
         'model' => $model,
+        'langModel' => $langModel,
         'seo' => $seo,
+        'langSeo' => $langSeo,
         'slug' => $slug,
     ]) ?>
 
