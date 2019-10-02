@@ -38,5 +38,10 @@ return [
             ],
         ],
     ],
+    'modules' => [
+        'filemanager' => [
+            'class' => 'backend\modules\filemanager\FileManager',
+        ]
+    ],
     'params' => $params,
 ];

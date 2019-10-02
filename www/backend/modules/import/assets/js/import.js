@@ -93,6 +93,13 @@ $('#download-xml').on('click', function () {
             }
         },
         complete: function () {
+            var category_id = [];
+            $('.main-category-tree li').each(function () {
+                category_id.push($(this).data('id'));
+            });
+            $('.category-prosto').each(function (i, o) {
+                $(this).attr('name', 'categoryProsto[' + category_id[i] + ']');
+            });
             $('body').fadeTo("slow", 1);
         }
     });
