@@ -206,7 +206,24 @@ Modal::end();
                         <?php echo $form->field($product_characteristic, 'value', ['inputTemplate' => '<div class="form-group">{input}<button type="button" class=" pull-right btn btn-default save-characteristic" data-edit="0" title="Добавить характеристику"><i class="fa fa fa-floppy-o" aria-hidden="true"></i></button></div>']); ?>
                     </div>
                     <div class="type-item type-color hidden">
-                        <?php echo $form->field($product_characteristic, 'value', ['inputTemplate' => '{input}<button type="button" class=" pull-right btn btn-default save-characteristic" data-edit="0" title="Добавить характеристику"><i class="fa fa fa-floppy-o" aria-hidden="true"></i></button>'])->widget(ColorInput::classname(), ['options' => ['placeholder' => 'Select color ...', 'readonly' => 'readonly']]); ?>
+                        <?php echo $form->field($product_characteristic, 'value', ['inputTemplate' => '{input}<button type="button" class=" pull-right btn btn-default save-characteristic" data-edit="0" title="Добавить характеристику"><i class="fa fa fa-floppy-o" aria-hidden="true"></i></button>'])->widget(
+                                ColorInput::classname(), [
+                                        'options' => ['placeholder' => 'Select color ...', 'readonly' => 'readonly'],
+                                        'showDefaultPalette' => false,
+                                        'pluginOptions' => [
+                                            'showPalette' => true,
+                                            'preferredFormat' => 'name',
+                                            'palette' => [
+                                            [
+                                                "white", "black", "grey", "silver", "gold", "brown", "lime"
+                                            ],
+                                            [
+                                                "red", "orange", "yellow", "indigo", "maroon", "pink"
+                                            ],
+                                            [
+                                                "blue", "green", "violet", "cyan", "magenta", "purple",
+                                            ],
+                                        ]]]); ?>
                     </div>
                 </div>
             </div>
@@ -240,8 +257,16 @@ Modal::end();
                     [
                         'headerOptions' => ['width' => '92%'],
                         'attribute' => 'char_value',
-                        'value' => function ($model) {
-                            return $model['char_value'];
+                        'format' => 'html',
+                        'value' => function ($model) use ($pcharacteristic) {
+                                $char_value = '';
+                                $decode = \yii\helpers\Json::decode($model['char_value']);
+                              foreach ($decode as $k => $v) {
+                                $char_value .= $pcharacteristic[$v]['characteristic']['type'] == 'color'
+                                    ? ($k != array_key_first($decode) ? ' | ' : '') . 'Цвет: <span style="color:' . $pcharacteristic[$v]['value'] . '"> ' . $pcharacteristic[$v]['value'] . '</span>'
+                                    : ($k != array_key_first($decode) ? ' | ' : '') . $pcharacteristic[$v]['value'];
+                              };
+                              return $char_value;
                         }
                     ],
                     [

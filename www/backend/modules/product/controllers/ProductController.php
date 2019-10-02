@@ -132,6 +132,9 @@ class ProductController extends BaseController {
         $manufacturer = ArrayHelper::map(Manufacturer::find()->asArray()->where(['status' => 1])->all(), 'id', 'name');
         $group = ArrayHelper::map(Group::find()->where(['status' => 1])->all(), 'id', 'name');
 
+        $pcharacteristic = ArrayHelper::index(ProductCharacteristic::find()->select(['id', 'value', 'characteristic_id'])
+            ->where(['product_id' => $id])->with('characteristic')->asArray()->all(), 'id');
+
         $data = [];
         foreach ($model->productLang as $v) {
             foreach ($v as $k1 => $v1) {
@@ -140,7 +143,8 @@ class ProductController extends BaseController {
         }
         $modelLang->languageData = $data;
         if (empty($product->alias)) {
-            $modelLang->alias = preg_replace("/[^a-z0-9-]/", '', str_replace(' ', '-', mb_strtolower(TransliteratorHelper::process($product->productLang[0]->name, '?', 'en'))));
+            $modelLang->alias = preg_replace("/[^a-z0-9-]/", '', str_replace(' ', '-',
+                mb_strtolower(TransliteratorHelper::process($product->productLang[0]->name, '?', 'en'))));
             $product->languageData[0]['language'] = 'ru';
         }
 
@@ -196,6 +200,7 @@ class ProductController extends BaseController {
             'manufacturer' => $manufacturer,
             'group' => $group,
             'characteristic' => $characteristic,
+            'pcharacteristic' => $pcharacteristic,
             'product_characteristic' => $product_characteristic,
             'modelLang' => $modelLang
                 // Пересмотреть

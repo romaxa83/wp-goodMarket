@@ -190,7 +190,12 @@ function getProductPrice(lang_id, category_id, product_id, vproduct_id){
         dataType: 'json',
         data:{products:products, lang_id:lang_id, category_id:category_id, product_id:product_id, vproduct_id:vproduct_id},
         success: function(data) {
-            if(data!=false){
+            if (data.type == "error") {
+                if (data.redirect != undefined) {
+                    window.location.href = host + data.redirect;
+                }
+            }
+            if(data.type == "success"){
                 manage_table.find('tbody tr:first').attr('data-price', data['price']).attr('data-product_price', data['product_price']).attr('data-currency', data['currency']);
             }
         }
