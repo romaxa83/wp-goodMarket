@@ -26,6 +26,17 @@ use common\controllers\AccessController;
                             'visible' => AccessController::checkPermission('/category/category/index')
                         ],
                         ['label' => 'Баннера', 'icon' => 'list', 'url' => ['/banners/banners'], 'visible' => AccessController::checkPermission('/banners/banners/index')],
+                        [
+                            'label' => 'Контент',
+                            'icon' => 'briefcase',
+                            'url' => '#',
+                            'items' =>
+                                [
+                                    ['label' => 'Страницы', 'icon' => 'file-o', 'url' => ['/content/page'], 'visible' => AccessController::checkPermission('/content/page')],
+                                    ['label' => 'Типы записей', 'icon' => 'archive', 'url' => ['/content/channel'], 'visible' => AccessController::checkPermission('/content/channel')],
+                                    ['label' => 'Настройки', 'icon' => 'gear', 'url' => ['/content/options'], 'visible' => AccessController::checkPermission('/content/options')],
+                                ]
+                        ],
                         ['label' => 'Импорт', 'icon' => 'gears', 'url' => '#',
                             'visible' => AccessController::checkPermission('/import/import/index') || AccessController::checkPermission('/import/import/log'),
                             'items' => [
