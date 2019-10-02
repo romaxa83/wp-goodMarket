@@ -2,8 +2,8 @@
 
 use backend\modules\import\widgets\CategoryTreeWidget; ?>
 <ul class="tree-category">
-    <?php foreach ($category as $one) : ?>
-        <li>
+    <?php foreach ($category as $key => $one) : ?>
+        <li data-id="<?= $key ?>">
             <div class="list-group-item list-group-item-action">
                 <?= $one['parent']['name'] ?>
             </div>

@@ -14,6 +14,7 @@ return [
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-frontend',
+            'baseUrl' => ''
         ],
         'user' => [
             'identityClass' => 'common\models\User',
@@ -36,14 +37,19 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*
         'urlManager' => [
+            'class' => 'yii\web\UrlManager',
             'enablePrettyUrl' => true,
+            'enableStrictParsing' => true,
             'showScriptName' => false,
             'rules' => [
-            ],
-        ],
-        */
+                '' => 'site/index', 
+                [
+                    'class' => 'backend\modules\content\components\PageRule',
+                    'connectionID' => 'db',
+                ]
+            ]
+        ]
     ],
     'params' => $params,
 ];
