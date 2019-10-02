@@ -136,10 +136,6 @@ function init(){
         $('select[name="Order[user_id]"]').parent().show();
         $('.guest').addClass('guest-hide');
    }
-   if($('.warehouse-select option').length > 1){
-       wh_selected =  $('select[name="Order[address]"]').find('option:selected').attr('value');
-       fillSelect(url, $('select[name="Order[address]"]'), {}, wh_selected);
-    }
     if (order_id){
         $.ajax({
             type: 'POST',
@@ -149,6 +145,10 @@ function init(){
                 setProducts(data);
             }
         });
+    }
+   if($('.warehouse-select option').length > 1){
+       wh_selected =  $('select[name="Order[address]"]').find('option:selected').attr('value');
+       fillSelect(url, $('select[name="Order[address]"]'), {}, wh_selected);
     }
 }
 
