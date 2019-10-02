@@ -542,7 +542,7 @@ class OrderController extends BaseController {
                         $order_products[$k]['amount'] = $products[$pid]['vproducts'][$data[$k]['vproduct_id']]['amount'];
                         $order_products[$k]['vproduct_id'] = $data[$k]['vproduct_id'];
                     } catch (\Throwable $e) {
-                        Yii::$app->session->setFlash('error', 'Не консистентность данных: отсутствуют данные вариативного товара (id='.$data[$k]['vproduct_id'].') для продукта (id='.$pid.')');
+                        Yii::$app->session->setFlash('error', 'Отсутствуют данные вариативного товара (id='.$data[$k]['vproduct_id'].') для продукта (id='.$pid.')');
                         if (Yii::$app->request->isAjax) {
                             return Json::encode(['type' => 'error', 'redirect' => '/admin/order/order']);
                         } else {
@@ -1010,7 +1010,7 @@ class OrderController extends BaseController {
                             : $product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][Lang::getDefaultLangID()]['currency'];
                     } catch (\Throwable $e) {
                         Yii::$app->session->setFlash('error',
-                            'Не консистентность данных: отсутствуют VProductLang данные вариативного товара (id='.$post['vproduct_id'].') для продукта (id='.$post['product_id'].')');
+                            'Отсутствуют VProductLang данные вариативного товара (id='.$post['vproduct_id'].') для продукта (id='.$post['product_id'].')');
                         if (Yii::$app->request->isAjax) {
                             return Json::encode(['type' => 'error', 'redirect' => '/admin/order/order']);
                         } else {
@@ -1029,7 +1029,7 @@ class OrderController extends BaseController {
                             ? $product[$post['product_id']]['productLang'][$post['lang_id']]['currency']
                             : $product[$post['product_id']]['productLang'][Lang::getDefaultLangID()]['currency'];
                     } catch (\Throwable $e) {
-                        Yii::$app->session->setFlash('error', 'Не консистентность данных: отсутствуют ProductLang данные для продукта с id=' . $post['product_id']);
+                        Yii::$app->session->setFlash('error', 'Отсутствуют ProductLang данные для продукта с id=' . $post['product_id']);
                         if (Yii::$app->request->isAjax) {
                             return Json::encode(['type' => 'error', 'redirect' => '/admin/order/order']);
                         } else {
