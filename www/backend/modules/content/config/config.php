@@ -25,9 +25,6 @@ return [
             'statistics' => 'Статистика',
             'banners' => 'Баннеры',
             'image' => 'Изображение',
-            'api-country-selector' => 'Страна из API',
-            'resorts' => 'Курорты',
-            'regions' => 'Регионы',
             'categories' => 'Категории',
             'filter' => 'Фильтр'
         ],
