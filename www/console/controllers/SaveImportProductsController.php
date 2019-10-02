@@ -20,6 +20,8 @@ use backend\modules\product\models\Manufacturer;
 use backend\modules\import\service\ImportService;
 use backend\widgets\SeoWidget;
 use backend\modules\import\service\FilterAttr;
+use backend\modules\product\models\ProductLang;
+use backend\widgets\langwidget\LangWidget;
 
 class SaveImportProductsController extends Controller {
 
@@ -73,8 +75,7 @@ class SaveImportProductsController extends Controller {
         parent::init();
         $this->importService = new ImportService();
         $this->filter = new FilterAttr();
-        $this->filemanager_module = \Yii::$app->getModule('filemanager');
-        //$this->category_cache = CategoryController::getCategoryList();
+        $this->filemanager_module = Yii::$app->getModule('filemanager');
     }
 
     /**
@@ -104,7 +105,7 @@ class SaveImportProductsController extends Controller {
                 $index = ParseShop::find()->select('id')->where([$field_name => ParseShop::IN_PROCESS])->asArray()->one()['id'];
                 if (is_null($index)) {
                     $index = ParseShop::find()->select('id')->where([$field_name => ParseShop::NOT_PROCESS])->asArray()->one()['id'];
-                    if ($index !== null) {
+                    if (!is_null($index)) {
                         $this->setInProcessStatus($field_name, $index);
                     }
                 }
@@ -253,6 +254,7 @@ class SaveImportProductsController extends Controller {
             //если нету магазина для процесса 
             return false;
         }
+        // Пересмотреть IF
         if ($process_name != 'create') {
             $div_keys = $this->importService->readJson(Yii::getAlias('@backend') . '/modules/import/assets/shops/shop_' . $index . '/div_keys.json');
             //если есть магазин и у него есть товары удаленые из xml 
@@ -262,6 +264,7 @@ class SaveImportProductsController extends Controller {
                 }
             }
         }
+        // Убрать петлю getNameColumn
         $column_status = $this->getNameColumn($process_name);
         $products = $this->parseProducts($index);
         if (empty($products)) {
@@ -295,10 +298,9 @@ class SaveImportProductsController extends Controller {
         $i = 0;
         $product = [];
         $limit = 50; //add config.import_settings
-        if ($shop_id !== null) {
+        if (!is_null($shop_id)) {
             /* Собираем данные продуктов */
-            $absolutePath = Yii::getAlias('@backend') . '/modules/import/assets/shops/shop_' . $shop_id;
-            $filepath = $absolutePath . '/import_attr.json';
+            $filepath = Yii::getAlias('@backend') . '/modules/import/assets/shops/shop_' . $shop_id . '/import_attr.json';
             $data = $this->importService->readJson($filepath);
             if (!empty($data)) {
                 foreach ($data as $key => $oneTag) {
@@ -322,7 +324,7 @@ class SaveImportProductsController extends Controller {
                     }
                 }
                 /* Запаписываем остаток обратно в файл */
-                $this->importService->writeJson($data, $filepath);
+                //$this->importService->writeJson($data, $filepath);
                 return $product;
             }
         }
@@ -513,7 +515,7 @@ class SaveImportProductsController extends Controller {
             'shop_id' => $shop_id,
             'fields' => []
         ];
-        $cache_category_name = ArrayHelper::map($this->category_cache, 'id', 'name');
+        $cache_category_name = ArrayHelper::map(Category::find()->select(['category.id', 'category_lang.name'])->joinWith('categoryLang')->asArray()->all(), 'id', 'name');
         $product_cache_xml = $product_cache_frame;
         $intersect_keys = array_intersect(array_keys($product), array_keys($product_cache_xml));
         foreach ($intersect_keys as $i_k) {
@@ -792,17 +794,20 @@ class SaveImportProductsController extends Controller {
         //сбор кеша
         $assemble_cache_frame = $this->assembleCacheFrame($shop_model['name'], $shop_model['id'], $prod);
         //поиск идентичного товара от другого магазина
-        $prod['alias'] = SlugGenerator::generateTranslate($prod['product_name']);
-        $prod_replace = Product::find()->where(['vendor_code' => $prod['vendor_code']])->orWhere(['alias' => $prod['alias']])->one();
+        $prod['alias'] = SlugGenerator::slug($prod['product_name']);
+        $prod_replace = Product::find()->where(['vendor_code' => $prod['vendor_code']])->orWhere(['product_lang.alias' => $prod['alias']])->joinWith('productLang')->one();
         if (is_null($prod_replace)) {
+            // Пересмотреть
             //идентичный товар не найден && сохранения "not found img"
-            $save_img_result = $this->saveDefImg($this->filemanager_module->routes, $this->filemanager_module->rename, $this->filemanager_module->thumbs);
-            if ($save_img_result) {
-                $prod['media_id'] = $save_img_result;
-            } else {
-                $this->importService->writeLogs("Не удалось загрузить стандартное изображение для продукта " . $prod['id'], 'SaveImportProduct.txt');
-                return false;
-            }
+//            $save_img_result = $this->saveDefImg($this->filemanager_module->routes, $this->filemanager_module->rename, $this->filemanager_module->thumbs);
+//            if ($save_img_result) {
+//                $prod['media_id'] = $save_img_result;
+//            } else {
+//                $this->importService->writeLogs("Не удалось загрузить стандартное изображение для продукта " . $prod['id'], 'SaveImportProduct.txt');
+//                return false;
+//            }
+            $prod['media_id'] = 1;
+
             //сохраниние в характеристики
             $prod['group_id'] = ShopGroup::find()->where(['shop_id' => $shop_model['id']])->one()->group_id;
             if (array_key_exists('characteristics', $prod) && !empty($connectionData['characters_id'])) {
@@ -824,7 +829,7 @@ class SaveImportProductsController extends Controller {
                 if ($prod_manufacture_model == null) {
                     $prod_manufacture_model = new Manufacturer();
                     $prod_manufacture_model->name = $prod['manufacturer'];
-                    $prod_manufacture_model->slug = SlugGenerator::generateTranslate($prod['manufacturer']);
+                    $prod_manufacture_model->slug = SlugGenerator::slug($prod['manufacturer']);
                     $prod_manufacture_model->status = 1;
                     $prod_manufacture_model->save();
                 }
@@ -835,15 +840,26 @@ class SaveImportProductsController extends Controller {
             $prod_model->category_id = $prod['category_id'];
             $prod_model->media_id = $prod['media_id'];
             $prod_model->manufacturer_id = $prod['manufacturer_id'];
-            $prod_model->alias = $prod['alias'];
-            $prod_model->import_id = $prod['id'];
+            //$prod_model->import_id = $prod['id'];
             $prod_model->group_id = $prod['group_id'];
-            $prod_model->description = (isset($prod['description'])) ? $prod['description'] : "";
-            $prod_model->price = $prod['price'];
             $prod_model->vendor_code = $prod['vendor_code'];
+            $prod_model->amount = 1;
+            $prod_model->rating = 0;
             $prod_model->publish = (int) $this->importService->isPublish($prod, $category_status);
-            $prod_model->language = 'ru';
-            if (!$prod_model->save()) {
+            if ($prod_model->save()) {
+                $LW = LangWidget::getActiveLanguageData(['id', 'alias']);
+                foreach ($LW as $item) {
+                    $pl = new ProductLang();
+                    $pl->product_id = $prod_model->id;
+                    $pl->lang_id = $item['id'];
+                    $pl->alias = $prod['alias'];
+                    $pl->name = $prod['product_name'];
+                    $pl->description = (isset($prod['description'])) ? $prod['description'] : "";
+                    $pl->price = $prod['price'];
+                    $pl->currency = 'UAH';
+                    $pl->save();
+                }
+            } else {
                 $this->importService->writeLogs("Не удалось сохранить продукт с id: " . $prod['id'], 'SaveImportProduct.txt');
                 return false;
             }
@@ -853,7 +869,7 @@ class SaveImportProductsController extends Controller {
                     $seo[$keySeo] = SeoMeta::SeoGenerator($oneSeoColumn, $assemble_cache_frame);
                 }
                 //сохранение сео товару
-                $prod_model->seo_id = SeoWidget::save($prod_model->id, 'product', ['ru' => $seo['Product']]);
+                SeoWidget::save($prod_model->id, 'product', $seo['Product']);
                 if (!$prod_model->update()) {
                     $this->importService->writeLogs("Не удалось сохранить seo продукта с id: " . $prod['id'], 'SaveImportProduct.txt');
                     return false;
@@ -870,26 +886,28 @@ class SaveImportProductsController extends Controller {
                 $this->importService->writeLogs('загрузка оригинальных картинки товара не удалась', 'SaveImportProduct.txt');
             }
         } else {
-            if (($prod['price'] !== 0) && ($prod['price'] < $prod_replace->price) && ($this->importService->isTrue($assemble_cache_frame['publish_status']))) {
-                $this->importService->writeLogs('Найден выгодный товар. Текущий товар: ' . $prod_replace->import_id . ' Выгодный товар: ' . $prod['id'], 'SaveImportProduct.txt');
+            if (($prod['price'] !== 0) && ($prod['price'] < $prod_replace->productLang[0]['price']) && ($this->importService->isTrue($assemble_cache_frame['publish_status']))) {
+                //$this->importService->writeLogs('Найден выгодный товар. Текущий товар: ' . $prod_replace->import_id . ' Выгодный товар: ' . $prod['id'], 'SaveImportProduct.txt');
+                $this->importService->writeLogs('Найден выгодный товар. Выгодный товар: ' . $prod['id'], 'SaveImportProduct.txt');
                 //при нахождения выгодной цены у товара используем его
-                $prod_replace->import_id = $prod['id'];
-                $prod_replace->price = $prod['price'];
-                $prod_replace->save();
+                //$prod_replace->import_id = $prod['id'];
+                //$prod_replace->price = $prod['price'];
+                //$prod_replace->save();
+                ProductLang::updateAll(['price' => $prod['price']], ['=', 'product_id', $prod_replace['id']]);
             }
         }
-        //Сохранение в кеш
-        $shop_cache = [];
-        $product_cache_xml = ProductController::attachFieldDB($assemble_cache_frame, ['vendor_code' => $assemble_cache_frame['vendor_code']]);
-        $shop_cache[$product_index] = $product_cache_xml;
-        if (Yii::$app->cache->exists('products_shop_' . $shop_model['id'])) {
-            $shop_cache = $shop_cache + Yii::$app->cache->get('products_shop_' . $shop_model['id']);
-        }
-        if (!Yii::$app->cache->set('products_shop_' . $shop_model['id'], $shop_cache, true)) {
-            $this->writeLogs('Продукт не получилось занести в кеш', 'SaveImportProduct.txt');
-            $this->consoleInfo('echo', 'Кеш словил маслину');
-            return false;
-        }
+//        //Сохранение в кеш
+//        $shop_cache = [];
+//        $product_cache_xml = ProductController::attachFieldDB($assemble_cache_frame, ['vendor_code' => $assemble_cache_frame['vendor_code']]);
+//        $shop_cache[$product_index] = $product_cache_xml;
+//        if (Yii::$app->cache->exists('products_shop_' . $shop_model['id'])) {
+//            $shop_cache = $shop_cache + Yii::$app->cache->get('products_shop_' . $shop_model['id']);
+//        }
+//        if (!Yii::$app->cache->set('products_shop_' . $shop_model['id'], $shop_cache, true)) {
+//            $this->writeLogs('Продукт не получилось занести в кеш', 'SaveImportProduct.txt');
+//            $this->consoleInfo('echo', 'Кеш словил маслину');
+//            return false;
+//        }
         return true;
     }
 
