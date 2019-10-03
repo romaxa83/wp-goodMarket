@@ -247,24 +247,23 @@
                       <div class="offer-card">
                         <div class="offer-card__img">
                           <picture>
-                            <source
-                              media="(min-width: 768px)"
-                              type="image/webp"
-                              srcset="img/banner-md.webp"
-                            />
-                            <source
-                              media="(min-width: 768px)"
-                              srcset="img/banner-md.jpg"
-                            />
-                            <source
-                              type="image/webp"
-                              srcset="img/banner-sm.webp"
-                            />
-                            <img
-                              src="img/banner-sm.jpg"
-                              alt="banner"
-                              title="banner"
-                            />
+                              <source
+                                      media="(min-width: 1500px)"
+                                      srcset="img/banner-xxl.jpg"
+                              />
+                              <source
+                                      media="(min-width: 1200px)"
+                                      srcset="img/banner-xl.jpg"
+                              />
+                              <source
+                                      media="(min-width: 768px)"
+                                      srcset="img/banner-md.jpg"
+                              />
+                              <img
+                                      src="img/banner-sm.jpg"
+                                      alt="banner"
+                                      title="banner"
+                              />
                           </picture>
                         </div>
                         <div>

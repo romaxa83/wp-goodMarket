@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 use yii\helpers\Url;
 
@@ -8,32 +8,22 @@ use yii\helpers\Url;
     <a href="#" class="top-banner__link"></a>
     <picture>
         <source
-        media="(min-width: 1200px)"
-        type="image/webp"
-        srcset="img/top_banner-xl.webp"
+                media="(min-width: 1500px)"
+                srcset="img/top_banner-xxl.jpg"
         />
         <source
-        media="(min-width: 1200px)"
-        srcset="img/top_banner-xl.jpg"
+                media="(min-width: 1200px)"
+                srcset="img/top_banner-xl.jpg"
         />
         <source
-        media="(min-width: 768px)"
-        type="image/webp"
-        srcset="img/top_banner-md.webp"
-        />
-        <source
-        media="(min-width: 768px)"
-        srcset="img/top_banner-md.jpg"
-        />
-        <source
-        type="image/webp"
-        srcset="img/top_banner-sm.webp"
+                media="(min-width: 768px)"
+                srcset="img/top_banner-md.jpg"
         />
         <img
-        src="img/top_banner-sm.jpg"
-        alt="top banner"
-        title="top banner"
-        class="top-banner__img"
+                src="img/top_banner-sm.jpg"
+                alt="top banner"
+                title="top banner"
+                class="top-banner__img"
         />
     </picture>
     </div>
@@ -275,7 +265,7 @@ use yii\helpers\Url;
                 <use xlink:href="img/spritemap.svg#sprite-phone"></use>
                 </svg>
             </div>
-            <span class="nav-link dropdown-toggle" 
+            <span class="nav-link dropdown-toggle"
                 >(000) 123-45-67</span
             >
             <div class="dropdown-menu text-center">
@@ -323,7 +313,7 @@ use yii\helpers\Url;
         </nav>
     </div>
     </div>
-    <div class="site-header__wrapper" id="stickyHeader" data-sticky-wrap="true"> 
+    <div class="site-header__wrapper" id="stickyHeader" data-sticky-wrap="true">
     <div class="container position-relative">
         <nav
         class="navbar site-navbar d-flex flex-nowrap align-items-center justify-content-start"
