@@ -2,24 +2,16 @@
 /** @var int $id */
 /** @var string $group */
 
-use backend\modules\content\models\ChannelCategory;
+use backend\modules\category\models\Category;
 use kartik\select2\Select2;
 
 ?>
 
-<?php
-$categories = ChannelCategory::find()
-    ->where(['status' => 1])
-    ->indexBy('id')
-    ->asArray()
-    ->all();
-?>
-
 <?= Select2::widget([
-    'name' => "{$group}[{$id}][text]",
+    'name' => "{$group}[{$id}][category_id]",
     'data' => array_map(function($category) {
-        return $category['title'];
-    }, $categories),
+        return $category['name'];
+    }, Category::getListCategory()),
     'options' => [
         'placeholder' => 'Выбор категории',
         'class' => 'form-control',

@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
 </style>
 <div class="box box-primary">
     <div class="box-header with-border">
-        <?= Html::a('Добавить страницу', ['create'], ['class' => 'btn btn-success btn-sm invisible']) ?>
+        <?= Html::a('Добавить страницу', ['create'], ['class' => 'btn btn-success btn-sm']) ?>
         <div class="box-tools pull-right btn-sm">
             <div class="has-feedback">
                 <form id="search-form">
@@ -39,7 +39,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 'dataProvider' => $dataProvider,
                 'columns' => [
                     'id',
-                    'title',
+                    [
+                        'attribute' => 'Название страницы',
+                        'content' => function($model) {
+                            return $model['oneLang']->title;
+                        }
+                    ],
                     [
                         'attribute' => 'status',
                         'content' => function($data) {

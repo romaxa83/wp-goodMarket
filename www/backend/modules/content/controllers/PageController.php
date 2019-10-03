@@ -2,21 +2,30 @@
 
 namespace backend\modules\content\controllers;
 
+use Yii;
+
 use Ausi\SlugGenerator\SlugGenerator;
 use backend\modules\content\models\ContentOptions;
-use backend\modules\content\models\PageMeta;
-use backend\modules\content\models\PageText;
 use backend\modules\content\models\SlugManager;
+
 //use backend\modules\user\useCase\Access;
-use Yii;
+
 use backend\modules\content\models\Page;
+use backend\modules\content\models\PageLang;
+use backend\modules\content\models\PageMeta;
+use backend\modules\content\models\PageMetaLang;
+use backend\modules\content\models\PageText;
+use backend\widgets\langwidget\LangWidget;
+
 use yii\data\ActiveDataProvider;
 use yii\db\StaleObjectException;
+
 use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
+
 use yii\web\Controller;
 use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 
 /**
  * PageController implements the CRUD actions for Page model.
@@ -35,7 +44,8 @@ class PageController extends Controller
     /**
      * {@inheritdoc}
      */
-    public function behaviors() {
+    public function behaviors() 
+    {
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -64,10 +74,11 @@ class PageController extends Controller
      * @return mixed
      * @throws ForbiddenHttpException
      */
-    public function actionIndex() {
+    public function actionIndex() 
+    {
 //        $this->access->accessAction();
 
-        $query = Page::find();
+        $query = Page::find()->with(['oneLang']);
 
         $search = Yii::$app->request->get('search');
         if ($search) {
@@ -100,22 +111,38 @@ class PageController extends Controller
     public function actionCreate()
     {
 //        $this->access->accessAction();
-
         $cache = YII::$app->cache;
         $cache->delete('block-id');
+
         $model = new Page();
+        $langModel = new PageLang();
+
         $seo = new PageMeta();
+        $langSeo = new PageMetaLang();
+        
         $slug = new SlugManager();
 
-        if ($model->load(Yii::$app->request->post())) {
-            if($this->savePage($model, $seo, $slug)) {
-                return $this->redirect(['index', 'id' => $model->id]);
+        if(Yii::$app->request->isPost){
+            $post = Yii::$app->request->post();
+            if($model->load($post) && LangWidget::validate($langModel,$post) && LangWidget::validate($langSeo,$post)){
+                if($this->savePage($model, $seo, $slug)) {
+                    $langModel->saveLang($post['PageLang'],$model->id);
+                    $langSeo->saveLang($post['PageMetaLang'],$model->id);
+
+                    if(Yii::$app->request->post('redirect') == 1) {
+                        return $this->redirect(['index', 'id' => $model->id]);
+                    }else{
+                        return $this->redirect(['update?id=' . $model->id]);
+                    }
+                }
             }
         }
 
         return $this->render('create', [
             'model' => $model,
+            'langModel' => $langModel,
             'seo' => $seo,
+            'langSeo' => $langSeo,
             'slug' => $slug,
         ]);
     }
@@ -130,26 +157,54 @@ class PageController extends Controller
      * @throws ForbiddenHttpException
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id) {
+    public function actionUpdate($id) 
+    {
 //        $this->access->accessAction();
 
         $cache = YII::$app->cache;
         $cache->delete('block-id');
-        $model = $this->findModel($id);
-        $seo = $model->pageMetas;
+
+        $model = Page::find()->where(['id' => $id])->with(['manyLang','aliasLang'])->one();
+        $langModel = new PageLang();
+
+        foreach ($model['manyLang'] as $indexRow => $oneLang) {
+            $langAlias = $model['aliasLang'][$indexRow]->alias;
+            $langModel->languageData[$langAlias]['title'] = $oneLang->title;
+        }
+
+        $seo = PageMeta::find()->where(['id' => $id])->with(['manyLang','aliasLang'])->one();
+        $langSeo = new PageMetaLang();
+
+        foreach ($seo['manyLang'] as $indexRow => $oneLang) {
+            $langAlias = $seo['aliasLang'][$indexRow]->alias;
+            $langSeo->languageData[$langAlias]['title'] = $oneLang->title;
+            $langSeo->languageData[$langAlias]['description'] = $oneLang->description;
+            $langSeo->languageData[$langAlias]['keywords'] = $oneLang->keywords;
+        }
+
         $slug = $model->slugManager;
 
-        if ($model->load(Yii::$app->request->post())) {
-            if($this->savePage($model, $seo, $slug)) {
-                if(Yii::$app->request->post('redirect') == 1) {
-                    return $this->redirect(['index', 'id' => $model->id]);
+        if(Yii::$app->request->isPost){
+            $post = Yii::$app->request->post();
+            if ($model->load($post) && LangWidget::validate($langModel,$post)) {
+                if($this->savePage($model, $seo, $slug)) {
+                    $langModel->updateLang($post['PageLang'],$id);
+                    $langSeo->updateLang($post['PageMetaLang'],$id);
+
+                    if(Yii::$app->request->post('redirect') == 1) {
+                        return $this->redirect(['index', 'id' => $model->id]);
+                    }else{
+                        return $this->redirect(['update?id=' . $id]);
+                    }
                 }
             }
         }
 
         return $this->render('update', [
             'model' => $model,
-            'seo' => $model->pageMetas,
+            'langModel' => $langModel,
+            'seo' => $seo,
+            'langSeo' => $langSeo,
             'textBlocks' => $model->pageText,
             'slug' => $model->slugManager,
         ]);
@@ -168,7 +223,8 @@ class PageController extends Controller
      * @throws \Throwable
      * @throws StaleObjectException
      */
-    public function actionDelete($id) {
+    public function actionDelete($id) 
+    {
 //        $this->access->accessAction();
 
         $this->findModel($id)->delete();
@@ -182,9 +238,9 @@ class PageController extends Controller
      * @return bool|string
      * @throws ForbiddenHttpException
      */
-    public function actionAjaxGenerateAlias(){
+    public function actionAjaxGenerateAlias()
+    {
 //        $this->access->accessAction();
-
         if(Yii::$app->request->isAjax){
             if($title = Yii::$app->request->post('title')){
                 $generator = new SlugGenerator;
@@ -192,6 +248,7 @@ class PageController extends Controller
                 return $alias;
             }
         }
+
         return false;
     }
 
@@ -201,7 +258,8 @@ class PageController extends Controller
      * @return mixed
      * @throws ForbiddenHttpException
      */
-    public function actionGetRouteForTemplate() {
+    public function actionGetRouteForTemplate() 
+    {
 //        $this->access->accessAction();
 
         $slug = Yii::$app->request->post('template');
@@ -214,18 +272,20 @@ class PageController extends Controller
     {
         $seo->attributes = Yii::$app->request->post('PageMeta');
         $model->pageMetas = $seo;
+        
         $slug->attributes = Yii::$app->request->post('slug');
         $model->slugManager = $slug;
 
         $texts = Yii::$app->request->post('block');
+
         if($texts) {
             $model->pageText = PageText::preparePostData($texts);
         }
+
         if($model->save()) {
             Yii::$app->session->setFlash('success', "<p>Данные сохранены</p>");
             return true;
-        }
-        else {
+        }else {
             $errors = '';
             foreach ($model->getErrors() as $fieldWithErrors) {
                 foreach ($fieldWithErrors as $error) {
@@ -244,7 +304,8 @@ class PageController extends Controller
      * @return Page the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id) {
+    protected function findModel($id) 
+    {
         if (($model = Page::findOne($id)) !== null) {
             return $model;
         }

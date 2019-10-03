@@ -12,6 +12,7 @@ class LangWidget extends Widget {
 
     public $model;
     public $fields;
+    public $idTab;
 
     public function init() {
         parent::init();
@@ -21,10 +22,11 @@ class LangWidget extends Widget {
 
     public function run() {
         return $this->render('langs-tab', [
-                    'class' => StringHelper::basename($this->model->className()),
-                    'model' => $this->model,
-                    'fields' => $this->fields,
-                    'languages' => self::getActiveLanguageData(['lang', 'alias'])
+            'class' => StringHelper::basename($this->model->className()),
+            'model' => $this->model,
+            'fields' => $this->fields,
+            'idTab' => $this->idTab,
+            'languages' => self::getActiveLanguageData(['lang', 'alias'])
         ]);
     }
 
