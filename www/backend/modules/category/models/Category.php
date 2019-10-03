@@ -103,8 +103,11 @@ class Category extends \yii\db\ActiveRecord {
         return true;
     }
 
-    public static function getListCategory()
+    public static function getListCategory($amountProduct = 4)
     {
-        return Yii::$app->db->createCommand('SELECT product.category_id,product.id,product.publish,category.id,category_lang.category_id,category_lang.name FROM category LEFT JOIN product ON product.category_id = category.id LEFT JOIN category_lang ON category_lang.category_id = category.id WHERE product.publish = 1 GROUP by product.category_id HAVING COUNT(product.id) >= 4')->queryAll();  
+        $query = Yii::$app->db->createCommand("SELECT product.category_id,product.id,product.publish,category.id,category_lang.category_id,category_lang.name FROM category LEFT JOIN product ON product.category_id = category.id LEFT JOIN category_lang ON category_lang.category_id = category.id WHERE product.publish = 1 GROUP by product.category_id HAVING COUNT(product.id) >= $amountProduct")->queryAll();
+        $result = ArrayHelper::index($query, 'category_id');
+
+        return $result; 
     }
 }
