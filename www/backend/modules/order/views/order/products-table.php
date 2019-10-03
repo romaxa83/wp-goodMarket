@@ -24,6 +24,7 @@ use yii\grid\GridView;
             [
                 'label' => 'Вариация',
                 'attribute' => 'variation',
+                'format' => 'html',
             ],
             [
                 'label' => 'Количество',

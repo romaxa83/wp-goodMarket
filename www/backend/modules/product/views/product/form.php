@@ -206,7 +206,24 @@ Modal::end();
                         <?php echo $form->field($product_characteristic, 'value', ['inputTemplate' => '<div class="form-group">{input}<button type="button" class=" pull-right btn btn-default save-characteristic" data-edit="0" title="Добавить характеристику"><i class="fa fa fa-floppy-o" aria-hidden="true"></i></button></div>']); ?>
                     </div>
                     <div class="type-item type-color hidden">
-                        <?php echo $form->field($product_characteristic, 'value', ['inputTemplate' => '{input}<button type="button" class=" pull-right btn btn-default save-characteristic" data-edit="0" title="Добавить характеристику"><i class="fa fa fa-floppy-o" aria-hidden="true"></i></button>'])->widget(ColorInput::classname(), ['options' => ['placeholder' => 'Select color ...', 'readonly' => 'readonly']]); ?>
+                        <?php echo $form->field($product_characteristic, 'value', ['inputTemplate' => '{input}<button type="button" class=" pull-right btn btn-default save-characteristic" data-edit="0" title="Добавить характеристику"><i class="fa fa fa-floppy-o" aria-hidden="true"></i></button>'])->widget(
+                                ColorInput::classname(), [
+                                        'options' => ['placeholder' => 'Select color ...', 'readonly' => 'readonly'],
+                                        'showDefaultPalette' => false,
+                                        'pluginOptions' => [
+                                            'showPalette' => true,
+                                            'preferredFormat' => 'name',
+                                            'palette' => [
+                                            [
+                                                "white", "black", "grey", "silver", "gold", "brown", "lime"
+                                            ],
+                                            [
+                                                "red", "orange", "yellow", "indigo", "maroon", "pink"
+                                            ],
+                                            [
+                                                "blue", "green", "violet", "cyan", "magenta", "purple",
+                                            ],
+                                        ]]]); ?>
                     </div>
                 </div>
             </div>
@@ -218,85 +235,6 @@ Modal::end();
             <div id="product-characteristic"></div>
         </div>
         <div class="tab-pane" id="tab_6">
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <?php
-                        echo '<label class="control-label">Характеристика</label>';
-                        echo Select2::widget([
-                            'id' => 'atribute_characteristic',
-                            'name' => 'Atribute[characteristic]',
-                            'data' => [],
-                            'language' => 'ru',
-                            'options' => ['placeholder' => 'Выберите характеристику'],
-                            'pluginOptions' => [
-                                'allowClear' => true
-                            ],
-                        ]);
-                        ?>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-group attr-type attr-color hidden">
-                        <?php
-                        echo '<label class="control-label">Цвет</label>';
-                        echo ColorInput::widget([
-                            'name' => 'Atribute[color]',
-                            'attribute' => 'saturation',
-                            'options' => ['placeholder' => 'Выберите цвет'],
-                            'options' => ['readonly' => true]
-                        ]);
-                        ?>
-                    </div>
-                    <div class="form-group attr-type attr-text hidden">
-                        <label class="control-label">Значение</label>
-                        <input type="text" name="Atribute[value]" class="form-control">
-                        <p class="help-block help-block-error"></p>
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group form-field hidden">
-                        <label class="control-label">Цена</label>
-                        <input type="number" name="Atribute[price]" class="form-control">
-                        <p class="help-block help-block-error"></p>
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group form-field hidden">
-                        <label class="control-label">Количество</label>
-                        <input type="number" name="Atribute[amount]" class="form-control">
-                        <p class="help-block help-block-error"></p>
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group form-field hidden">
-                        <label class="control-label">Изображение</label>
-                        <div>
-                            <?php
-                            echo Html::button('<i class="fa fa-plus" aria-hidden="true"></i>', [
-                                    'title' => 'Добавить изображение',
-                                    'class' => 'btn btn-primary grid-option product-gallery-window',
-                                    'data-toggle' => \Yii::t('yii', 'modal'),
-                                    'data-target' => \Yii::t('yii', '#product-gallery'),
-                                    'data-product_id' => $id,
-                                    'data-media' => $model["media_id"],
-                                    'data-id' => $model['id']
-                                ]) . '<span class="media_id"> ' . $model["media_id"] . '<span>';
-                            ?>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group form-field hidden">
-                        <label class="control-label"></label>
-                        <div>
-                            <button type="button" class="btn btn-default" data-edit="0" title="Сохранить атрибут">
-                                <i class="fa fa fa-floppy-o" aria-hidden="true"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <?php
             echo GridView::widget([
                 'dataProvider' => $dataProvider,
@@ -319,8 +257,16 @@ Modal::end();
                     [
                         'headerOptions' => ['width' => '92%'],
                         'attribute' => 'char_value',
-                        'value' => function ($model) {
-                            return $model['char_value'];
+                        'format' => 'html',
+                        'value' => function ($model) use ($pcharacteristic) {
+                                $char_value = '';
+                                $decode = \yii\helpers\Json::decode($model['char_value']);
+                              foreach ($decode as $k => $v) {
+                                $char_value .= $pcharacteristic[$v]['characteristic']['type'] == 'color'
+                                    ? ($k != array_key_first($decode) ? ' | ' : '') . 'Цвет: <span style="color:' . $pcharacteristic[$v]['value'] . '"> ' . $pcharacteristic[$v]['value'] . '</span>'
+                                    : ($k != array_key_first($decode) ? ' | ' : '') . $pcharacteristic[$v]['value'];
+                              };
+                              return $char_value;
                         }
                     ],
                     [

@@ -3,6 +3,7 @@
 namespace backend\modules\order\controllers;
 
 use backend\modules\category\models\CategoryLang;
+use backend\modules\product\models\ProductCharacteristic;
 use backend\modules\product\models\ProductLang;
 use backend\modules\product\models\VProductLang;
 use common\models\Lang;
@@ -537,9 +538,29 @@ class OrderController extends BaseController {
             foreach ($data as $k => $v) {
                     $pid = $v['product_id'];
                 if (isset($data[$k]['vproduct_id']) && $data[$k]['vproduct_id'] != 0) {
-                    $order_products[$k]['amount'] = $products[$pid]['vproducts'][$data[$k]['vproduct_id']]['amount'];
-                    $order_products[$k]['variation'] = $products[$pid]['vproducts'][$data[$k]['vproduct_id']]['char_value'];
-                    $order_products[$k]['vproduct_id'] = $data[$k]['vproduct_id'];
+                    try {
+                        $order_products[$k]['amount'] = $products[$pid]['vproducts'][$data[$k]['vproduct_id']]['amount'];
+                        $order_products[$k]['vproduct_id'] = $data[$k]['vproduct_id'];
+                    } catch (\Throwable $e) {
+                        Yii::$app->session->setFlash('error', 'Отсутствуют данные вариативного товара (id='.$data[$k]['vproduct_id'].') для продукта (id='.$pid.')');
+                        if (Yii::$app->request->isAjax) {
+                            return Json::encode(['type' => 'error', 'redirect' => '/admin/order/order']);
+                        } else {
+                            return $this->redirect(['/order/order']);
+                        }
+                    }
+                    $pcharacteristic = ArrayHelper::index(ProductCharacteristic::find()->select(['id', 'value', 'characteristic_id'])
+                        ->where(['product_id' => $pid])->with('characteristic')->asArray()->all(), 'id');
+
+                    $char_value = '';
+                    $decode = Json::decode($products[$pid]['vproducts'][$data[$k]['vproduct_id']]['char_value']);
+                    foreach ($decode as $k1 => $v1) {
+                        $char_value .= $pcharacteristic[$v1]['characteristic']['type'] == 'color'
+                            ? ($k1 != array_key_first($decode) ? ' | ' : '') . 'Цвет: <span style="color:' . $pcharacteristic[$v1]['value'] . '"> ' . $pcharacteristic[$v1]['value'] . '</span>'
+                            : ($k1 != array_key_first($decode) ? ' | ' : '') . $pcharacteristic[$v1]['value'];
+                    };
+                    $order_products[$k]['variation'] = $char_value;
+
                 } else {
                     $order_products[$k]['amount'] = $products[$pid]['amount'];
                     $order_products[$k]['variation'] = 'Не выбрано';
@@ -584,11 +605,20 @@ class OrderController extends BaseController {
         if (Yii::$app->request->isAjax) {
             if (Yii::$app->request->post()) {
                 $data = Yii::$app->request->post();
+                $pcharacteristic = ArrayHelper::index(ProductCharacteristic::find()->select(['id', 'value', 'characteristic_id'])
+                    ->where(['product_id' => $data['product_id']])->with('characteristic')->asArray()->all(), 'id');
                 $v_product_list = VProduct::getVProductsByProduct($data['product_id']);
                 if (!empty($v_product_list)) {
-                    $v_products = ArrayHelper::getColumn($v_product_list, function ($element) {
-                                return ['id' => $element['id'], 'text' => $element['char_value']];
-                            });
+                    $v_products = ArrayHelper::getColumn($v_product_list, function ($element) use ($pcharacteristic) {
+                        $char_value = '';
+                        $decode = Json::decode($element['char_value']);
+                        foreach ($decode as $k => $v) {
+                            $char_value .= $pcharacteristic[$v]['characteristic']['type'] == 'color'
+                            ? ($k != array_key_first($decode) ? ' | ' : '') . 'Цвет: ' . $pcharacteristic[$v]['value']
+                            : ($k != array_key_first($decode) ? ' | ' : '') . $pcharacteristic[$v]['value'];
+                        };
+                        return ['id' => $element['id'], 'text' => $char_value];
+                    });
                     $v_products[0] = ['id' => 0, 'text' => 'Без вариации'];
                     return Json::encode($v_products);
                 }
@@ -954,6 +984,9 @@ class OrderController extends BaseController {
     public function actionAjaxGetProductPrice($order_id = 0) {
         if (Yii::$app->request->isAjax) {
             if ($post = Yii::$app->request->post()) {
+                if ($post['product_id'] == 0) {
+                    return Json::encode([]);
+                }
                 if ($post['products'] == 'empty') {
                     $post['products'] = [];
                 }
@@ -965,25 +998,44 @@ class OrderController extends BaseController {
                 $product = VProductLang::indexLangBy($product);
 
                 if ($post['vproduct_id'] > 0) {
-                    $product_price = isset($product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][$post['lang_id']]['price'])
-                    && !empty($product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][$post['lang_id']]['price'])
-                    ? $product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][$post['lang_id']]['price']
-                    : $product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][Lang::getDefaultLangID()]['price'];
+                    try {
+                        $product_price = isset($product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][$post['lang_id']]['price'])
+                        && !empty($product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][$post['lang_id']]['price'])
+                            ? $product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][$post['lang_id']]['price']
+                            : $product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][Lang::getDefaultLangID()]['price'];
 
-                    $currency = isset($product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][$post['lang_id']]['currency'])
-                    && !empty($product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][$post['lang_id']]['currency'])
-                    ? $product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][$post['lang_id']]['currency']
-                    : $product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][Lang::getDefaultLangID()]['currency'];
+                        $currency = isset($product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][$post['lang_id']]['currency'])
+                        && !empty($product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][$post['lang_id']]['currency'])
+                            ? $product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][$post['lang_id']]['currency']
+                            : $product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][Lang::getDefaultLangID()]['currency'];
+                    } catch (\Throwable $e) {
+                        Yii::$app->session->setFlash('error',
+                            'Отсутствуют VProductLang данные вариативного товара (id='.$post['vproduct_id'].') для продукта (id='.$post['product_id'].')');
+                        if (Yii::$app->request->isAjax) {
+                            return Json::encode(['type' => 'error', 'redirect' => '/admin/order/order']);
+                        } else {
+                            return $this->redirect(['/order/order']);
+                        }
+                    }
                 } else {
-                    $product_price = isset($product[$post['product_id']]['productLang'][$post['lang_id']]['price'])
-                    && !empty($product[$post['product_id']]['productLang'][$post['lang_id']]['price'])
-                    ? $product[$post['product_id']]['productLang'][$post['lang_id']]['price']
-                    : $product[$post['product_id']]['productLang'][Lang::getDefaultLangID()]['price'];
+                    try {
+                        $product_price = isset($product[$post['product_id']]['productLang'][$post['lang_id']]['price'])
+                        && !empty($product[$post['product_id']]['productLang'][$post['lang_id']]['price'])
+                            ? $product[$post['product_id']]['productLang'][$post['lang_id']]['price']
+                            : $product[$post['product_id']]['productLang'][Lang::getDefaultLangID()]['price'];
 
-                    $currency = isset($product[$post['product_id']]['productLang'][$post['lang_id']]['currency'])
-                    && !empty($product[$post['product_id']]['productLang'][$post['lang_id']]['currency'])
-                    ? $product[$post['product_id']]['productLang'][$post['lang_id']]['currency']
-                    : $product[$post['product_id']]['productLang'][Lang::getDefaultLangID()]['currency'];
+                        $currency = isset($product[$post['product_id']]['productLang'][$post['lang_id']]['currency'])
+                        && !empty($product[$post['product_id']]['productLang'][$post['lang_id']]['currency'])
+                            ? $product[$post['product_id']]['productLang'][$post['lang_id']]['currency']
+                            : $product[$post['product_id']]['productLang'][Lang::getDefaultLangID()]['currency'];
+                    } catch (\Throwable $e) {
+                        Yii::$app->session->setFlash('error', 'Отсутствуют ProductLang данные для продукта с id=' . $post['product_id']);
+                        if (Yii::$app->request->isAjax) {
+                            return Json::encode(['type' => 'error', 'redirect' => '/admin/order/order']);
+                        } else {
+                            return $this->redirect(['/order/order']);
+                        }
+                    }
                 }
 
                 // Добавить модуль акций и пересмотреть
@@ -992,7 +1044,7 @@ class OrderController extends BaseController {
                 $sale = 0;
                 $price = $product_price - ($sale * $product_price) / 100;
 
-                $data = ['product_price' => $product_price, 'price' => $price, 'currency' => $currency];
+                $data = ['type' => 'success', 'product_price' => $product_price, 'price' => $price, 'currency' => $currency];
                 return Json::encode($data);
             }
         }

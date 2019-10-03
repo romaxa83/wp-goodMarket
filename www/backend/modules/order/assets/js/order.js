@@ -73,7 +73,7 @@ function fillSelect(url, select, data={}, value=0){
                     value = data[obj_keys[0]]['id'];
                 }
             }else{
-                select.append(new Option('Ничео не найдено', 0, false, false));
+                select.append(new Option('Ничего не найдено', 0, false, false));
             }
             select.removeAttr('disabled');
             $(select).attr('data-selected_id', value);
@@ -136,10 +136,6 @@ function init(){
         $('select[name="Order[user_id]"]').parent().show();
         $('.guest').addClass('guest-hide');
    }
-   if($('.warehouse-select option').length > 1){
-       wh_selected =  $('select[name="Order[address]"]').find('option:selected').attr('value');
-       fillSelect(url, $('select[name="Order[address]"]'), {}, wh_selected);
-    }
     if (order_id){
         $.ajax({
             type: 'POST',
@@ -149,6 +145,10 @@ function init(){
                 setProducts(data);
             }
         });
+    }
+   if($('.warehouse-select option').length > 1){
+       wh_selected =  $('select[name="Order[address]"]').find('option:selected').attr('value');
+       fillSelect(url, $('select[name="Order[address]"]'), {}, wh_selected);
     }
 }
 
@@ -190,7 +190,12 @@ function getProductPrice(lang_id, category_id, product_id, vproduct_id){
         dataType: 'json',
         data:{products:products, lang_id:lang_id, category_id:category_id, product_id:product_id, vproduct_id:vproduct_id},
         success: function(data) {
-            if(data!=false){
+            if (data.type == "error") {
+                if (data.redirect != undefined) {
+                    window.location.href = host + data.redirect;
+                }
+            }
+            if(data.type == "success"){
                 manage_table.find('tbody tr:first').attr('data-price', data['price']).attr('data-product_price', data['product_price']).attr('data-currency', data['currency']);
             }
         }
