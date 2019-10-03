@@ -8,7 +8,7 @@ use kartik\select2\Select2;
 ?>
 
 <?= Select2::widget([
-    'name' => "{$group}[{$id}][text]",
+    'name' => "{$group}[{$id}][category_id]",
     'data' => array_map(function($category) {
         return $category['name'];
     }, Category::getListCategory()),

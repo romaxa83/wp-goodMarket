@@ -9,7 +9,7 @@ use kartik\select2\Select2;
 /** @var string $group */
 ?>
 <?= Select2::widget([
-    'name' => "{$group}[{$block_id}][text]",
+    'name' => "{$group}[{$block_id}][category_id]",
     'data' => array_map(function($category) {
         return $category['name'];
     }, Category::getListCategory()),

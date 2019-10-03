@@ -272,18 +272,20 @@ class PageController extends Controller
     {
         $seo->attributes = Yii::$app->request->post('PageMeta');
         $model->pageMetas = $seo;
+        
         $slug->attributes = Yii::$app->request->post('slug');
         $model->slugManager = $slug;
 
         $texts = Yii::$app->request->post('block');
+
         if($texts) {
             $model->pageText = PageText::preparePostData($texts);
         }
+
         if($model->save()) {
             Yii::$app->session->setFlash('success', "<p>Данные сохранены</p>");
             return true;
-        }
-        else {
+        }else {
             $errors = '';
             foreach ($model->getErrors() as $fieldWithErrors) {
                 foreach ($fieldWithErrors as $error) {

@@ -48,7 +48,7 @@ use backend\widgets\langwidget\LangWidget;
                                     'type' => $block['type'],
                                     'block_id' => $block['id'],
                                     'content_id' => $block['id'],
-                                    'value' => $block['text'],
+                                    'value' => $block['text'] ?? $block['category_id'],
                                     'name' => $block['name'],
                                     'label' => $block['label']
                                 ]); ?>
