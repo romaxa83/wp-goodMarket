@@ -11,16 +11,16 @@ use backend\widgets\langwidget\LangWidget;
 class BannerLang extends ActiveRecord {
 
     const HEADER = [
-        'xxl' => ['width' => 1920, 'height' => 370],
-        'xl' => ['width' => 1366, 'height' => 370],
-        'md' => ['width' => 960, 'height' => 334],
-        'sm' => ['width' => 414, 'height' => 370]
+        'xxl' => ['width' => 1920, 'height' => 30],
+        'xl' => ['width' => 1366, 'height' => 30],
+        'md' => ['width' => 960, 'height' => 30],
+        'sm' => ['width' => 414, 'height' => 30]
     ];
     const SLIDER = [
-        'xxl' => ['width' => 1170, 'height' => 30],
-        'xl' => ['width' => 870, 'height' => 30],
-        'md' => ['width' => 690, 'height' => 30],
-        'sm' => ['width' => 414, 'height' => 30]
+        'xxl' => ['width' => 1170, 'height' => 370],
+        'xl' => ['width' => 870, 'height' => 370],
+        'md' => ['width' => 690, 'height' => 334],
+        'sm' => ['width' => 414, 'height' => 370]
     ];
     public $languageData;
 

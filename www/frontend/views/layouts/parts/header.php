@@ -1,32 +1,10 @@
 <?php
 
-use yii\helpers\Url;
+use backend\modules\banners\widgets\headerwidget\BannerHeaderWidget;
 
 ?>
 <header class="site-header">
-    <div class="top-banner">
-    <a href="#" class="top-banner__link"></a>
-    <picture>
-        <source
-                media="(min-width: 1500px)"
-                srcset="img/top_banner-xxl.jpg"
-        />
-        <source
-                media="(min-width: 1200px)"
-                srcset="img/top_banner-xl.jpg"
-        />
-        <source
-                media="(min-width: 768px)"
-                srcset="img/top_banner-md.jpg"
-        />
-        <img
-                src="img/top_banner-sm.jpg"
-                alt="top banner"
-                title="top banner"
-                class="top-banner__img"
-        />
-    </picture>
-    </div>
+    <?php echo BannerHeaderWidget::widget([]);?>
     <div class="mob-menu d-xl-none" id="mobMenu">
     <nav class="navbar d-block">
         <div class="mob-menu__logo">
