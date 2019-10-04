@@ -38,18 +38,36 @@ return [
             'errorAction' => 'site/error',
         ],
         'urlManager' => [
-            'class' => 'yii\web\UrlManager',
+            'class' => 'codemix\localeurls\UrlManager',
+            'languages' => ['ru', 'ua'],
+            'enableDefaultLanguageUrlCode' => true,
             'enablePrettyUrl' => true,
             'enableStrictParsing' => true,
             'showScriptName' => false,
             'rules' => [
                 '' => 'site/index', 
+
+                'catalog' => 'category/catalog',
+                'catalog/<alias:\w+>' => 'category/category',
+
+                'blog' => 'blog/blog',
+                'blog/<alias:\w+>' => 'blog/article',
+                
+                '<action:\w+>' => 'site/<action>',
                 [
                     'class' => 'backend\modules\content\components\PageRule',
                     'connectionID' => 'db',
                 ]
             ]
-        ]
+        ],
+        'i18n' => [
+            'translations' => [
+                'common*' => [
+                    'class' => 'yii\i18n\PhpMessageSource',
+                    'basePath' => '@app/messages',
+                ],
+            ],
+        ],
     ],
     'params' => $params,
 ];

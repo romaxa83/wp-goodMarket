@@ -33,4 +33,8 @@ $(document).ready(function(){
 			}
 		});
 	});
+
+	$('input[name="PageLang[ru][title]"]').on('blur',function(){
+		$('.generate-alias').click();
+	});	
 });

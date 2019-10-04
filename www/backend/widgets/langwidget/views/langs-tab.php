@@ -7,14 +7,14 @@ use yii\helpers\ArrayHelper;
         <ul class="nav nav-tabs">
             <?php foreach ($languages as $k => $v): ?>
                 <li class="<?php echo ($v['alias'] == 'ru') ? 'active' : NULL ?>">
-                    <a href="<?php echo '#language_' . $v['alias']; ?>" class="<?php echo $v['alias']; ?>" data-toggle="tab" style="color: #949ba2"><?php echo $v['lang']; ?></a>
+                    <a href="<?php echo '#language_' . $v['alias'] . $idTab ?>" class="<?php echo $v['alias']; ?>" data-toggle="tab" style="color: #949ba2"><?php echo $v['lang']; ?></a>
                 </li>
             <?php endforeach; ?>
         </ul>
     <?php endif; ?>
     <div class="tab-content">
         <?php foreach ($languages as $k => $v0): ?>
-            <div class="tab-pane fade <?php echo ($k == 0) ? 'in active' : NULL; ?>" id="<?php echo 'language_' . $v0['alias']; ?>">
+            <div class="tab-pane fade <?php echo ($k == 0) ? 'in active' : NULL; ?>" id="<?php echo 'language_' . $v0['alias'] . $idTab ?>">
                 <?php foreach ($fields as $field): ?>
                     <?php $attribute = strtolower($class) . '-' . $field["name"] . '-' . $v0['alias']; ?>
                     <div class="form-group <?php echo 'field-' . strtolower($class) . '-' . $field["name"] . '-' . $v0['alias']; ?> required  <?php echo (isset($model->errors[$attribute])) ? 'has-error' : NULL; ?>">

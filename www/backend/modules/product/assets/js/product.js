@@ -447,20 +447,141 @@ $(document).ready(function () {
     });
     // /gallery-box
 
+    // attribute
+    var form_add_product_characteristic = $('#form-add-product-characteristic');
+    var form_pre_generate_product_attributes = $('#form-pre-generate-product-attributes');
+    var form_generate_product_attributes = $('#form-generate-product-attributes');
+    var attribute_modal_group_select = $('#atribute-modal').find($('select[name="Atribute[group]"]'));
+    var attribute_modal_characteristic_select = $('#atribute-modal').find($('select[name="Atribute[characteristic]"]'));
+    var attribute_modal_product_characteristic_select = $('#atribute-modal').find($('select[name="Atribute[product_characteristic]"]'));
+
     $('.add-atribute').on('click', function () {
         $('#atribute-modal').modal('show');
+        $.ajax({
+            url: host + '/admin/product/product/ajax-get-group-data',
+            type: 'GET',
+            success: function (data) {
+                data = JSON.parse(data);
+                attribute_modal_group_select.empty();
+                for (var i in data) {
+                    var item = new Option(data[i]['name'], data[i]['id'], false, false);
+                    attribute_modal_group_select.append(item);
+                }
+                $(attribute_modal_group_select).trigger('select2:select');
+            }
+        });
     });
 
-    $('#atribute_characteristic').on('change', function () {
-        if ($(this).val()) {
-            $('.attr-type').addClass('hidden');
-            $('.attr-' + $(this).find('option:selected').data('type')).removeClass('hidden');
-            $('.form-field').removeClass('hidden');
-        } else {
-            $('.form-field').addClass('hidden');
-            $('.attr-type').addClass('hidden');
-        }
+    $(attribute_modal_group_select).on('select2:select', function (e) {
+        $.ajax({
+            url: host + '/admin/product/product/ajax-get-product-characteristic-list',
+            type: 'POST',
+            data: {id: attribute_modal_group_select.val()},
+            success: function (data) {
+                data = JSON.parse(data);
+                attribute_modal_characteristic_select.empty();
+                for (var i in data) {
+                    var item = new Option(data[i]['name'], i, false, false);
+                    attribute_modal_characteristic_select.append(item);
+                }
+                $(attribute_modal_characteristic_select).trigger('select2:select');
+            }
+        });
     });
+
+    $(attribute_modal_characteristic_select).on('select2:select', function (e) {
+        $.ajax({
+            url: host + '/admin/product/product/ajax-get-characteristic-for-product',
+            type: 'POST',
+            data: {id: attribute_modal_characteristic_select.val()},
+            success: function (data) {
+                data = JSON.parse(data);
+                if (attribute_modal_product_characteristic_select.data('select2')) {
+                    attribute_modal_product_characteristic_select.empty().trigger("change");
+                }
+
+                attribute_modal_product_characteristic_select.select2({
+                    data: data,
+                    templateResult: function (d) { return $(d.text); },
+                    templateSelection: function (d) { return $(d.text); },
+                });
+        }});
+    });
+
+    $(".add-product-characteristic").on("click", function () {
+        var url = form_add_product_characteristic.attr("action");
+        var group = form_add_product_characteristic.find($('select[name="Atribute[group]"]')).val();
+        var characteristic = form_add_product_characteristic.find($('select[name="Atribute[characteristic]"]')).val();
+        var product_characteristic = form_add_product_characteristic.find($('select[name="Atribute[product_characteristic]"]')).val();
+        var product_attributes = form_pre_generate_product_attributes.find($('input[name="Atribute[product_attributes]"]')).val();
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: {group:group, characteristic:characteristic, product_characteristic:product_characteristic, product_attributes:product_attributes},
+            success: function (data) {
+                var data = JSON.parse(data);
+                form_pre_generate_product_attributes.empty().html(data.render);
+            }
+        });
+    });
+
+    $('#form-pre-generate-product-attributes').on("click", ".delete-product-attribute",  function () {
+        var attribute_id = $(this).data('id');
+        var product_attributes = JSON.parse(form_pre_generate_product_attributes.find($('input[name="Atribute[product_attributes]"]')).val());
+        delete product_attributes[attribute_id];
+        form_pre_generate_product_attributes.find($('input[name="Atribute[product_attributes]"]')).val(JSON.stringify(product_attributes));
+        $('div[class="form-group"][data-id='+attribute_id+']').remove();
+    });
+
+    form_pre_generate_product_attributes.on("click", ".pre-generate-product-characteristic", function () {
+        $('#atribute-modal').modal('hide');
+        var url = form_pre_generate_product_attributes.attr("action");
+        var data = form_pre_generate_product_attributes.serialize();
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: data,
+            success: function (data) {
+                $('#generate-atribute-modal').modal('show');
+                form_generate_product_attributes.empty().html(data);
+            }
+        });
+    });
+
+    form_generate_product_attributes.on("click", ".generate-product-characteristic", function () {
+        var url = form_generate_product_attributes.attr("action");
+        var groups = {};
+        let attribute_price = $('input[name="attribute_price"]');
+
+        form_generate_product_attributes.find($('.form-group')).each(function(i, obj) {
+            let data_id = $(this).find(attribute_price).data('id');
+            let price = $(this).find(attribute_price).val();
+            let count = $(this).find($('input[name="attribute_count"]')).val();
+            let product_id = $(this).find(attribute_price).data('product-id');
+            if (data_id !== undefined) {
+                groups[data_id] = {
+                    attribute_price: price,
+                    attribute_count: count,
+                    product_id: product_id,
+                    data_id: data_id
+                };
+            }
+        });
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: {groups:groups},
+            success: function (data) {
+                var data = JSON.parse(data);
+                if (data.type == 'success') {
+                    $('#generate-atribute-modal').modal('hide');
+                    location.reload();
+                }
+            }
+        });
+    });
+
+    // /attribute
 
     $('body').on('click', '.select2-selection__clear', function () {
         $('.form-field').addClass('hidden');

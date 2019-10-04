@@ -8,13 +8,9 @@ return [
                 'label' => 'Главная'
             ],
             'blog' => [
-                'route' => 'blog/index',
-                'label' => 'Блог'
+                'route' => 'site/view',
+                'label' => 'Техническая страница'
             ],
-            'blog-record' => [
-                'route' => 'blog/record',
-                'label' => 'Запись блога'
-            ]
         ],
         'blockTypes' => [
             'editor' => 'Редактор',
@@ -25,10 +21,7 @@ return [
             'statistics' => 'Статистика',
             'banners' => 'Баннеры',
             'image' => 'Изображение',
-            'api-country-selector' => 'Страна из API',
-            'resorts' => 'Курорты',
-            'regions' => 'Регионы',
-            'categories' => 'Категории',
+            'categories' => 'Блок категории',
             'filter' => 'Фильтр'
         ],
     ]

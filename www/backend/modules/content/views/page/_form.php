@@ -11,6 +11,7 @@ use yii\widgets\ActiveForm;
 use vova07\imperavi\Asset;
 use vova07\imperavi\Widget;
 use alexeevdv\yii\BootstrapToggleWidget;
+use backend\widgets\langwidget\LangWidget;
 
 /* @var $this yii\web\View */
 /* @var $model backend\modules\content\models\Page */
@@ -26,7 +27,12 @@ use alexeevdv\yii\BootstrapToggleWidget;
         <div class="col-lg-8">
             <div class="box">
                 <div class="box-body">
-                    <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
+                    <?= LangWidget::widget([
+                        'model' => $langModel,
+                        'fields' => [
+                            ['type' => 'text', 'name' => 'title'],
+                        ]
+                    ]); ?>
                 </div>
             </div>
             <div class="nav-tabs-custom">
@@ -42,7 +48,7 @@ use alexeevdv\yii\BootstrapToggleWidget;
                                     'type' => $block['type'],
                                     'block_id' => $block['id'],
                                     'content_id' => $block['id'],
-                                    'value' => $block['text'],
+                                    'value' => $block['text'] ?? $block['category_id'],
                                     'name' => $block['name'],
                                     'label' => $block['label']
                                 ]); ?>
@@ -52,9 +58,15 @@ use alexeevdv\yii\BootstrapToggleWidget;
                         <div id="page-new-content"></div>
                     </div>
                     <div class="tab-pane" id="tab_2">
-                        <?= $form->field($seo, 'title')->textInput() ?>
-                        <?= $form->field($seo, 'description')->textarea() ?>
-                        <?= $form->field($seo, 'keywords')->textInput() ?>
+                        <?= LangWidget::widget([
+                            'model' => $langSeo,
+                            'fields' => [
+                                ['type' => 'text', 'name' => 'title'],
+                                ['type' => 'text', 'name' => 'description'],
+                                ['type' => 'text', 'name' => 'keywords'],
+                            ],
+                            'idTab' => 'seo_filed'
+                        ]); ?>
                     </div>
                 </div>
             </div>
@@ -86,7 +98,7 @@ use alexeevdv\yii\BootstrapToggleWidget;
                         <?= Html::label('Псевдоним', '', ['class' => 'control-label']) ?>
                         <?= Html::textInput('slug[slug]', $slug->slug, array('class' => 'form-control')) ?>
                     </div>
-                    <?= SyncAliasWidget::widget(['field_donor_name'=>'Page[title]', 'field_recipient_name'=>'slug[slug]']) ?>
+                    <?= SyncAliasWidget::widget(['field_donor_name'=>'PageLang[ru][title]', 'field_recipient_name'=>'slug[slug]']) ?>
                     <?= SelectTemplateWidget::widget([
                         'slugId' => $slug->id,
                         'slugRoute' => $slug->route,

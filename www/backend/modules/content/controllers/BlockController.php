@@ -11,7 +11,8 @@ use yii\web\Controller;
 use yii\filters\AccessControl;
 use yii\web\ForbiddenHttpException;
 
-class BlockController extends Controller {
+class BlockController extends Controller 
+{
     protected $access;
 
     public function __construct($id, $module, $config = [])
@@ -21,7 +22,8 @@ class BlockController extends Controller {
 //        $this->access = new Access();
     }
 
-    public function behaviors() {
+    public function behaviors() 
+    {
         return [
             'access' => [
                 'class' => AccessControl::className(),
@@ -63,7 +65,9 @@ class BlockController extends Controller {
         if(!Yii::$app->request->isAjax) {
             throw new Exception('Allowed only by ajax');
         }
+
         $id = $this->getLastId();
+
         $template = Yii::$app->request->post('block-type');
         $group = Yii::$app->request->post('content-group');
 
@@ -73,31 +77,34 @@ class BlockController extends Controller {
             'yii\web\JqueryAsset' => false
         ];
 
-        $json = array(
+        $json = [
             'html' => $this->renderAjax('new-block', compact('id', 'group', 'template')),
             'type' => $template,
             'id' => $id
-        );
+        ];
 
         return json_encode($json);
     }
 
-    private function getLastId() {
+    private function getLastId() 
+    {
         $cache = YII::$app->cache;
+        
         if ($cache->exists('block-id')) {
             $last_id = $cache->get('block-id');
         } else {
             if(Yii::$app->request->post('content-parent') == 'page-new-content') {
                 $lastRow = PageText::find()->max('id');
-            }
-            else {
+            }else {
                 $lastRow = ChannelContent::find()->max('id');
             }
 
             $last_id = !$lastRow ? 0 : (int) $lastRow;
         }
         $id = ++$last_id;
+
         $cache->set('block-id', $id);
+        
         return $id;
     }
 

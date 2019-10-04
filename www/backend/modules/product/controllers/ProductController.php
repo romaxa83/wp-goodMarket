@@ -119,7 +119,7 @@ class ProductController extends BaseController {
             ['href' => 'tab_3', 'name' => 'Галерея'],
             ['href' => 'tab_4', 'name' => 'SEO'],
             ['href' => 'tab_5', 'name' => 'Характеристики'],
-            // ['href' => 'tab_6', 'name' => 'Атрибуты'], - 
+            ['href' => 'tab_6', 'name' => 'Атрибуты'],
             //['href' => 'tab_7', 'name' => 'Акции']
         ];
         $model = $product = Product::find()->where(['id' => $id])->with('category')->with('productLang.lang')->one();
@@ -132,6 +132,9 @@ class ProductController extends BaseController {
         $manufacturer = ArrayHelper::map(Manufacturer::find()->asArray()->where(['status' => 1])->all(), 'id', 'name');
         $group = ArrayHelper::map(Group::find()->where(['status' => 1])->all(), 'id', 'name');
 
+        $pcharacteristic = ArrayHelper::index(ProductCharacteristic::find()->select(['id', 'value', 'characteristic_id'])
+            ->where(['product_id' => $id])->with('characteristic')->asArray()->all(), 'id');
+
         $data = [];
         foreach ($model->productLang as $v) {
             foreach ($v as $k1 => $v1) {
@@ -140,7 +143,8 @@ class ProductController extends BaseController {
         }
         $modelLang->languageData = $data;
         if (empty($product->alias)) {
-            $modelLang->alias = preg_replace("/[^a-z0-9-]/", '', str_replace(' ', '-', mb_strtolower(TransliteratorHelper::process($product->productLang[0]->name, '?', 'en'))));
+            $modelLang->alias = preg_replace("/[^a-z0-9-]/", '', str_replace(' ', '-',
+                mb_strtolower(TransliteratorHelper::process($product->productLang[0]->name, '?', 'en'))));
             $product->languageData[0]['language'] = 'ru';
         }
 
@@ -172,7 +176,7 @@ class ProductController extends BaseController {
 //                $sp_id = $stock_data[$i]['id'];
 //                $stock_data[$i] = ['stock_id' => $stock_id, 'sp_id' => $sp_id, 'var' => $var, 'title' => $stock->title, 'type' => $stock->type, 'sale' => $sale, 'sale_price' => $sale_price];
 //            }
-//            $stock_exist = true; 
+//            $stock_exist = true;
 //        } else {
 //            $stock_data = null;
 //            $stock_exist = false;
@@ -196,6 +200,7 @@ class ProductController extends BaseController {
             'manufacturer' => $manufacturer,
             'group' => $group,
             'characteristic' => $characteristic,
+            'pcharacteristic' => $pcharacteristic,
             'product_characteristic' => $product_characteristic,
             'modelLang' => $modelLang
                 // Пересмотреть
@@ -316,7 +321,9 @@ class ProductController extends BaseController {
     }
 
     private function getProductCharacteristic($id) {
-        $request = ProductCharacteristic::find()->select('product_characteristic.*, characteristic.*')->leftJoin('characteristic', 'product_characteristic.characteristic_id = characteristic.id')->where(['or', ['product_characteristic.product_id' => $id], ['product_import_id' => $id]])->asArray()->all();
+        $request = ProductCharacteristic::find()->select('product_characteristic.*, characteristic.*')
+            ->leftJoin('characteristic', 'product_characteristic.characteristic_id = characteristic.id')
+            ->where(['or', ['product_characteristic.product_id' => $id], ['product_import_id' => $id]])->asArray()->all();
         return $request;
     }
 
@@ -329,7 +336,11 @@ class ProductController extends BaseController {
                     . '`characteristic`.`name` AS `characteristic_name`,'
                     . '`product_characteristic`.`product_import_id` AS `product_import_id`,'
                     . '`product_characteristic`.`value` AS `product_characteristic_value`, '
-                    . '`characteristic`.`type` AS `characteristic_type`')->asArray()->leftJoin('characteristic', 'product_characteristic.characteristic_id = characteristic.id')->leftJoin('group', 'product_characteristic.group_id = group.id')->where(['or', ['product_characteristic.product_id' => $id], ['product_import_id' => $id]])->orderBy(['product_characteristic.group_id' => 'ASC', 'characteristic.id' => 'ASC']),
+                    . '`characteristic`.`type` AS `characteristic_type`')->asArray()
+                ->leftJoin('characteristic', 'product_characteristic.characteristic_id = characteristic.id')
+                ->leftJoin('group', 'product_characteristic.group_id = group.id')
+                ->where(['or', ['product_characteristic.product_id' => $id], ['product_import_id' => $id]])
+                ->orderBy(['product_characteristic.group_id' => 'ASC', 'characteristic.id' => 'ASC']),
             'pagination' => FALSE,
             'sort' => FALSE,
         ]);
@@ -755,6 +766,103 @@ class ProductController extends BaseController {
                     ->asArray()
                     ->all();
             return Json::encode($atributes);
+        }
+    }
+
+    public function actionAjaxGetGroupData() {
+        if (Yii::$app->request->isAjax) {
+            return Json::encode(Group::find()->select(['id', 'name'])->where(['status' => 1])->asArray()->all());
+        }
+    }
+
+    public function actionAjaxGetCharacteristicForProduct() {
+        if (Yii::$app->request->isAjax) {
+            $id = Yii::$app->request->post('id');
+            $characteristic = ArrayHelper::index(ProductCharacteristic::find()->select(['id', 'characteristic_id', 'value'])
+                ->where(['characteristic_id' => $id])->with('characteristic')->asArray()->all(), 'id');
+            foreach ($characteristic as $k => $v) {
+                $data[] = ['id' => $k, 'text' => $v['characteristic']['type'] == 'color' ? '<div>Цвет: <span style="color:' . $v['value'] .'"> ' . $v['value'] . '</span></div>' : '<div>'. $v['value'] .'</div>' ];
+            }
+            if (isset($data) && !count($data) > 0) {
+                $data[] = ['id' => 0, 'text' => 'Ничего не найдено'];
+            }
+            return Json::encode($data);
+        }
+    }
+
+    public function actionAjaxPreGenerateProductsAttributesForModal() {
+        if (Yii::$app->request->isAjax) {
+            $post = Yii::$app->request->post();
+            if (!empty($post['product_attributes'])) {
+                $product_attributes = Json::decode($post['product_attributes']);
+            }
+            $product_attributes[$post['product_characteristic']] = ProductCharacteristic::find()->select(['id', 'product_id', 'characteristic_id', 'value'])
+                ->where(['id' => $post['product_characteristic']])->with('characteristic')->asArray()->one();
+
+            $render = $this->renderAjax('_modal_attributes', ['product_attributes' => $product_attributes]);
+
+            return Json::encode(['product_attributes' => $product_attributes, 'render' => $render]);
+        }
+    }
+
+    public function actionAjaxGenerateProductsAttributesForModal() {
+        if (Yii::$app->request->isAjax) {
+            $post = Yii::$app->request->post();
+            $product_attributes = Json::decode($post['Atribute']['product_attributes']);
+
+            foreach ($product_attributes as $k => $v) {
+                $temp[$v['characteristic']['name']][] = $v['id'];
+            }
+            foreach ($temp as $k => $v) {
+                $groups[] = $v;
+            }
+
+            $combination = ProductCharacteristic::CombinationOfCharacteristics($groups);
+            for ($i = 0; $i < count($combination); $i++) {
+                sort($combination[$i]);
+            }
+
+            foreach ($product_attributes as $k => $v){
+                $product_id = $v['product_id'];
+                break;
+            }
+            $vproducts = VProduct::find()->select(['char_value', 'amount', 'price'])->where(['product_id' => $product_id])->asArray()->all();
+            $vproducts = ArrayHelper::index($vproducts, 'char_value');
+            return $this->renderAjax('_generated_modal_attributes', [
+                'combination' => $combination,
+                'product_attributes' => $product_attributes,
+                'vproducts' => $vproducts,
+            ]);
+        }
+    }
+
+    public function actionAjaxSaveGeneratedProductAttributes() {
+        if (Yii::$app->request->isAjax) {
+            $post = Yii::$app->request->post();
+            if (isset($post['groups']) && !empty($post['groups'])) {
+                foreach ($post['groups'] as $k => $v){
+                    $product_id = $v['product_id'];
+                    break;
+                }
+                foreach ($post['groups'] as $k => $v) {
+                    $groups[Json::encode($v['data_id'])] = $v;
+                }
+                $vproducts = ArrayHelper::index(VProduct::find()->where(['product_id' => $product_id])->all(), 'char_value');
+                foreach ($groups as $k => $v) {
+                    if (is_null($v['attribute_price']) || is_null($v['attribute_count']) || $v['attribute_price'] == 0) {
+                        continue;
+                    }
+                    $vproduct = isset($vproducts[$k]) ? $vproducts[$k] : new VProduct();
+                    $vproduct->product_id = $product_id;
+                    $vproduct->amount = $v['attribute_count'];
+                    $vproduct->price = $v['attribute_price'];
+                    $vproduct->publish = is_null($vproduct->publish) ? 1 : $vproduct->publish;
+                    $vproduct->char_value = Json::encode($v['data_id']);
+                    $vproduct->save();
+                }
+                Yii::$app->session->setFlash('success', 'Атрибуты успешно изменены');
+                return Json::encode(['type' => 'success']);
+            }
         }
     }
 

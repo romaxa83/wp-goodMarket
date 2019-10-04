@@ -1,3 +1,40 @@
+<section class="newsletter">
+    <div class="container">
+        <div class="row align-items-center newsletter-wrapper">
+        <div
+            class="newsletter__desc text-center text-xl-left col-12 col-xl-6"
+        >
+            <h2>
+            Подпишитесь на новости
+            </h2>
+            <p>
+            присоединяйтесь, и получайте уведомления о всех скидках и новых
+            товарах
+            </p>
+        </div>
+        <div class="newsletter__form col-12 col-xl-6">
+            <form class="needs-validation" novalidate data-successfully="#thankForSubscribing">
+            <div class="d-md-flex justify-content-md-center">
+                <div class="form-group">
+                <input
+                    type="email"
+                    class="form-control email-validation"
+                    id="newsletterEmail"
+                    placeholder="Ваш e-mail"
+                    required
+                />
+                </div>
+                <div class="newsletter__form-btn text-center">
+                <button class="btn btn-primary" type="submit">
+                    Подписаться
+                </button>
+                </div>
+            </div>
+            </form>
+        </div>
+        </div>
+    </div>
+</section>
 <footer class="page-footer">
     <div class="container">
     <nav class="navbar row">
@@ -9,7 +46,7 @@
             <img
                 width="222"
                 height="50"
-                src="img/logo.svg"
+                src="/img/logo.svg"
                 alt="site logo"
                 title="site logo"
             />
@@ -60,25 +97,25 @@
             <div class="social-link__item">
             <a class="social-link__link" href="#"></a>
             <svg width="11" height="21">
-                <use xlink:href="img/spritemap.svg#sprite-facebook"></use>
+                <use xlink:href="/img/spritemap.svg#sprite-facebook"></use>
             </svg>
             </div>
             <div class="social-link__item">
             <a class="social-link__link" href="#"></a>
             <svg width="21" height="18">
-                <use xlink:href="img/spritemap.svg#sprite-twitter"></use>
+                <use xlink:href="/img/spritemap.svg#sprite-twitter"></use>
             </svg>
             </div>
             <div class="social-link__item">
             <a class="social-link__link" href="#"></a>
             <svg width="21" height="20">
-                <use xlink:href="img/spritemap.svg#sprite-google"></use>
+                <use xlink:href="/img/spritemap.svg#sprite-google"></use>
             </svg>
             </div>
             <div class="social-link__item">
             <a class="social-link__link" href="#"></a>
             <svg width="19" height="19">
-                <use xlink:href="img/spritemap.svg#sprite-insta"></use>
+                <use xlink:href="/img/spritemap.svg#sprite-insta"></use>
             </svg>
             </div>
         </div>
@@ -106,7 +143,7 @@
             <div class="copyright__dev-link">
             <a href="#">
                 <svg width="60" height="9">
-                <use xlink:href="img/spritemap.svg#sprite-bonum"></use>
+                <use xlink:href="/img/spritemap.svg#sprite-bonum"></use>
                 </svg>
             </a>
             </div>
