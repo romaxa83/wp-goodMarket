@@ -100,6 +100,7 @@ class ProductController extends BaseController {
             'characteristic' => new Characteristic(),
             'characteristic_list' => [],
             'product_characteristic' => new ProductCharacteristic(),
+            'pcharacteristic' => [],
             'dataProvider' => $dataProvider,
             'manufacturer' => $manufacturer,
             'group' => $group,
