@@ -20,7 +20,8 @@ class BannerLang extends ActiveRecord {
         'xxl' => ['width' => 1170, 'height' => 370],
         'xl' => ['width' => 870, 'height' => 370],
         'md' => ['width' => 690, 'height' => 334],
-        'sm' => ['width' => 414, 'height' => 370]
+        'sm' => ['width' => 414, 'height' => 370],
+        'slider-thumb' => ['width' => 125, 'height' => 105]
     ];
     public $languageData;
 
@@ -80,6 +81,17 @@ class BannerLang extends ActiveRecord {
             $success = TRUE;
         }
         return $success;
+    }
+
+    public static function indexLangBy(array $data, string $column = 'lang_id') {
+        foreach ($data as $k => $v) {
+            $bannerLang = [];
+            foreach ($v['bannerLang'] as $k1 => $v1) {
+                $bannerLang[$v1[$column]] = $v1;
+            }
+            $data[$k]['bannerLang'] = $bannerLang;
+        }
+        return $data;
     }
 
     public static function cropBanner(int $banner_id) {

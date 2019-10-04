@@ -1,6 +1,8 @@
 <?php
 namespace frontend\controllers;
 
+use backend\modules\banners\models\Banner;
+use backend\modules\banners\models\BannerLang;
 use frontend\models\ResendVerificationEmailForm;
 use frontend\models\VerifyEmailForm;
 use Yii;
@@ -18,8 +20,10 @@ use frontend\models\ContactForm;
 /**
  * Site controller
  */
-class SiteController extends Controller
-{
+class SiteController extends Controller {
+
+    public $params;
+
     /**
      * {@inheritdoc}
      */
@@ -72,9 +76,23 @@ class SiteController extends Controller
      *
      * @return mixed
      */
-    public function actionIndex()
-    {
-        return $this->render('index');
+    public function actionIndex() {
+        $banner_header = Banner::find()->select(['id'])->where(['type' => Banner::BANNER_HEADER, 'status' => 1])->with([
+            'bannerLang.media' => function ($query) {
+                $query->select('id, url, alt');
+            }])->limit(15)->asArray()->all();
+        $banner_header = BannerLang::indexLangBy($banner_header, 'lang_id');
+
+        $banner_slider = Banner::find()->select(['id'])->where(['type' => Banner::BANNER_SLIDER, 'status' => 1])->with([
+            'bannerLang.media' => function ($query) {
+                $query->select('id, url, alt');
+            }])->limit(10)->asArray()->all();
+        $banner_slider = BannerLang::indexLangBy($banner_slider, 'lang_id');
+
+        return $this->render('index', [
+            'banner_header' => $banner_header,
+            'banner_slider' => $banner_slider,
+        ]);
     }
 
     /**

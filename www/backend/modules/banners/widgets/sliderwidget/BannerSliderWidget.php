@@ -2,13 +2,12 @@
 
 namespace backend\modules\banners\widgets\sliderwidget;
 
+use backend\modules\banners\models\BannerLang;
 use yii\base\Widget;
 
 class BannerSliderWidget extends Widget {
 
-    public $attribute = [];
-    public $hide_col = [];
-    public $model;
+    public $banners = [];
 
     public function init() {
         parent::init();
@@ -17,10 +16,30 @@ class BannerSliderWidget extends Widget {
     }
 
     public function run() {
-        return $this->render('hide-col', [
-                    'attributes' => $this->attribute,
-                    'model' => $this->model,
-                    'hide_col' => $this->hide_col
+        if (!empty($this->banners)) {
+            foreach ($this->banners as $banner_key => $banner) {
+                $header_resolutions = [];
+
+                foreach ($banner['bannerLang'] as $lang_key => $lang_value) {
+                    if (isset($lang_value['media']['url'])) {
+                        $url = $lang_value['media']['url'];
+
+                        foreach (BannerLang::SLIDER as $k => $v) {
+                            $path = explode('.', $url);
+                            $filename = $path[count($path) - 2] . "-$k";
+                            $path[count($path) - 2] = $filename;
+                            $header_resolutions[$k] = implode('.', $path);
+                        }
+
+                        $this->banners[$banner_key]['bannerLang'][$lang_key]['media']['header_resolutions'] = $header_resolutions;
+
+                    } else continue;
+                }
+            }
+        }
+
+        return $this->render('slider', [
+            'banners' => $this->banners
         ]);
     }
 }
