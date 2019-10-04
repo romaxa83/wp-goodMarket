@@ -7,6 +7,9 @@ use yii\db\ActiveRecord;
 
 class Banner extends ActiveRecord {
 
+    const BANNER_SLIDER = 'slider';
+    const BANNER_HEADER = 'header';
+    const BANNER_TYPES = ['slider' => 'Слайдер', 'header' => 'Хедер'];
     public $languageData;
 
     public static function tableName() {
@@ -15,7 +18,9 @@ class Banner extends ActiveRecord {
 
     public function rules() {
         return [
-            [['status'], 'required']
+            [['status', 'type'], 'required'],
+            [['status'], 'number'],
+            [['type'], 'string']
         ];
     }
 
@@ -23,13 +28,14 @@ class Banner extends ActiveRecord {
         return [
             'id' => 'ID',
             'position' => 'Позиция',
+            'type' => 'Тип',
             'status' => 'Опубликовать'
         ];
     }
 
     public function scenarios() {
         return [
-            self::SCENARIO_DEFAULT => ['status']
+            self::SCENARIO_DEFAULT => ['status', 'type']
         ];
     }
 

@@ -1,6 +1,7 @@
 <?php
 
 use app\modules\banners\BannersAsset;
+use backend\modules\banners\models\Banner;
 use backend\widgets\hide_col\HideColWidget;
 use yii\helpers\Html;
 use yii\grid\GridView;
@@ -118,6 +119,25 @@ BannersAsset::register($this);
                         'format' => 'raw',
                         'value' => function($model) {
                             return $model->bannerLang[0]['alias'];
+                        },
+                        'contentOptions' => [
+                            'data-attr' => 'alias',
+                            'style' => $user_settings['hide-col'] !== null && in_array('alias', $user_settings['hide-col']) ? 'display:none' : ''
+                        ],
+                        'headerOptions' => [
+                            'data-attr' => 'alias',
+                            'style' => $user_settings['hide-col'] !== null && in_array('alias', $user_settings['hide-col']) ? 'display:none' : ''
+                        ],
+                        'filterOptions' => [
+                            'data-attr' => 'alias',
+                            'style' => $user_settings['hide-col'] !== null && in_array('alias', $user_settings['hide-col']) ? 'display:none' : ''
+                        ]
+                    ],
+                    [
+                        'attribute' => 'type',
+                        'format' => 'raw',
+                        'value' => function($model) {
+                            return Banner::BANNER_TYPES[$model->type];
                         },
                         'contentOptions' => [
                             'data-attr' => 'alias',
