@@ -2,6 +2,7 @@
 
 namespace backend\modules\settings\controllers;
 
+use common\models\Lang;
 use Yii;
 use backend\controllers\BaseController;
 use backend\modules\settings\models\Settings;
@@ -10,6 +11,7 @@ use yii\helpers\Json;
 use common\controllers\AccessController;
 use yii\filters\AccessControl;
 use yii\web\ForbiddenHttpException;
+use function GuzzleHttp\Promise\all;
 
 class DefaultController extends BaseController {
 
@@ -34,15 +36,9 @@ class DefaultController extends BaseController {
             return false;
         }
     }
-    
+
     private function getLangsSettings() {
-        $settings = Settings::find()
-                ->select('body')
-                ->where(['name' => 'set_language'])
-                ->asArray()
-                ->one();
-        $set_lang = (!empty($settings['body'])) ? unserialize($settings['body']) : null;
-        return $set_lang;
+        return Lang::find()->all();
     }
 
     private function getSetting($alias) {
@@ -125,10 +121,11 @@ class DefaultController extends BaseController {
                 $action = 'update';
                 $langs = $this->getLangsSettings();
                 $lang = $langs[$row_id];
-                $model = new Settings();
-                $model->lang = $lang['lang'];
+                $model = new Lang();
+                $model->name = $lang['name'];
                 $model->alias = $lang['alias'];
                 $model->status = $lang['status'];
+                $model->currency = $lang['currency'];
                 return $this->renderAjax('edit', ['model' => $model, 'index' => $index, 'key' => $row_id, 'action' => $action]);
             }
         }
@@ -143,11 +140,7 @@ class DefaultController extends BaseController {
                 $languages = $this->getLangsSettings();
                 $language = $languages[$record_id];
                 $language['status'] = $status;
-                $languages[$record_id] = $language;
-                $languages = serialize($languages);
-                $settings = Settings::find()->where(['name' => 'set_language'])->one();
-                $settings->body = $languages;
-                $settings->save();
+                $language->save();
             }
         }
     }
@@ -171,11 +164,11 @@ class DefaultController extends BaseController {
     public function actionUpdateStatusSocial(){
         if(Yii::$app->request->isAjax){
             if(Yii::$app->request->post()){
-                $this->changeStatus(Yii::$app->request->post(), 'social-group');   
+                $this->changeStatus(Yii::$app->request->post(), 'social-group');
             }
         }
     }
-    
+
     public function actionUpdateStatusContact(){
         if(Yii::$app->request->isAjax){
             $post = Yii::$app->request->post();
@@ -213,20 +206,20 @@ class DefaultController extends BaseController {
                 if ($action == 'update') {
                     $language = $languages[$record_id];
                     $language['status'] = $status;
-                    $language['lang'] = $edit_data['lang'];
+                    $language['name'] = $edit_data['name'];
                     $language['alias'] = $edit_data['alias'];
+                    $language['currency'] = $edit_data['currency'];
                     $languages[$record_id] = $language;
                 } else if ($action == 'add') {
+                    $language = new Lang();
                     $language['status'] = $status;
-                    $language['lang'] = $edit_data['lang'];
+                    $language['name'] = $edit_data['name'];
                     $language['alias'] = $edit_data['alias'];
+                    $language['currency'] = $edit_data['currency'];
                     array_push($languages, $language);
                 }
-                $languages = serialize($languages);
-                $settings = Settings::find()->where(['name' => 'set_language'])->one();
-                $settings->body = $languages;
-                $settings->save();
-                $settings->getErrors();
+                $language->save();
+                $language->getErrors();
                 echo 'ok';
             }
         }
@@ -238,12 +231,9 @@ class DefaultController extends BaseController {
                 $data = Yii::$app->request->post();
                 $record_id = $data['row_id'];
                 $languages = $this->getLangsSettings();
+                $languages[$record_id]->delete();
                 unset($languages[$record_id]);
                 $count_langs = count($languages);
-                $languages = serialize($languages);
-                $settings = Settings::find()->where(['name' => 'set_language'])->one();
-                $settings->body = $languages;
-                $settings->save();
                 echo $count_langs;
             }
         }
@@ -260,7 +250,7 @@ class DefaultController extends BaseController {
                 end($languages);
                 $key = key($languages) + 1;
             }
-            $model = new Settings();
+            $model = new Lang();
             $action = 'add';
             return $this->renderAjax('edit', ['model' => $model, 'key' => $key, 'index' => $index, 'action' => $action]);
         }
@@ -343,7 +333,7 @@ class DefaultController extends BaseController {
                                     }else if($data['type'] == 'payment' || $data['type'] == 'delivery'){
                                         $e['name'] = $data['body'];
                                     }
-                                    
+
                                 }
                             }
                             return $e;

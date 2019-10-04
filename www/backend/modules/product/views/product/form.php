@@ -80,14 +80,6 @@ Modal::end();
                 ['type' => 'text', 'name' => 'alias'],
                 ['type' => 'text', 'name' => 'name'],
                 ['type' => 'number', 'name' => 'price'],
-                ['type' => 'widget', 'name' => 'currency', 'class' => 'kartik\select2\Select2', 'options' => [
-                    'data' => ['uah' => 'Гривна', 'usd' => 'Доллар'],
-                    'language' => 'ru',
-                    'options' => ['placeholder' => 'Выберите валюту'],
-                    'pluginOptions' => [
-                        'allowClear' => true
-                    ],
-                ]],
                 ['type' => 'widget', 'name' => 'description', 'class' => 'vova07\imperavi\Widget', 'options' => [
                     'settings' => [
                         'lang' => 'ru',

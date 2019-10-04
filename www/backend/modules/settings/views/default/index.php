@@ -52,7 +52,7 @@ SettingsAsset::register($this);
                         'columns' => [
                             ['class' => 'yii\grid\SerialColumn'],
                             [
-                                'attribute' => 'lang',
+                                'attribute' => 'name',
                                 'format' => 'text',
                                 'label' => 'Язык'
                             ],
@@ -60,6 +60,11 @@ SettingsAsset::register($this);
                                 'attribute' => 'alias',
                                 'format' => 'text',
                                 'label' => 'Алиас'
+                            ],
+                            [
+                                'attribute' => 'currency',
+                                'format' => 'text',
+                                'label' => 'Валюта'
                             ],
                             [
                                 'attribute' => 'status',
