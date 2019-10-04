@@ -157,7 +157,7 @@ class FileController extends Controller
         }
 
         $model->deleteFile($routes);
-        
+
         if(!$model->deleteEssenceImg($id, Yii::$app->params['media']['default_img'])){
             return ['success' => 'false'];
         }

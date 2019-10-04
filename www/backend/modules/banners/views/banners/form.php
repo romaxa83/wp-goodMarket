@@ -1,6 +1,8 @@
 <?php
 
 use app\modules\banners\BannersAsset;
+use backend\modules\banners\models\Banner;
+use kartik\select2\Select2;
 use yii\helpers\Url;
 use yii\helpers\Html;
 use backend\modules\filemanager\widgets\FileInput;
@@ -43,6 +45,16 @@ BannersAsset::register($this);
                             ]
                         ]
                 ]]);
+                echo $form->field($model, 'type')->widget(Select2::classname(), [
+                    'id' => 'type',
+                    'name' => 'Banner[type]',
+                    'data' => Banner::BANNER_TYPES,
+                    'value' => $model->type,
+                    'options' => ['prompt' => 'Select a type ...'],
+                    'pluginOptions' => [
+                        'allowClear' => true
+                    ],
+                ]);
                 echo $form->field($model, 'status')->inline()->radioList([1 => ' Да', 0 => ' Нет'], [
                     'item' => function($index, $label, $name, $checked, $value) {
                         $check = $checked ? ' checked="checked"' : 0;

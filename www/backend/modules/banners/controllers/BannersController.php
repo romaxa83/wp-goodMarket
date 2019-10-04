@@ -2,6 +2,7 @@
 
 namespace backend\modules\banners\controllers;
 
+use backend\modules\filemanager\models\Mediafile;
 use Yii;
 use yii\data\ActiveDataProvider;
 use backend\controllers\BaseController;
@@ -9,6 +10,7 @@ use backend\modules\banners\models\Banner;
 use backend\widgets\langwidget\LangWidget;
 use common\controllers\AccessController;
 use yii\filters\AccessControl;
+use yii\helpers\ArrayHelper;
 use yii\web\ForbiddenHttpException;
 use backend\modules\banners\models\BannerLang;
 
@@ -59,6 +61,7 @@ class BannersController extends BaseController {
         if (Yii::$app->request->isPost) {
             $post = Yii::$app->request->post();
             if (BannerLang::saveAll($model, $modelLang, $post)) {
+                BannerLang::cropBanner($model->id);
                 Yii::$app->session->setFlash('success', 'Пункт успешно добавлен');
                 return $this->redirect(['/banners/banners']);
             }
@@ -85,6 +88,7 @@ class BannersController extends BaseController {
         if (Yii::$app->request->isPost) {
             $post = Yii::$app->request->post();
             if (BannerLang::saveAll($model, $modelLang, $post)) {
+                BannerLang::cropBanner($id);
                 Yii::$app->session->setFlash('success', 'Пункт успешно отредактирован');
                 return $this->redirect(['/banners/banners']);
             }
@@ -97,8 +101,10 @@ class BannersController extends BaseController {
 
     public function actionDelete() {
         $id = Yii::$app->request->get('id');
-        Banner::deleteAll(['id' => $id]);
-        BannerLang::deleteAll(['banner_id' => $id]);
+        foreach (BannerLang::find()->where(['banner_id' => $id])->all() as $b) {
+            $b->delete();
+        }
+        Banner::find()->where(['id' => $id])->one()->delete();
         Yii::$app->session->setFlash('success', 'Пункт успешно удален');
         $this->redirect(['/banners/banners']);
     }

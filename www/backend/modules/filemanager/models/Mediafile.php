@@ -2,6 +2,8 @@
 
 namespace backend\modules\filemanager\models;
 
+use backend\modules\banners\models\BannerLang;
+use Imagick;
 use Yii;
 use yii\web\UploadedFile;
 use yii\behaviors\TimestampBehavior;
@@ -225,7 +227,7 @@ class Mediafile extends ActiveRecord
         if (!file_exists($absolutePath)) {
             mkdir($absolutePath, 0777, true);
         }
-        
+
         // get file instance
         $this->file = UploadedFile::getInstance($this, 'file');
         //if a file with the same name already exist append a number
@@ -250,6 +252,11 @@ class Mediafile extends ActiveRecord
         $this->type = $this->file->type;
         $this->size = $this->file->size;
         $this->url = $url;
+
+        if ($this->isImage()) {
+            self::compress("$absolutePath/$filename");
+            $this->size = filesize("$absolutePath/$filename");
+        }
 
         return $this->save();
     }
@@ -723,4 +730,112 @@ class Mediafile extends ActiveRecord
         //$vprod_result = VProduct::updateAll(['media_id'=>$def_media->id], ['=', 'media_id', $media_id]);
         return ($prod_result === $prod_count) && ($cat_result === $cat_count);
     }
+
+    /**
+     * Compress image
+     */
+    public static function compress($filePath) {
+        if (file_exists($filePath)) {
+            $imagick = new Imagick();
+
+            $rawImage = file_get_contents($filePath);
+
+            $imagick->readImageBlob($rawImage);
+            $imagick->stripImage();
+
+            // Compress image
+            $imagick->setImageCompressionQuality(85);
+
+            $image_types = getimagesize($filePath);
+
+            // Set image as based its own type
+            if ($image_types[2] === IMAGETYPE_JPEG)
+            {
+                $imagick->setImageFormat('jpeg');
+
+                $imagick->setSamplingFactors(array('2x2', '1x1', '1x1'));
+
+                $profiles = $imagick->getImageProfiles("icc", true);
+
+                $imagick->stripImage();
+
+                if(!empty($profiles)) {
+                    $imagick->profileImage('icc', $profiles['icc']);
+                }
+
+                $imagick->setInterlaceScheme(Imagick::INTERLACE_JPEG);
+                $imagick->setColorspace(Imagick::COLORSPACE_SRGB);
+            }
+            else if ($image_types[2] === IMAGETYPE_PNG)
+            {
+                $imagick->setImageFormat('png');
+            }
+            else if ($image_types[2] === IMAGETYPE_GIF)
+            {
+                $imagick->setImageFormat('gif');
+            }
+
+            $imagick->writeImage($filePath);
+
+            // Destroy image from memory
+            $imagick->destroy();
+        }
+    }
+
+    public static function bannerCropping($filePath, $new_w, $new_h, $suffix, $focus = 'center') {
+        if (file_exists($filePath)) {
+            $imagick = new Imagick();
+
+            $rawImage = file_get_contents($filePath);
+
+            $imagick->readImageBlob($rawImage);
+            $imagick->stripImage();
+
+            $w = $imagick->getImageWidth();
+            $h = $imagick->getImageHeight();
+
+            if ($w > $h) {
+                $resize_w = $w * $new_h / $h;
+                $resize_h = $new_h;
+            }
+            else {
+                $resize_w = $new_w;
+                $resize_h = $h * $new_w / $w;
+            }
+            $imagick->resizeImage($resize_w, $resize_h, Imagick::FILTER_LANCZOS, 0.9);
+
+            switch ($focus) {
+                case 'northwest':
+                    $imagick->cropImage($new_w, $new_h, 0, 0);
+                    break;
+
+                case 'center':
+                    $imagick->cropImage($new_w, $new_h, ($resize_w - $new_w) / 2, ($resize_h - $new_h) / 2);
+                    break;
+
+                case 'northeast':
+                    $imagick->cropImage($new_w, $new_h, $resize_w - $new_w, 0);
+                    break;
+
+                case 'southwest':
+                    $imagick->cropImage($new_w, $new_h, 0, $resize_h - $new_h);
+                    break;
+
+                case 'southeast':
+                    $imagick->cropImage($new_w, $new_h, $resize_w - $new_w, $resize_h - $new_h);
+                    break;
+            }
+
+            $path = explode('.', $filePath);
+            $filename = $path[count($path)-2] . "-$suffix";
+            $path[count($path)-2] = $filename;
+            $filePath = implode('.', $path);
+
+            $imagick->writeImage($filePath);
+
+            // Destroy image from memory
+            $imagick->destroy();
+        }
+    }
+
 }
