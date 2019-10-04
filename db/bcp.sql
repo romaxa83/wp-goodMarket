@@ -192,14 +192,6 @@ CREATE TABLE `lang` (
   `status` tinyint(3) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
---
--- Dumping data for table `lang`
---
-
-INSERT INTO `lang` (`id`, `alias`, `name`, `priority`, `status`) VALUES
-(1, 'ru', 'Русский', 1, 1),
-(2, 'eng', 'English', 2, 1);
-
 -- --------------------------------------------------------
 
 --
