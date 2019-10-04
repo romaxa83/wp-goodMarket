@@ -3,8 +3,8 @@ use yii\helpers\Url;
 ?>
 
 <div class="top-banner">
-    <?php $lang = array_key_first($banner['bannerLang'])?>
-    <?php if (isset($banner['bannerLang'][$lang]['media']['header_resolutions'])): ?>
+    <?php if (isset($banner['bannerLang'][array_key_first($banner['bannerLang'])]['media']['header_resolutions'])): ?>
+        <?php $lang = array_key_first($banner['bannerLang'])?>
         <?php $banner = $banner['bannerLang'][$lang] ?>
         <a href="<?php echo Url::to($banner['alias'], TRUE); ?>" class="top-banner__link"></a>
         <picture>

@@ -4,7 +4,7 @@ use backend\modules\banners\widgets\headerwidget\BannerHeaderWidget;
 
 ?>
 <header class="site-header">
-    <?php echo BannerHeaderWidget::widget(['banners' => $this->context->params['banner_header']]);?>
+    <?php echo BannerHeaderWidget::widget([]);?>
     <div class="mob-menu d-xl-none" id="mobMenu">
     <nav class="navbar d-block">
         <div class="mob-menu__logo">

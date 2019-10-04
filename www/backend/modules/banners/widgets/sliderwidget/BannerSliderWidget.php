@@ -2,6 +2,7 @@
 
 namespace backend\modules\banners\widgets\sliderwidget;
 
+use backend\modules\banners\models\Banner;
 use backend\modules\banners\models\BannerLang;
 use yii\base\Widget;
 
@@ -16,6 +17,14 @@ class BannerSliderWidget extends Widget {
     }
 
     public function run() {
+        if (empty($this->banners)) {
+            $this->banners = Banner::find()->select(['id'])->where(['type' => Banner::BANNER_SLIDER, 'status' => 1])->with([
+                'bannerLang.media' => function ($query) {
+                    $query->select('id, url, alt');
+                }])->limit(10)->asArray()->all();
+            $this->banners = BannerLang::indexLangBy($this->banners, 'lang_id');
+        }
+
         if (!empty($this->banners)) {
             foreach ($this->banners as $banner_key => $banner) {
                 $header_resolutions = [];

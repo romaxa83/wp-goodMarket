@@ -1,8 +1,6 @@
 <?php
 use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
 
-$this->context->params['banner_header'] = $banner_header;
-
 ?>
 
 <div class="hero-sections-wrapper">
@@ -10,7 +8,7 @@ $this->context->params['banner_header'] = $banner_header;
         <div class="category-section col-xl-3 col-xxl-2 d-none d-xl-block">
             <?= \frontend\widgets\categorywidget\CategoryWidget::widget(); ?>
         </div>
-        <?php echo BannerSliderWidget::widget(['banners' => $banner_slider]);?>
+        <?php echo BannerSliderWidget::widget();?>
     </div>
 </div>
 
