@@ -46,7 +46,7 @@
             <img
                 width="222"
                 height="50"
-                src="img/logo.svg"
+                src="/img/logo.svg"
                 alt="site logo"
                 title="site logo"
             />
@@ -97,25 +97,25 @@
             <div class="social-link__item">
             <a class="social-link__link" href="#"></a>
             <svg width="11" height="21">
-                <use xlink:href="img/spritemap.svg#sprite-facebook"></use>
+                <use xlink:href="/img/spritemap.svg#sprite-facebook"></use>
             </svg>
             </div>
             <div class="social-link__item">
             <a class="social-link__link" href="#"></a>
             <svg width="21" height="18">
-                <use xlink:href="img/spritemap.svg#sprite-twitter"></use>
+                <use xlink:href="/img/spritemap.svg#sprite-twitter"></use>
             </svg>
             </div>
             <div class="social-link__item">
             <a class="social-link__link" href="#"></a>
             <svg width="21" height="20">
-                <use xlink:href="img/spritemap.svg#sprite-google"></use>
+                <use xlink:href="/img/spritemap.svg#sprite-google"></use>
             </svg>
             </div>
             <div class="social-link__item">
             <a class="social-link__link" href="#"></a>
             <svg width="19" height="19">
-                <use xlink:href="img/spritemap.svg#sprite-insta"></use>
+                <use xlink:href="/img/spritemap.svg#sprite-insta"></use>
             </svg>
             </div>
         </div>
@@ -143,7 +143,7 @@
             <div class="copyright__dev-link">
             <a href="#">
                 <svg width="60" height="9">
-                <use xlink:href="img/spritemap.svg#sprite-bonum"></use>
+                <use xlink:href="/img/spritemap.svg#sprite-bonum"></use>
                 </svg>
             </a>
             </div>
