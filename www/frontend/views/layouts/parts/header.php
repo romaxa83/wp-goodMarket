@@ -10,27 +10,27 @@ use yii\helpers\Url;
         <source
         media="(min-width: 1200px)"
         type="image/webp"
-        srcset="img/top_banner-xl.webp"
+        srcset="/img/top_banner-xl.webp"
         />
         <source
         media="(min-width: 1200px)"
-        srcset="img/top_banner-xl.jpg"
+        srcset="/img/top_banner-xl.jpg"
         />
         <source
         media="(min-width: 768px)"
         type="image/webp"
-        srcset="img/top_banner-md.webp"
+        srcset="/img/top_banner-md.webp"
         />
         <source
         media="(min-width: 768px)"
-        srcset="img/top_banner-md.jpg"
+        srcset="/img/top_banner-md.jpg"
         />
         <source
         type="image/webp"
-        srcset="img/top_banner-sm.webp"
+        srcset="/img/top_banner-sm.webp"
         />
         <img
-        src="img/top_banner-sm.jpg"
+        src="/img/top_banner-sm.jpg"
         alt="top banner"
         title="top banner"
         class="top-banner__img"
@@ -42,14 +42,14 @@ use yii\helpers\Url;
         <div class="mob-menu__logo">
         <button class="mob-menu__close" id="btnMobMenuClose">
             <svg width="25" height="25">
-            <use xlink:href="img/spritemap.svg#sprite-close"></use>
+            <use xlink:href="/img/spritemap.svg#sprite-close"></use>
             </svg>
         </button>
         <span class="navbar-brand">
             <img
             width="185"
             height="42"
-            src="img/logo.svg"
+            src="/img/logo.svg"
             alt="site logo"
             title="site logo"
             class="mob-menu__logo-img"
@@ -64,13 +64,12 @@ use yii\helpers\Url;
             data-popup="#loginFormPopup"
         >
             <svg width="20" height="20">
-            <use xlink:href="img/spritemap.svg#sprite-profile"></use>
+            <use xlink:href="/img/spritemap.svg#sprite-profile"></use>
             </svg>
             Войдите в кабинет
         </button>
         <div class="authorization__lang">
-            <a href="#" class="active">ru</a>
-            <a href="#">ua</a>
+            <?= \frontend\widgets\langwidget\LangWidget::widget(['mobile' => true]); ?>
         </div>
         </div>
         <ul class="navbar-nav mob-menu__navigation">
@@ -78,7 +77,7 @@ use yii\helpers\Url;
             <div class="nav-icon">
             <svg width="17" height="16">
                 <use
-                xlink:href="img/spritemap.svg#sprite-web-page-home"
+                xlink:href="/img/spritemap.svg#sprite-web-page-home"
                 ></use>
             </svg>
             </div>
@@ -87,7 +86,7 @@ use yii\helpers\Url;
         <li class="nav-item dropdown">
             <div class="nav-icon">
             <svg width="13" height="13">
-                <use xlink:href="img/spritemap.svg#sprite-menu"></use>
+                <use xlink:href="/img/spritemap.svg#sprite-menu"></use>
             </svg>
             </div>
             <a class="nav-link dropdown-toggle" href="#">
@@ -182,7 +181,7 @@ use yii\helpers\Url;
         <li class="nav-item">
             <div class="nav-icon">
             <svg width="13" height="13">
-                <use xlink:href="img/spritemap.svg#sprite-percentage"></use>
+                <use xlink:href="/img/spritemap.svg#sprite-percentage"></use>
             </svg>
             </div>
             <a href="#" class="nav-link">Акции</a>
@@ -191,7 +190,7 @@ use yii\helpers\Url;
             <div class="nav-icon">
             <svg width="16" height="16">
                 <use
-                xlink:href="img/spritemap.svg#sprite-shopping-cart_menu"
+                xlink:href="/img/spritemap.svg#sprite-shopping-cart_menu"
                 ></use>
             </svg>
             </div>
@@ -201,7 +200,7 @@ use yii\helpers\Url;
             <div class="nav-icon">
             <svg width="16" height="16">
                 <use
-                xlink:href="img/spritemap.svg#sprite-heart-outline-menu"
+                xlink:href="/img/spritemap.svg#sprite-heart-outline-menu"
                 ></use>
             </svg>
             </div>
@@ -212,7 +211,7 @@ use yii\helpers\Url;
         <li class="nav-item">
             <div class="nav-icon">
             <svg width="15" height="16">
-                <use xlink:href="img/spritemap.svg#sprite-phone"></use>
+                <use xlink:href="/img/spritemap.svg#sprite-phone"></use>
             </svg>
             </div>
             <a href="tel:0001234567" class="nav-link">(000) 123-45-67</a>
@@ -220,7 +219,7 @@ use yii\helpers\Url;
         <li class="nav-item">
             <div class="nav-icon">
             <svg width="15" height="15">
-                <use xlink:href="img/spritemap.svg#sprite-about_us"></use>
+                <use xlink:href="/img/spritemap.svg#sprite-about_us"></use>
             </svg>
             </div>
             <a href="#" class="nav-link">Почему мы?</a>
@@ -228,7 +227,7 @@ use yii\helpers\Url;
         <li class="nav-item dropdown">
             <div class="nav-icon">
             <svg width="15" height="15">
-                <use xlink:href="img/spritemap.svg#sprite-information"></use>
+                <use xlink:href="/img/spritemap.svg#sprite-information"></use>
             </svg>
             </div>
             <a class="nav-link dropdown-toggle" href="#">
@@ -250,7 +249,7 @@ use yii\helpers\Url;
             <img
                 width="222"
                 height="50"
-                src="img/logo.svg"
+                src="/img/logo.svg"
                 alt="site logo"
                 title="site logo"
                 class="desctop-menu__logo-img"
@@ -261,18 +260,14 @@ use yii\helpers\Url;
             class="navbar-nav d-flex flex-row align-items-center justify-content-between col-xl-7 col-xxl-8 desctop-menu__navigation"
         >
             <li class="nav-item desctop-menu__lang dropdown-click lang-dropdown">
-            <span class="nav-link dropdown-toggle">RU</span>
-            <div class="dropdown-menu dropdown-menu--category text-center">
-                <span class="dropdown-item active">RU</span>
-                <a class="dropdown-item" href="#">UA</a>
-            </div>
+                <?= \frontend\widgets\langwidget\LangWidget::widget(); ?>
             </li>
             <li
             class="nav-item desctop-menu__phone mr-auto dropdown-click phone-dropdown"
             >
             <div class="nav-icon">
                 <svg width="17" height="18">
-                <use xlink:href="img/spritemap.svg#sprite-phone"></use>
+                <use xlink:href="/img/spritemap.svg#sprite-phone"></use>
                 </svg>
             </div>
             <span class="nav-link dropdown-toggle" 
@@ -315,7 +310,7 @@ use yii\helpers\Url;
             data-popup="#loginFormPopup"
             >
             <svg width="20" height="20">
-                <use xlink:href="img/spritemap.svg#sprite-profile"></use>
+                <use xlink:href="/img/spritemap.svg#sprite-profile"></use>
             </svg>
             Войдите в кабинет
             </button>
@@ -333,7 +328,7 @@ use yii\helpers\Url;
             id="btnMobMenuOpen"
         >
             <svg width="23" height="23">
-            <use xlink:href="img/spritemap.svg#sprite-burger"></use>
+            <use xlink:href="/img/spritemap.svg#sprite-burger"></use>
             </svg>
         </button>
         <a
@@ -352,7 +347,7 @@ use yii\helpers\Url;
             />
             <button class="site-search__btn" type="submit">
                 <svg width="18" height="18">
-                <use xlink:href="img/spritemap.svg#sprite-search"></use>
+                <use xlink:href="/img/spritemap.svg#sprite-search"></use>
                 </svg>
             </button>
             </form>
@@ -367,7 +362,7 @@ use yii\helpers\Url;
             </div>
             <svg width="18" height="18">
                 <use
-                xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                 ></use>
             </svg>
             </div>
@@ -379,7 +374,7 @@ use yii\helpers\Url;
             </div>
             <svg width="18" height="18">
                 <use
-                xlink:href="img/spritemap.svg#sprite-heart-outline"
+                xlink:href="/img/spritemap.svg#sprite-heart-outline"
                 ></use>
             </svg>
             </div>
@@ -452,10 +447,10 @@ use yii\helpers\Url;
                     <picture>
                     <source
                         type="image/webp"
-                        srcset="img/popular-img.webp"
+                        srcset="/img/popular-img.webp"
                     />
                     <img
-                        src="img/popular-img.jpg"
+                        src="/img/popular-img.jpg"
                         alt="product card img"
                         title="product card img"
                     />
@@ -481,10 +476,10 @@ use yii\helpers\Url;
                     <picture>
                     <source
                         type="image/webp"
-                        srcset="img/popular-img.webp"
+                        srcset="/img/popular-img.webp"
                     />
                     <img
-                        src="img/popular-img.jpg"
+                        src="/img/popular-img.jpg"
                         alt="product card img"
                         title="product card img"
                     />
@@ -510,10 +505,10 @@ use yii\helpers\Url;
                     <picture>
                     <source
                         type="image/webp"
-                        srcset="img/popular-img.webp"
+                        srcset="/img/popular-img.webp"
                     />
                     <img
-                        src="img/popular-img.jpg"
+                        src="/img/popular-img.jpg"
                         alt="product card img"
                         title="product card img"
                     />
@@ -539,10 +534,10 @@ use yii\helpers\Url;
                     <picture>
                     <source
                         type="image/webp"
-                        srcset="img/popular-img.webp"
+                        srcset="/img/popular-img.webp"
                     />
                     <img
-                        src="img/popular-img.jpg"
+                        src="/img/popular-img.jpg"
                         alt="product card img"
                         title="product card img"
                     />
