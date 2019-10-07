@@ -1,6 +1,6 @@
 <?php
 
-namespace frontend\widgets\langwidget;
+namespace frontend\widgets\langWidget;
 
 use yii\web\AssetBundle;
 
