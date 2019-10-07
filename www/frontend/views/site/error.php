@@ -1,5 +1,7 @@
 <?php 
 use yii\helpers\Url;
+
+$this->title = 'Good Market - внутренняя ошибка сервера'
 ?>
 <main class="main-content">
     <section class="error-section" style="height:500px">

@@ -2,6 +2,8 @@
 use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
 use backend\modules\blog\widgets\blogWidget\BlogWidget;
 use backend\modules\category\widgets\categoryWidget\CategoryWidget;
+
+$this->title = 'Good Market';
 ?>
 
 <div class="hero-sections-wrapper">
