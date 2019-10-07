@@ -7,11 +7,11 @@ class CategoryController extends Controller
 {
     public function actionCatalog()
     {
-        return 'catalog';
+        return $this->render('index');
     }
 
     public function actionCategory(string $alias)
     {
-        return 'page view category ' . $alias;
+        return $this->render('category');
     }
 }
