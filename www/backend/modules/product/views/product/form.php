@@ -231,7 +231,7 @@ Modal::end();
             echo GridView::widget([
                 'dataProvider' => $dataProvider,
                 'tableOptions' => [
-                    'id' => 'product-table1',
+                    'id' => 'vproduct-table',
                     'class' => 'table table-striped table-bordered table-hover',
                 ],
                 'columns' => [

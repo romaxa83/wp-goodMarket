@@ -6,12 +6,11 @@ use yii\data\ActiveDataProvider;
 use backend\modules\product\models\VProduct;
 
 class VProductSearch extends VProduct {
+    public $product_id;
 
     function search($params) {
-        $query = VProduct::find();
-        if (isset($params['id'])) {
-            $query->where(['product_id' => $params['id']]);
-        }
+        $query = VProduct::find()->where(['product_id' => $this->product_id]);
+
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort' => FALSE,
