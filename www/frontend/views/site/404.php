@@ -1,5 +1,7 @@
 <?php 
 use yii\helpers\Url;
+
+$this->title = 'Good Market - ошибка 404'
 ?>
 <main class="main-content">
     <section class="error-section">
