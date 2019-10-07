@@ -1,6 +1,6 @@
 <?php
 
-namespace frontend\widgets\categorywidget;
+namespace backend\modules\category\widgets\categoryWidget;
 
 use yii\web\AssetBundle;
 

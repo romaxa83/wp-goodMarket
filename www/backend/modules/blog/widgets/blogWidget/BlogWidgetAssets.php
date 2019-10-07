@@ -1,6 +1,6 @@
 <?php
 
-namespace frontend\widgets\blogwidget;
+namespace backend\modules\blog\widgets\blogWidget;
 
 use yii\web\AssetBundle;
 

@@ -1,10 +1,10 @@
 <?php
 
-namespace frontend\widgets\blogwidget;
+namespace backend\modules\blog\widgets\blogWidget;
 
 use Yii;
 use yii\base\Widget;
-use frontend\widgets\blogwidget\BlogWidgetAssets;
+use backend\modules\blog\widgets\blogWidget\BlogWidgetAssets;
 use yii\helpers\ArrayHelper;
 
 class BlogWidget extends Widget 
