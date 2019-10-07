@@ -1,8 +1,9 @@
-var table = $('#lang');
+var lang_table = $('#lang');
+var currency_table = $('#currency');
 var sub_table;
 var inputes;
-$(document).mouseup(function (e)
-{
+
+$(document).mouseup(function (e) {
     if (sub_table != null) {
         if (!$(sub_table).is(e.target) && $(sub_table).has(e.target).length === 0) {
             var form = $(sub_table).parents('form');
@@ -17,9 +18,9 @@ $(document).mouseup(function (e)
                         td_parent.html(value);
                     } else {
                         row.remove();
-                        var count_row = table.find('tr[data-key]').length;
+                        var count_row = lang_table.find('tr[data-key]').length;
                         if (count_row == 0) {
-                            table.find('tbody').html('<tr><td colspan="5"><div class="empty">Ничего не найдено.</div></td></tr>');
+                            lang_table.find('tbody').html('<tr><td colspan="5"><div class="empty">Ничего не найдено.</div></td></tr>');
                         }
                     }
                 }
@@ -31,18 +32,24 @@ $(document).mouseup(function (e)
 });
 
 $('body').on('click', '.edit-lang', function () {
-    var row = $(this).parents('tr[data-key]');
+    editCustomRow('/admin/settings/default/update-row-lang/', $(this), lang_table)
+});
+
+$('body').on('click', '.edit-currency', function () {
+    editCustomRow('/admin/settings/default/update-row-currency/', $(this), currency_table)
+});
+
+function editCustomRow(url, edit, table) {
+    var row = edit.parents('tr[data-key]');
     var index = row.attr('data-index');
-    var row_id = $(this).attr('data-key');
+    var row_id = edit.attr('data-key');
     inputes = {};
     $.ajax({
-        url: host + '/admin/settings/default/update-row-lang/',
+        url: host + url,
         type: 'post',
         data: {'row_id': row_id, 'index': index},
-        success: function (response)
-        {
+        success: function (response) {
             var col_width = [];
-
             $(table).find('th').each(function (i) {
                 col_width[i] = $(this).outerWidth(true);
             });
@@ -58,15 +65,23 @@ $('body').on('click', '.edit-lang', function () {
             });
         }
     });
-});
+}
 
 $('body').on('click', '.save-lang', function () {
-    var save = $(this);
+    saveCustomRow('/admin/settings/default/save-row-lang', $(this))
+});
+
+$('body').on('click', '.save-currency', function () {
+    saveCustomRow('/admin/settings/default/save-row-currency', $(this))
+});
+
+function saveCustomRow(url, save) {
     var table = save.parents('table');
     var parent_row = $(table).parents('tr');
-    var lang_id = $(this).attr('data-key');
-    var action = $(this).attr('data-get_action');
+    var record_id = save.attr('data-key');
+    var action = save.attr('data-get_action');
     var form = save.parents('form');
+    var entity = save.data('entity');
     var data = {};
     var error = false;
     $(form).find('input').each(function () {
@@ -82,11 +97,15 @@ $('body').on('click', '.save-lang', function () {
     });
     if (error == true)
         return;
-    data['status'] = $(form).find('input[name="status"]').is(':checked') ? 1 : 0;
+    let status = $(form).find('input[name="status"]');
+    if (status.length > 0) {
+        data['status'] = status.is(':checked') ? 1 : 0;
+    }
+
     $.ajax({
-        url: host + '/admin/settings/default/save-row-lang',
+        url: host + url,
         type: 'post',
-        data: {'action': action, 'lang_id': lang_id, 'edit': data},
+        data: {'action': action, 'record_id': record_id, 'edit': data},
         success: function (response)
         {
             if (response == 'ok') {
@@ -96,15 +115,26 @@ $('body').on('click', '.save-lang', function () {
                         td_parent.html($(this).val());
                     }
                 });
-                save.replaceWith('<a class="grid-option fa fa-pencil edit-lang" href="#" title="Редактировать запись" aria-label="Редактировать запись" style="color:rgb(63,140,187)" data-action="update" data-key="' + lang_id + '" data-pjax="1"></a> <a class="grid-option fa fa-trash delete-lang" href="#" title="Удалить запись" aria-label="Удалить запись" style="color:rgb(63,140,187)" data-confirm="Вы уверены, что хотите удалить этот элемент?" data-key="' + lang_id + '" data-pjax="1"></a>');
+                save.replaceWith('<a class="grid-option fa fa-pencil edit-' + entity +'" href="#" title="Редактировать запись" ' +
+                    'aria-label="Редактировать запись" style="color:rgb(63,140,187)" data-action="update" data-key="' + record_id + '" ' +
+                    'data-pjax="1"></a> <a class="grid-option fa fa-trash delete-' + entity +'" href="#" title="Удалить запись" aria-label="Удалить запись" ' +
+                    'style="color:rgb(63,140,187)" data-confirm="Вы уверены, что хотите удалить этот элемент?" data-key="' + record_id + '" data-pjax="1"></a>');
             } else
                 return;
 
         }
     });
-});
+}
 
 $('.add-lang').on('click', function () {
+    addCustomRow('/admin/settings/default/add-row-lang', lang_table);
+});
+
+$('.add-currency').on('click', function () {
+    addCustomRow('/admin/settings/default/add-row-currency', currency_table);
+});
+
+function addCustomRow(url, table) {
     inputes = {};
     var col_width = [];
     var last_row;
@@ -120,11 +150,10 @@ $('.add-lang').on('click', function () {
         index = 0;
     }
     $.ajax({
-        url: host + '/admin/settings/default/add-row-lang',
+        url: host + url,
         type: 'post',
         data: {'index': index},
-        success: function (response)
-        {
+        success: function (response) {
             table.find('th').each(function (i) {
                 col_width[i] = $(this).outerWidth(true);
             });
@@ -143,7 +172,7 @@ $('.add-lang').on('click', function () {
             });
         }
     });
-});
+}
 
 $('.new-setting').on('click', function () {
     inputes = {};
@@ -252,10 +281,18 @@ function rowSettingHtml(table_data, data) {
 }
 
 $('body').on('click', '.delete-lang', function () {
-    var row = $(this).parents('tr[data-key]');
-    var row_id = $(this).attr('data-key');
+    deleteCustomRow('/admin/settings/default/delete-row-lang', $(this), lang_table);
+});
+
+$('body').on('click', '.delete-currency', function () {
+    deleteCustomRow('/admin/settings/default/delete-row-currency', $(this), currency_table);
+});
+
+function deleteCustomRow(url, del, table) {
+    var row = del.parents('tr[data-key]');
+    var row_id = del.attr('data-key');
     $.ajax({
-        url: host + '/admin/settings/default/delete-row-lang',
+        url: host + url,
         type: 'post',
         data: {row_id: row_id},
         success: function (data_count)
@@ -268,7 +305,7 @@ $('body').on('click', '.delete-lang', function () {
         }
     });
     return false;
-});
+}
 
 var mail = /^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/;
 var phone = /(\+)+(38)+(\()+([0-9]{3})+(\)-)+([0-9]{3}-)+([0-9]{2}-)+([0-9]{2})/;
@@ -296,7 +333,7 @@ $('#contact .text-data, .update-setting .text-data').on('click', function () {
     return;
 });
 
-$('#contact,.update-setting').on('blur', '.life-edit', function () {
+$('#contact, .update-setting').on('blur', '.life-edit', function () {
     var xhr = true;
     var oldValue = $(this).closest('td').attr('data-oldvalue');
     var newValue = $(this).val();

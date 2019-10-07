@@ -7,6 +7,7 @@ use Yii;
 use backend\controllers\BaseController;
 use backend\modules\settings\models\Settings;
 use yii\data\ArrayDataProvider;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 use common\controllers\AccessController;
 use yii\filters\AccessControl;
@@ -43,11 +44,10 @@ class DefaultController extends BaseController {
 
     private function getSetting($alias) {
         $settings = Settings::find()->where(['name' => $alias])->asArray()->one();
-        return (!empty($settings['body'])) ? unserialize($settings['body']) : null;
+        return (!empty($settings['body'])) ? unserialize($settings['body']) : [];
     }
 
     private function getContacts() {
-
         $model = Settings::find()
                 ->select(['body', 'name', 'status', 'id'])
                 ->where(['in', 'name', ['position', 'mail', 'phone']])
@@ -58,17 +58,16 @@ class DefaultController extends BaseController {
 
     private function getCoordinateData() {
         $coordinate = Settings::find()->where(['in', 'name', ['lat', 'lng']])->asArray()->all();
-        $coordinate = \yii\helpers\ArrayHelper::map($coordinate, 'name', 'body');
+        $coordinate = ArrayHelper::map($coordinate, 'name', 'body');
         return $coordinate;
     }
 
     public function actionIndex() {
         $set_lang = $this->getLangsSettings();
         $contact = $this->getContacts();
-
         $payment = $this->getSetting('payment');
         $delivery = $this->getSetting('delivery');
-
+        $currency = $this->getSetting('currencies');
         $group = $this->getSetting('social-group');
 
         $model = new Settings();
@@ -82,7 +81,6 @@ class DefaultController extends BaseController {
             'sort' => false,
             'pagination' => false
         ]);
-
         $paymentDataProvider = new ArrayDataProvider([
             'allModels' => $payment,
             'sort' => false,
@@ -91,7 +89,11 @@ class DefaultController extends BaseController {
         $deliveryDataProvider = new ArrayDataProvider([
             'allModels' => $delivery,
         ]);
-
+        $currencyDataProvider = new ArrayDataProvider([
+            'allModels' => $currency,
+            'sort' => false,
+            'pagination' => false
+        ]);
         $GroupDataProvider = new ArrayDataProvider([
             'allModels' => $group,
             'sort' => false,
@@ -102,11 +104,13 @@ class DefaultController extends BaseController {
 
         return $this->render('index', [
                     'defaultLanguage' => Yii::$app->params['settings']['defaultLanguage'],
+                    'defaultCurrency' => Yii::$app->params['settings']['defaultCurrency'],
                     'model' => $model,
                     'dataProvider' => $dataProvider,
                     'contact' => $ContactDataProvider,
                     'payment' => $paymentDataProvider,
                     'delivery' => $deliveryDataProvider,
+                    'currency' => $currencyDataProvider,
                     'group' => $GroupDataProvider,
                     'coordinate' => $coordinate
         ]);
@@ -126,9 +130,32 @@ class DefaultController extends BaseController {
                 $model->alias = $lang['alias'];
                 $model->status = $lang['status'];
                 $model->currency = $lang['currency'];
-                return $this->renderAjax('edit', ['model' => $model, 'index' => $index, 'key' => $row_id, 'action' => $action]);
+                return $this->renderAjax('edit-lang', ['model' => $model, 'index' => $index, 'key' => $row_id, 'action' => $action]);
             }
         }
+    }
+
+    public function actionUpdateRowCurrency() {
+        if (Yii::$app->request->isAjax) {
+            if (Yii::$app->request->post()) {
+                $post = Yii::$app->request->post();
+                return $this->updateCustomRow($post, 'currencies', 'edit-currency');
+            }
+        }
+    }
+
+    private function updateCustomRow(array $post, string $setting_name, string $template) {
+        $row_id = $post['row_id'];
+        $index = $post['index'];
+        $action = 'update';
+        $langs = $this->getSetting($setting_name);
+        $lang = $langs[$row_id];
+        $model = new Settings();
+        $model->load($lang);
+        foreach ($lang as $k => $v) {
+            $model[$k] = $lang[$k];
+        }
+        return $this->renderAjax($template, ['model' => $model, 'index' => $index, 'key' => $row_id, 'action' => $action]);
     }
 
     public function actionUpdateStatus() {
@@ -192,7 +219,7 @@ class DefaultController extends BaseController {
             if (Yii::$app->request->post()) {
                 $data = Yii::$app->request->post();
                 $edit_data = $data['edit'];
-                $record_id = $data['lang_id'];
+                $record_id = $data['record_id'];
                 $status = $edit_data['status'];
                 $action = $data['action'];
                 foreach ($edit_data as $value) {
@@ -225,6 +252,51 @@ class DefaultController extends BaseController {
         }
     }
 
+    public function actionSaveRowCurrency() {
+        if (Yii::$app->request->isAjax) {
+            if (Yii::$app->request->post()) {
+                $data = Yii::$app->request->post();
+                $this->saveCustomRow($data, $this->getSetting('currencies'), 'currencies');
+            }
+        }
+    }
+
+    private function saveCustomRow(array $post, array $settings, string $setting_name) {
+        $edit_data = $post['edit'];
+        unset($edit_data['_csrf-backend']);
+        $record_id = $post['record_id'];
+        $action = $post['action'];
+        foreach ($edit_data as $value) {
+            $value = str_replace(" ", "", $value);
+            if ($value == '') {
+                echo 'fail';
+                return;
+            }
+        }
+        if ($action == 'update') {
+            $row = $settings[$record_id];
+            foreach ($edit_data as $k => $v) {
+                $row[$k] = $edit_data[$k];
+            }
+            $settings[$record_id] = $row;
+        } else if ($action == 'add') {
+            foreach ($edit_data as $k => $v) {
+                $row[$k] = $edit_data[$k];
+            }
+            array_push($settings, $row);
+        }
+        $setting = Settings::find()->where(['name' => $setting_name])->one();
+        if (is_null($setting)){
+            $setting = new Settings();
+            $setting->name = $setting_name;
+        }
+        $setting->body = serialize($settings);
+        $setting->save();
+        $setting->getErrors();
+        echo 'ok';
+    }
+
+
     public function actionDeleteRowLang() {
         if (Yii::$app->request->isAjax) {
             if (Yii::$app->request->post()) {
@@ -239,6 +311,26 @@ class DefaultController extends BaseController {
         }
     }
 
+    public function actionDeleteRowCurrency() {
+        if (Yii::$app->request->isAjax) {
+            if (Yii::$app->request->post()) {
+                $post = Yii::$app->request->post();
+                $this->deleteCustomRow($post, 'currencies');
+            }
+        }
+    }
+
+    private function deleteCustomRow(array $post, string $setting_name) {
+        $record_id = $post['row_id'];
+        $settings = $this->getSetting($setting_name);
+        unset($settings[$record_id]);
+        $count_langs = count($settings);
+        $setting = Settings::find()->where(['name' => $setting_name])->one();
+        $setting->body = serialize($settings);
+        $setting->save();
+        echo $count_langs;
+    }
+
     public function actionAddRowLang() {
         if (Yii::$app->request->isAjax) {
             $data = Yii::$app->request->post();
@@ -250,9 +342,22 @@ class DefaultController extends BaseController {
                 end($languages);
                 $key = key($languages) + 1;
             }
-            $model = new Lang();
-            $action = 'add';
-            return $this->renderAjax('edit', ['model' => $model, 'key' => $key, 'index' => $index, 'action' => $action]);
+            return $this->renderAjax('edit-lang', ['model' => new Lang(), 'key' => $key, 'index' => $index, 'action' => 'add']);
+        }
+    }
+
+    public function actionAddRowCurrency() {
+        if (Yii::$app->request->isAjax) {
+            $data = Yii::$app->request->post();
+            $currencies = $this->getSetting('currencies');
+            $index = $data['index'];
+            if (count($currencies) == 0) {
+                $key = 0;
+            } else {
+                end($currencies);
+                $key = key($currencies) + 1;
+            }
+            return $this->renderAjax('edit-currency', ['model' => new Settings(), 'key' => $key, 'index' => $index, 'action' => 'add']);
         }
     }
 
@@ -267,13 +372,11 @@ class DefaultController extends BaseController {
                 end($languages);
                 $key = key($languages) + 1;
             }
-            $model = new Settings();
-            $action = 'add';
             return $this->renderAjax('edit-setting', [
-                        'model' => $model,
+                        'model' => new Settings(),
                         'key' => $key,
                         'index' => $index,
-                        'action' => $action,
+                        'action' => 'add',
                         'setting' => $data['setting']
             ]);
         }

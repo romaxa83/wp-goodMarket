@@ -37,6 +37,7 @@ use yii\helpers\Url;
                                 'style' => 'color:rgb(63,140,187), margin:10px',
                                 'class' => 'grid-option fa fa-floppy-o save-lang',
                                 'data-get_action' => $action,
+                                'data-entity' => 'lang',
                                 'data-key' => $key,
                                 'data-pjax' => '1'
                             ]);?>

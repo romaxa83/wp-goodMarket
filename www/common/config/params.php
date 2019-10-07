@@ -10,6 +10,7 @@ return [
     ],
     'settings' => [
         'defaultLanguage' => 'ru',
+        'defaultCurrency' => 'грн',
         'mainContentLanguage' => 'ru'
     ],
 ];
