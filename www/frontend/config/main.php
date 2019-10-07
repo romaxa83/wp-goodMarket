@@ -52,6 +52,8 @@ return [
 
                 'blog' => 'blog/blog',
                 'blog/<alias:\w+>' => 'blog/article',
+
+                'product/<alias:\w+>' => 'product/product',
                 
                 '<action:\w+>' => 'site/<action>',
                 [
