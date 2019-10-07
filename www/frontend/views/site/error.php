@@ -2,7 +2,7 @@
 use yii\helpers\Url;
 ?>
 <main class="main-content">
-    <section class="error-section">
+    <section class="error-section" style="height:500px">
         <div class="error-section__container">
             <div class="error-section__desc-wrap">
                 <h1 class="error-section__title">
