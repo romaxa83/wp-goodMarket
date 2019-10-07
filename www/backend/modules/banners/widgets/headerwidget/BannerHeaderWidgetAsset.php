@@ -14,8 +14,7 @@ class BannerHeaderWidgetAsset extends AssetBundle {
 //        'css/header-widget.css'
     ];
     public $depends = [
-        'yii\web\YiiAsset',
-        'yii\bootstrap\BootstrapAsset',
+
     ];
 
 }

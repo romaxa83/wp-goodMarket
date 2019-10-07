@@ -52,7 +52,7 @@ SettingsAsset::register($this);
                         'columns' => [
                             ['class' => 'yii\grid\SerialColumn'],
                             [
-                                'attribute' => 'lang',
+                                'attribute' => 'name',
                                 'format' => 'text',
                                 'label' => 'Язык'
                             ],
@@ -60,6 +60,11 @@ SettingsAsset::register($this);
                                 'attribute' => 'alias',
                                 'format' => 'text',
                                 'label' => 'Алиас'
+                            ],
+                            [
+                                'attribute' => 'currency',
+                                'format' => 'text',
+                                'label' => 'Валюта'
                             ],
                             [
                                 'attribute' => 'status',
@@ -274,7 +279,108 @@ SettingsAsset::register($this);
         </div>
     </div>
     <div class="row">
-        <div class="col-xs-6">
+        <div class="col-xs-4">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">Настройка валют</h3>
+                    <?php
+                    if(AccessController::isView(\Yii::$app->controller, 'add-row-currency')){
+                        echo Html::tag(
+                            'a', '', [
+                            'href' => '#',
+                            'title' => 'Добавить запись',
+                            'style' => ['color' => 'rgb(63,140,187)', 'float' => 'right'],
+                            'class' => 'grid-option fa fa-plus add-currency',
+                            'data-action' => 'add',
+                            'data-type' => 'currency',
+                            'data-pjax' => '1'
+                        ]);
+                    }
+                    ?>
+                </div>
+                <div class="box-body">
+                    <?=
+                    GridView::widget(['dataProvider' => $currency,
+                        'tableOptions' => [
+                            'id' => 'currency',
+                            'class' => 'table table-bordered'
+                        ],
+                        'rowOptions' => function($model, $key, $index, $grid) {
+                            return [
+                                'background-color' => 'white',
+                                'data-key' => $key,
+                                'data-index' => $index,
+                                'data-type' => 'currency',
+                            ];
+                        },
+                        'showFooter' => false,
+                        'columns' => [
+                            ['class' => 'yii\grid\SerialColumn'],
+                            [
+                                'attribute' => 'name',
+                                'format' => 'text',
+                                'label' => 'Название валюты',
+                            ],
+                            [
+                                'attribute' => 'alias',
+                                'format' => 'text',
+                                'label' => 'Сокращение',
+                            ],
+                            [
+                                'attribute' => 'exchange',
+                                'format' => 'text',
+                                'label' => 'Курс к гривне',
+                                'contentOptions' => ['class' => 'text-data number']
+                            ],
+                            [
+                                'class' => yii\grid\ActionColumn::class,
+                                'template' => '{update} {delete}',
+                                'header' => 'Управление',
+                                'headerOptions' => ['width' => '100'],
+                                'buttons' => [
+                                    'update' => function($url, $model, $key) use ($defaultCurrency) {
+                                        $access = AccessController::isView(Yii::$app->controller, 'update-row-currency');
+                                        if($access){
+                                            return Html::tag(
+                                                'a', '', [
+                                                'href' => '#',
+                                                'title' => 'Редактировать запись',
+                                                'aria-label' => 'Редактировать запись',
+                                                'style' => 'color:rgb(63,140,187)',
+                                                'class' => ($model['alias'] == $defaultCurrency) ? 'grid-option fa fa-pencil' : 'grid-option fa fa-pencil edit-currency',
+                                                'data-action' => 'update',
+                                                'data-key' => $key,
+                                                'data-pjax' => '1',
+                                                'disabled' => ($model['alias'] == $defaultCurrency) ? TRUE : FALSE
+                                            ]);
+                                        }
+                                    },
+                                    'delete' => function($url, $model, $key) use ($defaultCurrency) {
+                                        $access = AccessController::isView(Yii::$app->controller, 'delete-row-currency');
+                                        if($access){
+                                            return Html::tag(
+                                                'a', '', [
+                                                'href' => '#',
+                                                'title' => 'Удалить запись',
+                                                'aria-label' => 'Удалить запись',
+                                                'style' => 'color:rgb(63,140,187)',
+                                                'class' => ($model['alias'] == $defaultCurrency) ? 'grid-option fa fa-trash' : 'grid-option fa fa-trash delete-currency',
+                                                'data-confirm' => ($model['alias'] != $defaultCurrency) ? 'Вы уверены, что хотите удалить этот элемент?' : FALSE,
+                                                'data-key' => $key,
+                                                'data-pjax' => '1',
+                                            ]);
+                                        }
+                                    }
+                                ]
+                            ]
+
+                        ],
+                    ]);
+                    ?>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-4">
             <div class="box">
                 <div class="box-header">
                     <h3 class="box-title">Настройка оплаты</h3>
@@ -353,7 +459,7 @@ SettingsAsset::register($this);
                 </div>
             </div>
         </div>
-        <div class="col-xs-6">
+        <div class="col-xs-4">
             <div class="box">
                 <div class="box-header">
                     <h3 class="box-title">Настройка доставки</h3>

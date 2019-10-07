@@ -493,7 +493,7 @@ $(document).ready(function () {
         $.ajax({
             url: host + '/admin/product/product/ajax-get-characteristic-for-product',
             type: 'POST',
-            data: {id: attribute_modal_characteristic_select.val()},
+            data: {product_id: $('#form-product').data('product-id'), characteristic_id: attribute_modal_characteristic_select.val()},
             success: function (data) {
                 data = JSON.parse(data);
                 if (attribute_modal_product_characteristic_select.data('select2')) {

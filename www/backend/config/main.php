@@ -42,6 +42,10 @@ return [
         'content' => [
             'class' => 'backend\modules\content\Page',
         ],
+        'settings' => [
+            'class' => 'backend\modules\settings\Settings',
+        ],
+
         'users' => [
             'class' => 'backend\modules\users\Users',
             'modules' => [

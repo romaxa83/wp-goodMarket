@@ -26,8 +26,8 @@ class OrderTest extends Unit {
         ],
 
         'products_data' => [
-            ["product_id" => "1", "lang_id" => "1", "vproduct_id" => "1", "category_id" => "1", "count" => "3", "product_price" => "1001", "price" => "1001", "currency" => "uah"],
-            ["product_id" => "2", "lang_id" => "2", "vproduct_id" => "2", "category_id" => "2", "count" => "4", "product_price" => "1002", "price" => "1002", "currency" => "usd"]
+            ["product_id" => "1", "lang_id" => "1", "vproduct_id" => "1", "category_id" => "1", "count" => "3", "product_price" => "1001", "price" => "1001"],
+            ["product_id" => "2", "lang_id" => "2", "vproduct_id" => "2", "category_id" => "2", "count" => "4", "product_price" => "1002", "price" => "1002"]
         ]
     ];
 
@@ -95,7 +95,7 @@ class OrderTest extends Unit {
         expect($order->paid)->equals($data['Order']['paid']);
         expect($order->comment)->equals($data['Order']['comment']);
 
-        $orderProduct = OrderProduct::find()->select(["product_id", "lang_id", "vproduct_id", "count", "product_price", "price", "currency"])
+        $orderProduct = OrderProduct::find()->select(["product_id", "lang_id", "vproduct_id", "count", "product_price", "price"])
             ->where(['order_id' => $order->id])->asArray()->all();
 
         expect(count($orderProduct))->equals(2);

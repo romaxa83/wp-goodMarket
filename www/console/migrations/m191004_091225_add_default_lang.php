@@ -1,5 +1,6 @@
 <?php
 
+use common\models\Lang;
 use yii\db\Migration;
 
 /**
@@ -16,30 +17,34 @@ class m191004_091225_add_default_lang extends Migration
             'alias' => 'ru',
             'name' => 'Русский',
             'priority' => 1,
-            'status' => 1
+            'status' => 1,
+            'currency' => 'руб'
         ];
 
         $arrLang[] = [
             'alias' => 'ua',
             'name' => 'Украинский',
             'priority' => 2,
-            'status' => 1
+            'status' => 1,
+            'currency' => 'грн'
         ];
 
         $arrLang[] = [
             'alias' => 'eng',
             'name' => 'Английский',
             'priority' => 3,
-            'status' => 0
+            'status' => 0,
+            'currency' => 'usd'
         ];
 
         foreach($arrLang as $oneLang){
-            $model = new \common\models\Lang();
+            $model = new Lang();
             $model->alias = $oneLang['alias'];
             $model->name = $oneLang['name'];
             $model->priority = $oneLang['priority'];
             $model->status = $oneLang['status'];
-            
+            $model->currency = $oneLang['currency'];
+
             if(!$model->save()){
                 return 'error';
             }
@@ -51,21 +56,6 @@ class m191004_091225_add_default_lang extends Migration
      */
     public function safeDown()
     {
-        \common\models\Lang()::deleteAll(['in','alias',['ru','ua','eng']]);
+        Lang::deleteAll(['in','alias',['ru','ua','eng']]);
     }
-
-    /*
-    // Use up()/down() to run migration code without a transaction.
-    public function up()
-    {
-
-    }
-
-    public function down()
-    {
-        echo "m191004_091225_add_default_lang cannot be reverted.\n";
-
-        return false;
-    }
-    */
 }

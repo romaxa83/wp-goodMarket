@@ -76,6 +76,7 @@ class ProductController extends BaseController {
         $model = new Product();
         $modelLang = new ProductLang();
         $searchModel = new VProductSearch();
+        $searchModel->product_id = $model->id;
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $manufacturer = ArrayHelper::map(Manufacturer::find()->asArray()->where(['status' => 1])->all(), 'id', 'name');
         $group = ArrayHelper::map(Group::find()->where(['status' => 1])->all(), 'id', 'name');
@@ -150,6 +151,7 @@ class ProductController extends BaseController {
         }
 
         $searchModel = new VProductSearch();
+        $searchModel->product_id = $model->id;
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         if (Yii::$app->request->isPost) {
@@ -424,10 +426,9 @@ class ProductController extends BaseController {
     public function actionAjaxGetProductCharacteristicInput() {
         $characteristic_id = Yii::$app->request->post('characteristic_id');
         $characteristic = Characteristic::findOne($characteristic_id);
-        $product_сharacteristic = new ProductCharacteristic();
         $render = $this->renderPartial('type', [
             'type' => $characteristic->type,
-            'product_characteristic' => $product_сharacteristic
+            'product_characteristic' => new ProductCharacteristic()
         ]);
         return Json::encode($render);
     }
@@ -778,9 +779,9 @@ class ProductController extends BaseController {
 
     public function actionAjaxGetCharacteristicForProduct() {
         if (Yii::$app->request->isAjax) {
-            $id = Yii::$app->request->post('id');
+            $post = Yii::$app->request->post();
             $characteristic = ArrayHelper::index(ProductCharacteristic::find()->select(['id', 'characteristic_id', 'value'])
-                ->where(['characteristic_id' => $id])->with('characteristic')->asArray()->all(), 'id');
+                ->where(['product_id' => $post['product_id'], 'characteristic_id' => $post['characteristic_id']])->with('characteristic')->asArray()->all(), 'id');
             foreach ($characteristic as $k => $v) {
                 $data[] = ['id' => $k, 'text' => $v['characteristic']['type'] == 'color' ? '<div>Цвет: <span style="color:' . $v['value'] .'"> ' . $v['value'] . '</span></div>' : '<div>'. $v['value'] .'</div>' ];
             }

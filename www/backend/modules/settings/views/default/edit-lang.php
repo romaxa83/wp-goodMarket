@@ -11,8 +11,9 @@ use yii\helpers\Url;
             <tbody>
             <tr>
                 <td><?=$index+1?></td>
-                <td><?=$form->field($model, 'lang')->textInput(['autofocus' => true, 'name' => 'lang'])->label(false)->error(false)?></td>
+                <td><?=$form->field($model, 'name')->textInput(['autofocus' => true, 'name' => 'name'])->label(false)->error(false)?></td>
                 <td><?=$form->field($model, 'alias')->textInput(['name'=>'alias'])->label(false)->error(false)?></td>
+                <td><?=$form->field($model, 'currency')->textInput(['name'=>'currency'])->label(false)->error(false)?></td>
                 <td>
                     <?php
                         $checked = ($model->status==1) ? 'true' : '';
@@ -36,17 +37,18 @@ use yii\helpers\Url;
                                 'style' => 'color:rgb(63,140,187), margin:10px',
                                 'class' => 'grid-option fa fa-floppy-o save-lang',
                                 'data-get_action' => $action,
+                                'data-entity' => 'lang',
                                 'data-key' => $key,
                                 'data-pjax' => '1'
                             ]);?>
-                    
+
                 </td>
-                 
+
             </tr>
         </tbody>
         </table>
         <?php ActiveForm::end(); ?>
     </td>
-        
-    
+
+
 </tr>

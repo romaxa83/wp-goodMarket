@@ -16,6 +16,7 @@ class Settings extends \yii\db\ActiveRecord
     public $lang;
     public $alias;
     public $status;
+    public $exchange;
     /**
      * {@inheritdoc}
      */

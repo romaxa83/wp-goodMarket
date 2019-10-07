@@ -14,8 +14,7 @@ class BannerSliderWidgetAsset extends AssetBundle {
 //        'css/slider-widget.css'
     ];
     public $depends = [
-        'yii\web\YiiAsset',
-        'yii\bootstrap\BootstrapAsset',
+
     ];
 
 }

@@ -43,6 +43,7 @@ use common\controllers\AccessController;
                                 ['label' => 'Логи иморта', 'icon' => 'circle', 'url' => ['/import/import/log'], 'visible' => AccessController::checkPermission('/import/import/log')],
                             ]],
                         ['label' => 'Отзывы', 'icon' => 'list', 'url' => ['/reviews/reviews/index'], 'visible' => AccessController::checkPermission('/reviews/reviews/index')],
+                        ['label' => 'Настройки', 'icon' => 'gears', 'url' => ['/settings/default/index'], 'visible' => AccessController::checkPermission('/settings/default/index')],
                         ['label' => 'Login', 'url' => ['site/login'], 'visible' => Yii::$app->user->isGuest],
                         [
                             'label' => 'Инструменты',

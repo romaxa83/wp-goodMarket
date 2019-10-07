@@ -24,7 +24,7 @@ class ProductLang extends ActiveRecord {
      */
     public function rules() {
         return [
-            [['product_id', 'lang_id', 'alias', 'name', 'description', 'price', 'currency'], 'required', 'message' => 'Необходимо заполнить '],
+            [['product_id', 'lang_id', 'alias', 'name', 'description', 'price'], 'required', 'message' => 'Необходимо заполнить '],
             ['alias', 'match', 'pattern' => '/^[a-z0-9_-]+$/', 'message' => 'Неверно введен алиас']
         ];
     }
@@ -42,7 +42,6 @@ class ProductLang extends ActiveRecord {
             'name' => 'Название',
             'description' => 'Описание',
             'price' => 'Цена',
-            'currency' => 'Валюта'
         ];
     }
 

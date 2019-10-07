@@ -999,15 +999,7 @@ class OrderController extends BaseController {
 
                 if ($post['vproduct_id'] > 0) {
                     try {
-                        $product_price = isset($product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][$post['lang_id']]['price'])
-                        && !empty($product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][$post['lang_id']]['price'])
-                            ? $product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][$post['lang_id']]['price']
-                            : $product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][Lang::getDefaultLangID()]['price'];
-
-                        $currency = isset($product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][$post['lang_id']]['currency'])
-                        && !empty($product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][$post['lang_id']]['currency'])
-                            ? $product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][$post['lang_id']]['currency']
-                            : $product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][Lang::getDefaultLangID()]['currency'];
+                        $product_price = $product[$post['product_id']]['vproducts'][$post['vproduct_id']]['vProductLang'][$post['lang_id']]['price'];
                     } catch (\Throwable $e) {
                         Yii::$app->session->setFlash('error',
                             'Отсутствуют VProductLang данные вариативного товара (id='.$post['vproduct_id'].') для продукта (id='.$post['product_id'].')');
@@ -1019,15 +1011,7 @@ class OrderController extends BaseController {
                     }
                 } else {
                     try {
-                        $product_price = isset($product[$post['product_id']]['productLang'][$post['lang_id']]['price'])
-                        && !empty($product[$post['product_id']]['productLang'][$post['lang_id']]['price'])
-                            ? $product[$post['product_id']]['productLang'][$post['lang_id']]['price']
-                            : $product[$post['product_id']]['productLang'][Lang::getDefaultLangID()]['price'];
-
-                        $currency = isset($product[$post['product_id']]['productLang'][$post['lang_id']]['currency'])
-                        && !empty($product[$post['product_id']]['productLang'][$post['lang_id']]['currency'])
-                            ? $product[$post['product_id']]['productLang'][$post['lang_id']]['currency']
-                            : $product[$post['product_id']]['productLang'][Lang::getDefaultLangID()]['currency'];
+                        $product_price = $product[$post['product_id']]['productLang'][$post['lang_id']]['price'];
                     } catch (\Throwable $e) {
                         Yii::$app->session->setFlash('error', 'Отсутствуют ProductLang данные для продукта с id=' . $post['product_id']);
                         if (Yii::$app->request->isAjax) {
@@ -1037,6 +1021,7 @@ class OrderController extends BaseController {
                         }
                     }
                 }
+                $currency = Lang::find()->select(['currency'])->where(['id' => $post['lang_id']])->one()->currency;
 
                 // Добавить модуль акций и пересмотреть
                 //$sale = $this->getProductSale($post['product_id'], 0, $post['products']);
