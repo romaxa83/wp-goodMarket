@@ -1,10 +1,10 @@
 <?php
 
-namespace frontend\widgets\categorywidget;
+namespace backend\modules\category\widgets\categoryWidget;
 
 use Yii;
 use yii\base\Widget;
-use frontend\widgets\categorywidget\CategoryWidgetAssets;
+use backend\modules\category\widgets\categoryWidget\CategoryWidgetAssets;
 use backend\modules\category\models\Category;
 use yii\helpers\ArrayHelper;
 

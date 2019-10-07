@@ -1,10 +1,10 @@
 <?php
 
-namespace frontend\widgets\langwidget;
+namespace frontend\widgets\langWidget;
 
 use Yii;
 use yii\base\Widget;
-use frontend\widgets\langwidget\LangWidgetAssets;
+use frontend\widgets\langWidget\LangWidgetAssets;
 
 class LangWidget extends Widget 
 {

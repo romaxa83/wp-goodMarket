@@ -34,7 +34,7 @@ use yii\helpers\Url;
                                             />
                                         </picture>
                                     </div>
-                                    <div>
+                                    <div class="offer-card__wrapper">
                                         <div class="offer-card__desc text-center">
                                             <h2>
                                                 <?php echo $banner['title'] ?>

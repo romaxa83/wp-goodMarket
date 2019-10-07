@@ -1,12 +1,13 @@
 <?php
 use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
-
+use backend\modules\blog\widgets\blogWidget\BlogWidget;
+use backend\modules\category\widgets\categoryWidget\CategoryWidget;
 ?>
 
 <div class="hero-sections-wrapper">
     <div class="hero-sections-row flex-nowrap">
         <div class="category-section col-xl-3 col-xxl-2 d-none d-xl-block">
-            <?= \frontend\widgets\categorywidget\CategoryWidget::widget(); ?>
+            <?= CategoryWidget::widget(); ?>
         </div>
         <?php echo BannerSliderWidget::widget();?>
     </div>
@@ -49,7 +50,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                             <button class="product-card__favorites">
                                 <svg width="27" height="24">
                                     <use
-                                            xlink:href="img/spritemap.svg#sprite-heart-outline"
+                                            xlink:href="/img/spritemap.svg#sprite-heart-outline"
                                     ></use>
                                 </svg>
                             </button>
@@ -57,10 +58,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <picture>
                                     <source
                                             type="image/webp"
-                                            srcset="img/product-card-img.webp"
+                                            srcset="/img/product-card-img.webp"
                                     />
                                     <img
-                                            src="img/product-card-img.jpg"
+                                            src="/img/product-card-img.jpg"
                                             alt="product card img"
                                             title="product card img"
                                     />
@@ -104,7 +105,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                         <button>
                                             <svg width="24" height="22">
                                                 <use
-                                                        xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                                                        xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                                                 ></use>
                                             </svg>
                                             Купить
@@ -126,7 +127,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                             <button class="product-card__favorites active">
                                 <svg width="27" height="24">
                                     <use
-                                            xlink:href="img/spritemap.svg#sprite-heart-outline"
+                                            xlink:href="/img/spritemap.svg#sprite-heart-outline"
                                     ></use>
                                 </svg>
                             </button>
@@ -134,10 +135,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <picture>
                                     <source
                                             type="image/webp"
-                                            srcset="img/product-card-img.webp"
+                                            srcset="/img/product-card-img.webp"
                                     />
                                     <img
-                                            src="img/product-card-img.jpg"
+                                            src="/img/product-card-img.jpg"
                                             alt="product card img"
                                             title="product card img"
                                     />
@@ -177,7 +178,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                         <button type="button">
                                             <svg width="24" height="22">
                                                 <use
-                                                        xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                                                        xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                                                 ></use>
                                             </svg>
                                             Предзаказ
@@ -199,7 +200,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                             <button class="product-card__favorites">
                                 <svg width="27" height="24">
                                     <use
-                                            xlink:href="img/spritemap.svg#sprite-heart-outline"
+                                            xlink:href="/img/spritemap.svg#sprite-heart-outline"
                                     ></use>
                                 </svg>
                             </button>
@@ -207,10 +208,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <picture>
                                     <source
                                             type="image/webp"
-                                            srcset="img/product-card-img.webp"
+                                            srcset="/img/product-card-img.webp"
                                     />
                                     <img
-                                            src="img/product-card-img.jpg"
+                                            src="/img/product-card-img.jpg"
                                             alt="product card img"
                                             title="product card img"
                                     />
@@ -254,7 +255,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                         <button>
                                             <svg width="24" height="22">
                                                 <use
-                                                        xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                                                        xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                                                 ></use>
                                             </svg>
                                             Купить
@@ -276,7 +277,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                             <button class="product-card__favorites">
                                 <svg width="27" height="24">
                                     <use
-                                            xlink:href="img/spritemap.svg#sprite-heart-outline"
+                                            xlink:href="/img/spritemap.svg#sprite-heart-outline"
                                     ></use>
                                 </svg>
                             </button>
@@ -284,10 +285,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <picture>
                                     <source
                                             type="image/webp"
-                                            srcset="img/product-card-img.webp"
+                                            srcset="/img/product-card-img.webp"
                                     />
                                     <img
-                                            src="img/product-card-img.jpg"
+                                            src="/img/product-card-img.jpg"
                                             alt="product card img"
                                             title="product card img"
                                     />
@@ -327,7 +328,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                         <button type="button">
                                             <svg width="24" height="22">
                                                 <use
-                                                        xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                                                        xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                                                 ></use>
                                             </svg>
                                             Предзаказ
@@ -349,7 +350,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                             <button class="product-card__favorites">
                                 <svg width="27" height="24">
                                     <use
-                                            xlink:href="img/spritemap.svg#sprite-heart-outline"
+                                            xlink:href="/img/spritemap.svg#sprite-heart-outline"
                                     ></use>
                                 </svg>
                             </button>
@@ -357,10 +358,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <picture>
                                     <source
                                             type="image/webp"
-                                            srcset="img/product-card-img.webp"
+                                            srcset="/img/product-card-img.webp"
                                     />
                                     <img
-                                            src="img/product-card-img.jpg"
+                                            src="/img/product-card-img.jpg"
                                             alt="product card img"
                                             title="product card img"
                                     />
@@ -400,7 +401,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                         <button type="button">
                                             <svg width="24" height="22">
                                                 <use
-                                                        xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                                                        xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                                                 ></use>
                                             </svg>
                                             Предзаказ
@@ -454,7 +455,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                             <button class="product-card__favorites active">
                                 <svg width="27" height="24">
                                     <use
-                                            xlink:href="img/spritemap.svg#sprite-heart-outline"
+                                            xlink:href="/img/spritemap.svg#sprite-heart-outline"
                                     ></use>
                                 </svg>
                             </button>
@@ -462,10 +463,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <picture>
                                     <source
                                             type="image/webp"
-                                            srcset="img/product-card-img.webp"
+                                            srcset="/img/product-card-img.webp"
                                     />
                                     <img
-                                            src="img/product-card-img.jpg"
+                                            src="/img/product-card-img.jpg"
                                             alt="product card img"
                                             title="product card img"
                                     />
@@ -509,7 +510,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                         <button>
                                             <svg width="24" height="22">
                                                 <use
-                                                        xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                                                        xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                                                 ></use>
                                             </svg>
                                             Купить
@@ -531,7 +532,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                             <button class="product-card__favorites">
                                 <svg width="27" height="24">
                                     <use
-                                            xlink:href="img/spritemap.svg#sprite-heart-outline"
+                                            xlink:href="/img/spritemap.svg#sprite-heart-outline"
                                     ></use>
                                 </svg>
                             </button>
@@ -539,10 +540,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <picture>
                                     <source
                                             type="image/webp"
-                                            srcset="img/product-card-img.webp"
+                                            srcset="/img/product-card-img.webp"
                                     />
                                     <img
-                                            src="img/product-card-img.jpg"
+                                            src="/img/product-card-img.jpg"
                                             alt="product card img"
                                             title="product card img"
                                     />
@@ -582,7 +583,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                         <button type="button">
                                             <svg width="24" height="22">
                                                 <use
-                                                        xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                                                        xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                                                 ></use>
                                             </svg>
                                             Предзаказ
@@ -609,7 +610,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                             <button class="product-card__favorites">
                                 <svg width="27" height="24">
                                     <use
-                                            xlink:href="img/spritemap.svg#sprite-heart-outline"
+                                            xlink:href="/img/spritemap.svg#sprite-heart-outline"
                                     ></use>
                                 </svg>
                             </button>
@@ -617,10 +618,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <picture>
                                     <source
                                             type="image/webp"
-                                            srcset="img/product-card-img.webp"
+                                            srcset="/img/product-card-img.webp"
                                     />
                                     <img
-                                            src="img/product-card-img.jpg"
+                                            src="/img/product-card-img.jpg"
                                             alt="product card img"
                                             title="product card img"
                                     />
@@ -664,7 +665,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                         <button>
                                             <svg width="24" height="22">
                                                 <use
-                                                        xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                                                        xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                                                 ></use>
                                             </svg>
                                             Купить
@@ -686,7 +687,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                             <button class="product-card__favorites active">
                                 <svg width="27" height="24">
                                     <use
-                                            xlink:href="img/spritemap.svg#sprite-heart-outline"
+                                            xlink:href="/img/spritemap.svg#sprite-heart-outline"
                                     ></use>
                                 </svg>
                             </button>
@@ -694,10 +695,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <picture>
                                     <source
                                             type="image/webp"
-                                            srcset="img/product-card-img.webp"
+                                            srcset="/img/product-card-img.webp"
                                     />
                                     <img
-                                            src="img/product-card-img.jpg"
+                                            src="/img/product-card-img.jpg"
                                             alt="product card img"
                                             title="product card img"
                                     />
@@ -737,7 +738,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                         <button type="button">
                                             <svg width="24" height="22">
                                                 <use
-                                                        xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                                                        xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                                                 ></use>
                                             </svg>
                                             Предзаказ
@@ -759,7 +760,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                             <button class="product-card__favorites">
                                 <svg width="27" height="24">
                                     <use
-                                            xlink:href="img/spritemap.svg#sprite-heart-outline"
+                                            xlink:href="/img/spritemap.svg#sprite-heart-outline"
                                     ></use>
                                 </svg>
                             </button>
@@ -767,10 +768,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <picture>
                                     <source
                                             type="image/webp"
-                                            srcset="img/product-card-img.webp"
+                                            srcset="/img/product-card-img.webp"
                                     />
                                     <img
-                                            src="img/product-card-img.jpg"
+                                            src="/img/product-card-img.jpg"
                                             alt="product card img"
                                             title="product card img"
                                     />
@@ -810,7 +811,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                         <button type="button">
                                             <svg width="24" height="22">
                                                 <use
-                                                        xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                                                        xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                                                 ></use>
                                             </svg>
                                             Предзаказ
@@ -843,7 +844,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                         <div class="benefits-card text-center text-xl-left">
                             <div class="benefits-card__img">
                                 <svg width="65" height="51">
-                                    <use xlink:href="img/spritemap.svg#sprite-tag"></use>
+                                    <use xlink:href="/img/spritemap.svg#sprite-tag"></use>
                                 </svg>
                             </div>
                             <div class="benefits-card__desc">
@@ -859,7 +860,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                             <div class="benefits-card__img">
                                 <svg width="75" height="51">
                                     <use
-                                            xlink:href="img/spritemap.svg#sprite-delivery"
+                                            xlink:href="/img/spritemap.svg#sprite-delivery"
                                     ></use>
                                 </svg>
                             </div>
@@ -875,7 +876,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                         <div class="benefits-card text-center text-xl-left">
                             <div class="benefits-card__img">
                                 <svg width="59" height="51">
-                                    <use xlink:href="img/spritemap.svg#sprite-list"></use>
+                                    <use xlink:href="/img/spritemap.svg#sprite-list"></use>
                                 </svg>
                             </div>
                             <div class="benefits-card__desc">
@@ -891,7 +892,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                             <div class="benefits-card__img">
                                 <svg width="61" height="51">
                                     <use
-                                            xlink:href="img/spritemap.svg#sprite-headphones"
+                                            xlink:href="/img/spritemap.svg#sprite-headphones"
                                     ></use>
                                 </svg>
                             </div>
@@ -926,27 +927,27 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                         <source
                                 media="(min-width: 1200px)"
                                 type="image/webp"
-                                srcset="img/stock-img_xl.webp"
+                                srcset="/img/stock-img_xl.webp"
                         />
                         <source
                                 media="(min-width: 1200px)"
-                                srcset="img/stock-img_xl.jpg"
+                                srcset="/img/stock-img_xl.jpg"
                         />
                         <!--	<source
               media="(min-width: 768px)"
               type="image/webp"
-              srcset="<%= require('./assets/img/top_banner-md.webp') %>"
+              srcset="<%= require('./assets//img/top_banner-md.webp') %>"
             />
             <source
               media="(min-width: 768px)"
-              srcset="<%= require('./assets/img/top_banner-md.jpg') %>"
+              srcset="<%= require('./assets//img/top_banner-md.jpg') %>"
             /> -->
                         <source
                                 type="image/webp"
-                                srcset="img/stock-img_sm.webp"
+                                srcset="/img/stock-img_sm.webp"
                         />
                         <img
-                                src="img/stock-img_sm.jpg"
+                                src="/img/stock-img_sm.jpg"
                                 alt="top banner"
                                 title="top banner"
                                 class="top-banner__img"
@@ -993,7 +994,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <button class="product-card__favorites">
                                     <svg width="27" height="24">
                                         <use
-                                                xlink:href="img/spritemap.svg#sprite-heart-outline"
+                                                xlink:href="/img/spritemap.svg#sprite-heart-outline"
                                         ></use>
                                     </svg>
                                 </button>
@@ -1001,10 +1002,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                     <picture>
                                         <source
                                                 type="image/webp"
-                                                srcset="img/product-card-img.webp"
+                                                srcset="/img/product-card-img.webp"
                                         />
                                         <img
-                                                src="img/product-card-img.jpg"
+                                                src="/img/product-card-img.jpg"
                                                 alt="product card img"
                                                 title="product card img"
                                         />
@@ -1046,7 +1047,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                             <button>
                                                 <svg width="24" height="22">
                                                     <use
-                                                            xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                                                            xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                                                     ></use>
                                                 </svg>
                                                 Предзаказ
@@ -1073,7 +1074,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <button class="product-card__favorites">
                                     <svg width="27" height="24">
                                         <use
-                                                xlink:href="img/spritemap.svg#sprite-heart-outline"
+                                                xlink:href="/img/spritemap.svg#sprite-heart-outline"
                                         ></use>
                                     </svg>
                                 </button>
@@ -1081,10 +1082,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                     <picture>
                                         <source
                                                 type="image/webp"
-                                                srcset="img/product-card-img.webp"
+                                                srcset="/img/product-card-img.webp"
                                         />
                                         <img
-                                                src="img/product-card-img.jpg"
+                                                src="/img/product-card-img.jpg"
                                                 alt="product card img"
                                                 title="product card img"
                                         />
@@ -1130,7 +1131,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                             <button>
                                                 <svg width="24" height="22">
                                                     <use
-                                                            xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                                                            xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                                                     ></use>
                                                 </svg>
                                                 Купить
@@ -1157,7 +1158,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <button class="product-card__favorites active">
                                     <svg width="27" height="24">
                                         <use
-                                                xlink:href="img/spritemap.svg#sprite-heart-outline"
+                                                xlink:href="/img/spritemap.svg#sprite-heart-outline"
                                         ></use>
                                     </svg>
                                 </button>
@@ -1165,10 +1166,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                     <picture>
                                         <source
                                                 type="image/webp"
-                                                srcset="img/product-card-img.webp"
+                                                srcset="/img/product-card-img.webp"
                                         />
                                         <img
-                                                src="img/product-card-img.jpg"
+                                                src="/img/product-card-img.jpg"
                                                 alt="product card img"
                                                 title="product card img"
                                         />
@@ -1210,7 +1211,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                             <button>
                                                 <svg width="24" height="22">
                                                     <use
-                                                            xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                                                            xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                                                     ></use>
                                                 </svg>
                                                 Пердзаказ
@@ -1237,7 +1238,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <button class="product-card__favorites">
                                     <svg width="27" height="24">
                                         <use
-                                                xlink:href="img/spritemap.svg#sprite-heart-outline"
+                                                xlink:href="/img/spritemap.svg#sprite-heart-outline"
                                         ></use>
                                     </svg>
                                 </button>
@@ -1245,10 +1246,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                     <picture>
                                         <source
                                                 type="image/webp"
-                                                srcset="img/product-card-img.webp"
+                                                srcset="/img/product-card-img.webp"
                                         />
                                         <img
-                                                src="img/product-card-img.jpg"
+                                                src="/img/product-card-img.jpg"
                                                 alt="product card img"
                                                 title="product card img"
                                         />
@@ -1294,7 +1295,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                             <button>
                                                 <svg width="24" height="22">
                                                     <use
-                                                            xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                                                            xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                                                     ></use>
                                                 </svg>
                                                 Купить
@@ -1316,10 +1317,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <picture>
                                     <source
                                             type="image/webp"
-                                            srcset="img/product-card-img.webp"
+                                            srcset="/img/product-card-img.webp"
                                     />
                                     <img
-                                            src="img/product-card-img.jpg"
+                                            src="/img/product-card-img.jpg"
                                             alt="product card img"
                                             title="product card img"
                                     />
@@ -1419,27 +1420,27 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                         <source
                                 media="(min-width: 1200px)"
                                 type="image/webp"
-                                srcset="img/stock-img_xl.webp"
+                                srcset="/img/stock-img_xl.webp"
                         />
                         <source
                                 media="(min-width: 1200px)"
-                                srcset="img/stock-img_xl.jpg"
+                                srcset="/img/stock-img_xl.jpg"
                         />
                         <!--	<source
               media="(min-width: 768px)"
               type="image/webp"
-              srcset="<%= require('./assets/img/top_banner-md.webp') %>"
+              srcset="<%= require('./assets//img/top_banner-md.webp') %>"
             />
             <source
               media="(min-width: 768px)"
-              srcset="<%= require('./assets/img/top_banner-md.jpg') %>"
+              srcset="<%= require('./assets//img/top_banner-md.jpg') %>"
             /> -->
                         <source
                                 type="image/webp"
-                                srcset="img/stock-img_sm.webp"
+                                srcset="/img/stock-img_sm.webp"
                         />
                         <img
-                                src="img/stock-img_sm.jpg"
+                                src="/img/stock-img_sm.jpg"
                                 alt="top banner"
                                 title="top banner"
                                 class="top-banner__img"
@@ -1486,7 +1487,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <button class="product-card__favorites">
                                     <svg width="27" height="24">
                                         <use
-                                                xlink:href="img/spritemap.svg#sprite-heart-outline"
+                                                xlink:href="/img/spritemap.svg#sprite-heart-outline"
                                         ></use>
                                     </svg>
                                 </button>
@@ -1494,10 +1495,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                     <picture>
                                         <source
                                                 type="image/webp"
-                                                srcset="img/product-card-img.webp"
+                                                srcset="/img/product-card-img.webp"
                                         />
                                         <img
-                                                src="img/product-card-img.jpg"
+                                                src="/img/product-card-img.jpg"
                                                 alt="product card img"
                                                 title="product card img"
                                         />
@@ -1543,7 +1544,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                             <button>
                                                 <svg width="24" height="22">
                                                     <use
-                                                            xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                                                            xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                                                     ></use>
                                                 </svg>
                                                 Купить
@@ -1570,7 +1571,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <button class="product-card__favorites">
                                     <svg width="27" height="24">
                                         <use
-                                                xlink:href="img/spritemap.svg#sprite-heart-outline"
+                                                xlink:href="/img/spritemap.svg#sprite-heart-outline"
                                         ></use>
                                     </svg>
                                 </button>
@@ -1578,10 +1579,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                     <picture>
                                         <source
                                                 type="image/webp"
-                                                srcset="img/product-card-img.webp"
+                                                srcset="/img/product-card-img.webp"
                                         />
                                         <img
-                                                src="img/product-card-img.jpg"
+                                                src="/img/product-card-img.jpg"
                                                 alt="product card img"
                                                 title="product card img"
                                         />
@@ -1623,7 +1624,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                             <button>
                                                 <svg width="24" height="22">
                                                     <use
-                                                            xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                                                            xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                                                     ></use>
                                                 </svg>
                                                 Предзаказ
@@ -1650,7 +1651,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <button class="product-card__favorites">
                                     <svg width="27" height="24">
                                         <use
-                                                xlink:href="img/spritemap.svg#sprite-heart-outline"
+                                                xlink:href="/img/spritemap.svg#sprite-heart-outline"
                                         ></use>
                                     </svg>
                                 </button>
@@ -1658,10 +1659,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                     <picture>
                                         <source
                                                 type="image/webp"
-                                                srcset="img/product-card-img.webp"
+                                                srcset="/img/product-card-img.webp"
                                         />
                                         <img
-                                                src="<%= require('./assets/img/product-card-img.jpg') %>"
+                                                src="<%= require('./assets//img/product-card-img.jpg') %>"
                                                 alt="product card img"
                                                 title="product card img"
                                         />
@@ -1707,7 +1708,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                             <button>
                                                 <svg width="24" height="22">
                                                     <use
-                                                            xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                                                            xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                                                     ></use>
                                                 </svg>
                                                 Купить
@@ -1734,7 +1735,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <button class="product-card__favorites">
                                     <svg width="27" height="24">
                                         <use
-                                                xlink:href="img/spritemap.svg#sprite-heart-outline"
+                                                xlink:href="/img/spritemap.svg#sprite-heart-outline"
                                         ></use>
                                     </svg>
                                 </button>
@@ -1742,10 +1743,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                     <picture>
                                         <source
                                                 type="image/webp"
-                                                srcset="img/product-card-img.webp"
+                                                srcset="/img/product-card-img.webp"
                                         />
                                         <img
-                                                src="img/product-card-img.jpg"
+                                                src="/img/product-card-img.jpg"
                                                 alt="product card img"
                                                 title="product card img"
                                         />
@@ -1791,7 +1792,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                             <button>
                                                 <svg width="24" height="22">
                                                     <use
-                                                            xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                                                            xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                                                     ></use>
                                                 </svg>
                                                 Купить
@@ -1813,10 +1814,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <picture>
                                     <source
                                             type="image/webp"
-                                            srcset="img/product-card-img.webp"
+                                            srcset="/img/product-card-img.webp"
                                     />
                                     <img
-                                            src="img/product-card-img.jpg"
+                                            src="/img/product-card-img.jpg"
                                             alt="product card img"
                                             title="product card img"
                                     />
@@ -1918,27 +1919,27 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                         <source
                                 media="(min-width: 1200px)"
                                 type="image/webp"
-                                srcset="img/stock-img_xl.webp"
+                                srcset="/img/stock-img_xl.webp"
                         />
                         <source
                                 media="(min-width: 1200px)"
-                                srcset="img/stock-img_xl.jpg"
+                                srcset="/img/stock-img_xl.jpg"
                         />
                         <!--	<source
               media="(min-width: 768px)"
               type="image/webp"
-              srcset="<%= require('./assets/img/top_banner-md.webp') %>"
+              srcset="<%= require('./assets//img/top_banner-md.webp') %>"
             />
             <source
               media="(min-width: 768px)"
-              srcset="<%= require('./assets/img/top_banner-md.jpg') %>"
+              srcset="<%= require('./assets//img/top_banner-md.jpg') %>"
             /> -->
                         <source
                                 type="image/webp"
-                                srcset="img/stock-img_sm.webp"
+                                srcset="/img/stock-img_sm.webp"
                         />
                         <img
-                                src="img/stock-img_sm.jpg"
+                                src="/img/stock-img_sm.jpg"
                                 alt="top banner"
                                 title="top banner"
                                 class="top-banner__img"
@@ -1985,7 +1986,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <button class="product-card__favorites">
                                     <svg width="27" height="24">
                                         <use
-                                                xlink:href="img/spritemap.svg#sprite-heart-outline"
+                                                xlink:href="/img/spritemap.svg#sprite-heart-outline"
                                         ></use>
                                     </svg>
                                 </button>
@@ -1993,10 +1994,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                     <picture>
                                         <source
                                                 type="image/webp"
-                                                srcset="img/product-card-img.webp"
+                                                srcset="/img/product-card-img.webp"
                                         />
                                         <img
-                                                src="img/product-card-img.jpg"
+                                                src="/img/product-card-img.jpg"
                                                 alt="product card img"
                                                 title="product card img"
                                         />
@@ -2038,7 +2039,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                             <button>
                                                 <svg width="24" height="22">
                                                     <use
-                                                            xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                                                            xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                                                     ></use>
                                                 </svg>
                                                 Предзаказ
@@ -2065,7 +2066,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <button class="product-card__favorites">
                                     <svg width="27" height="24">
                                         <use
-                                                xlink:href="img/spritemap.svg#sprite-heart-outline"
+                                                xlink:href="/img/spritemap.svg#sprite-heart-outline"
                                         ></use>
                                     </svg>
                                 </button>
@@ -2073,10 +2074,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                     <picture>
                                         <source
                                                 type="image/webp"
-                                                srcset="img/product-card-img.webp"
+                                                srcset="/img/product-card-img.webp"
                                         />
                                         <img
-                                                src="img/product-card-img.jpg"
+                                                src="/img/product-card-img.jpg"
                                                 alt="product card img"
                                                 title="product card img"
                                         />
@@ -2122,7 +2123,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                             <button>
                                                 <svg width="24" height="22">
                                                     <use
-                                                            xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                                                            xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                                                     ></use>
                                                 </svg>
                                                 Купить
@@ -2149,7 +2150,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <button class="product-card__favorites">
                                     <svg width="27" height="24">
                                         <use
-                                                xlink:href="img/spritemap.svg#sprite-heart-outline"
+                                                xlink:href="/img/spritemap.svg#sprite-heart-outline"
                                         ></use>
                                     </svg>
                                 </button>
@@ -2157,10 +2158,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                     <picture>
                                         <source
                                                 type="image/webp"
-                                                srcset="img/product-card-img.webp"
+                                                srcset="/img/product-card-img.webp"
                                         />
                                         <img
-                                                src="img/product-card-img.jpg"
+                                                src="/img/product-card-img.jpg"
                                                 alt="product card img"
                                                 title="product card img"
                                         />
@@ -2206,7 +2207,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                             <button>
                                                 <svg width="24" height="22">
                                                     <use
-                                                            xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                                                            xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                                                     ></use>
                                                 </svg>
                                                 Купить
@@ -2233,7 +2234,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <button class="product-card__favorites active">
                                     <svg width="27" height="24">
                                         <use
-                                                xlink:href="img/spritemap.svg#sprite-heart-outline"
+                                                xlink:href="/img/spritemap.svg#sprite-heart-outline"
                                         ></use>
                                     </svg>
                                 </button>
@@ -2241,10 +2242,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                     <picture>
                                         <source
                                                 type="image/webp"
-                                                srcset="img/product-card-img.webp"
+                                                srcset="/img/product-card-img.webp"
                                         />
                                         <img
-                                                src="img/product-card-img.jpg"
+                                                src="/img/product-card-img.jpg"
                                                 alt="product card img"
                                                 title="product card img"
                                         />
@@ -2290,7 +2291,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                             <button>
                                                 <svg width="24" height="22">
                                                     <use
-                                                            xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                                                            xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                                                     ></use>
                                                 </svg>
                                                 Купить
@@ -2312,10 +2313,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <picture>
                                     <source
                                             type="image/webp"
-                                            srcset="img/product-card-img.webp"
+                                            srcset="/img/product-card-img.webp"
                                     />
                                     <img
-                                            src="img/product-card-img.jpg"
+                                            src="/img/product-card-img.jpg"
                                             alt="product card img"
                                             title="product card img"
                                     />
@@ -2417,27 +2418,27 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                         <source
                                 media="(min-width: 1200px)"
                                 type="image/webp"
-                                srcset="img/stock-img_xl.webp"
+                                srcset="/img/stock-img_xl.webp"
                         />
                         <source
                                 media="(min-width: 1200px)"
-                                srcset="img/stock-img_xl.jpg"
+                                srcset="/img/stock-img_xl.jpg"
                         />
                         <!--	<source
               media="(min-width: 768px)"
               type="image/webp"
-              srcset="<%= require('./assets/img/top_banner-md.webp') %>"
+              srcset="<%= require('./assets//img/top_banner-md.webp') %>"
             />
             <source
               media="(min-width: 768px)"
-              srcset="<%= require('./assets/img/top_banner-md.jpg') %>"
+              srcset="<%= require('./assets//img/top_banner-md.jpg') %>"
             /> -->
                         <source
                                 type="image/webp"
-                                srcset="img/stock-img_sm.webp"
+                                srcset="/img/stock-img_sm.webp"
                         />
                         <img
-                                src="img/stock-img_sm.jpg"
+                                src="/img/stock-img_sm.jpg"
                                 alt="top banner"
                                 title="top banner"
                                 class="top-banner__img"
@@ -2484,7 +2485,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <button class="product-card__favorites">
                                     <svg width="27" height="24">
                                         <use
-                                                xlink:href="img/spritemap.svg#sprite-heart-outline"
+                                                xlink:href="/img/spritemap.svg#sprite-heart-outline"
                                         ></use>
                                     </svg>
                                 </button>
@@ -2492,10 +2493,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                     <picture>
                                         <source
                                                 type="image/webp"
-                                                srcset="img/product-card-img.webp"
+                                                srcset="/img/product-card-img.webp"
                                         />
                                         <img
-                                                src="img/product-card-img.jpg"
+                                                src="/img/product-card-img.jpg"
                                                 alt="product card img"
                                                 title="product card img"
                                         />
@@ -2539,7 +2540,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                             <button>
                                                 <svg width="24" height="22">
                                                     <use
-                                                            xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                                                            xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                                                     ></use>
                                                 </svg>
                                                 Предзаказ
@@ -2566,7 +2567,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <button class="product-card__favorites">
                                     <svg width="27" height="24">
                                         <use
-                                                xlink:href="img/spritemap.svg#sprite-heart-outline"
+                                                xlink:href="/img/spritemap.svg#sprite-heart-outline"
                                         ></use>
                                     </svg>
                                 </button>
@@ -2574,10 +2575,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                     <picture>
                                         <source
                                                 type="image/webp"
-                                                srcset="img/product-card-img.webp"
+                                                srcset="/img/product-card-img.webp"
                                         />
                                         <img
-                                                src="img/product-card-img.jpg"
+                                                src="/img/product-card-img.jpg"
                                                 alt="product card img"
                                                 title="product card img"
                                         />
@@ -2623,7 +2624,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                             <button>
                                                 <svg width="24" height="22">
                                                     <use
-                                                            xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                                                            xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                                                     ></use>
                                                 </svg>
                                                 Купить
@@ -2650,7 +2651,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <button class="product-card__favorites">
                                     <svg width="27" height="24">
                                         <use
-                                                xlink:href="img/spritemap.svg#sprite-heart-outline"
+                                                xlink:href="/img/spritemap.svg#sprite-heart-outline"
                                         ></use>
                                     </svg>
                                 </button>
@@ -2658,10 +2659,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                     <picture>
                                         <source
                                                 type="image/webp"
-                                                srcset="img/product-card-img.webp"
+                                                srcset="/img/product-card-img.webp"
                                         />
                                         <img
-                                                src="img/product-card-img.jpg"
+                                                src="/img/product-card-img.jpg"
                                                 alt="product card img"
                                                 title="product card img"
                                         />
@@ -2707,7 +2708,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                             <button>
                                                 <svg width="24" height="22">
                                                     <use
-                                                            xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                                                            xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                                                     ></use>
                                                 </svg>
                                                 Купить
@@ -2734,7 +2735,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <button class="product-card__favorites">
                                     <svg width="27" height="24">
                                         <use
-                                                xlink:href="img/spritemap.svg#sprite-heart-outline"
+                                                xlink:href="/img/spritemap.svg#sprite-heart-outline"
                                         ></use>
                                     </svg>
                                 </button>
@@ -2742,10 +2743,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                     <picture>
                                         <source
                                                 type="image/webp"
-                                                srcset="img/product-card-img.webp"
+                                                srcset="/img/product-card-img.webp"
                                         />
                                         <img
-                                                src="img/product-card-img.jpg"
+                                                src="/img/product-card-img.jpg"
                                                 alt="product card img"
                                                 title="product card img"
                                         />
@@ -2791,7 +2792,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                             <button>
                                                 <svg width="24" height="22">
                                                     <use
-                                                            xlink:href="img/spritemap.svg#sprite-shopping-cart"
+                                                            xlink:href="/img/spritemap.svg#sprite-shopping-cart"
                                                     ></use>
                                                 </svg>
                                                 Купить
@@ -2813,10 +2814,10 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
                                 <picture>
                                     <source
                                             type="image/webp"
-                                            srcset="img/product-card-img.webp"
+                                            srcset="/img/product-card-img.webp"
                                     />
                                     <img
-                                            src="img/product-card-img.jpg"
+                                            src="/img/product-card-img.jpg"
                                             alt="product card img"
                                             title="product card img"
                                     />
@@ -2903,143 +2904,7 @@ use backend\modules\banners\widgets\sliderwidget\BannerSliderWidget;
 </div>
 
 <section class="section-news goods-section">
-    <div class="container">
-        <div class="goods-section__desc section-news__desc text-center">
-            <h2>
-                Новости
-            </h2>
-            <div class="goods-section__bg-elem"></div>
-        </div>
-        <div class="slider-wrapper">
-            <div
-                    class="swiper-container"
-                    data-breakpoints='{
-        "200": { "slidesPerView": "1", "spaceBetween": "30" },
-        "414": {"slidesPerView": "auto", "spaceBetween": "30" },
-        "1024": {"slidesPerView": "3", "spaceBetween": "15" },
-        "1200": {"slidesPerView": "3", "spaceBetween": "30"} }'
-                    data-media="(min-width: 200px)"
-            >
-                <div class="swiper-wrapper">
-                    <div class="swiper-slide news-card-wrapper">
-                        <article class="news-card">
-                            <div class="news-card__img">
-                                <picture>
-                                    <source
-                                            type="image/webp"
-                                            srcset="img/article_img.webp"
-                                    />
-                                    <img
-                                            src="img/article_img.jpg"
-                                            alt="top banner"
-                                            title="top banner"
-                                            class="top-banner__img"
-                                    />
-                                </picture>
-                            </div>
-                            <div class="news-card__date">
-                                <p>
-                                    23.04.2018 г.
-                                </p>
-                            </div>
-                            <div class="news-card__desc">
-                                <h2>
-                                    Название новости, очень-очень длинное
-                                </h2>
-                                <p>
-                                    Многие думают, что Lorem Ipsum - взятый с потолка псевдо
-                                    латинский набор слов, но это не совсем так.
-                                </p>
-                            </div>
-                            <div class="news-card__read-more text-right text-md-left">
-                                <a href="#">
-                                    подробнее
-                                </a>
-                            </div>
-                        </article>
-                    </div>
-                    <div class="swiper-slide news-card-wrapper">
-                        <article class="news-card">
-                            <div class="news-card__img">
-                                <picture>
-                                    <source
-                                            type="image/webp"
-                                            srcset="img/article_img.webp"
-                                    />
-                                    <img
-                                            src="img/article_img.jpg"
-                                            alt="top banner"
-                                            title="top banner"
-                                            class="top-banner__img"
-                                    />
-                                </picture>
-                            </div>
-                            <div class="news-card__date">
-                                <p>
-                                    23.04.2018 г.
-                                </p>
-                            </div>
-                            <div class="news-card__desc">
-                                <h2>
-                                    Название новости, очень-очень длинное
-                                </h2>
-                                <p>
-                                    Многие думают, что Lorem Ipsum - взятый с потолка псевдо
-                                    латинский набор слов, но это не совсем так.
-                                </p>
-                            </div>
-                            <div class="news-card__read-more text-right text-md-left">
-                                <a href="#">
-                                    подробнее
-                                </a>
-                            </div>
-                        </article>
-                    </div>
-                    <div class="swiper-slide news-card-wrapper">
-                        <article class="news-card">
-                            <div class="news-card__img">
-                                <picture>
-                                    <source
-                                            type="image/webp"
-                                            srcset="img/article_img.webp"
-                                    />
-                                    <img
-                                            src="img/article_img.jpg"
-                                            alt="top banner"
-                                            title="top banner"
-                                            class="top-banner__img"
-                                    />
-                                </picture>
-                            </div>
-                            <div class="news-card__date">
-                                <p>
-                                    23.04.2018 г.
-                                </p>
-                            </div>
-                            <div class="news-card__desc">
-                                <h2>
-                                    Название новости, очень-очень длинное
-                                </h2>
-                                <p>
-                                    Многие думают, что Lorem Ipsum - взятый с потолка псевдо
-                                    латинский набор слов, но это не совсем так.
-                                </p>
-                            </div>
-                            <div class="news-card__read-more text-right text-md-left">
-                                <a href="#">
-                                    подробнее
-                                </a>
-                            </div>
-                        </article>
-                    </div>
-                </div>
-                <div class="swiper-pagination d-xl-none"></div>
-            </div>
-            <div class="text-center">
-                <a href="#" class="btn btn-primary">Все новости</a>
-            </div>
-        </div>
-    </div>
+    <?= BlogWidget::widget(); ?>
 </section>
 
 <section class="section-seo">

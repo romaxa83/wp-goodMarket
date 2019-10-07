@@ -1,7 +1,8 @@
 <?php
-
 use backend\modules\banners\widgets\headerwidget\BannerHeaderWidget;
-
+use backend\modules\category\widgets\categoryWidget\CategoryWidget;
+use frontend\widgets\langWidget\LangWidget;
+use yii\helpers\Url;
 ?>
 <header class="site-header">
     <?php echo BannerHeaderWidget::widget([]);?>
@@ -37,7 +38,7 @@ use backend\modules\banners\widgets\headerwidget\BannerHeaderWidget;
             Войдите в кабинет
         </button>
         <div class="authorization__lang">
-            <?= \frontend\widgets\langwidget\LangWidget::widget(['mobile' => true]); ?>
+            <?= LangWidget::widget(['mobile' => true]); ?>
         </div>
         </div>
         <ul class="navbar-nav mob-menu__navigation">
@@ -57,10 +58,10 @@ use backend\modules\banners\widgets\headerwidget\BannerHeaderWidget;
                 <use xlink:href="/img/spritemap.svg#sprite-menu"></use>
             </svg>
             </div>
-            <a class="nav-link dropdown-toggle" href="#">
+            <a class="nav-link dropdown-toggle" href="<?= Url::toRoute(['/catalog']) ?>">
             Каталог товаров
             </a>
-            <?= \frontend\widgets\categorywidget\CategoryWidget::widget(['mobile' => true]); ?>
+            <?= CategoryWidget::widget(['mobile' => true]); ?>
         </li>
         <li class="nav-item">
             <div class="nav-icon">
@@ -129,22 +130,35 @@ use backend\modules\banners\widgets\headerwidget\BannerHeaderWidget;
     <div class="container">
         <nav class="navbar justify-content-xxl-start">
         <div class="desctop-menu__logo col-xl-3 col-xxl-2">
+            <?php if(Url::home() . Yii::$app->language !== Url::current()) : ?>
+            <a class="navbar-brand" href="<?= Url::toRoute('site/index') ?>">
+                <img
+                    width="222"
+                    height="50"
+                    src="/img/logo.svg"
+                    alt="site logo"
+                    title="site logo"
+                    class="desctop-menu__logo-img"
+                />
+            </a>
+            <?php else : ?>
             <span class="navbar-brand">
-            <img
-                width="222"
-                height="50"
-                src="/img/logo.svg"
-                alt="site logo"
-                title="site logo"
-                class="desctop-menu__logo-img"
-            />
+                <img
+                    width="222"
+                    height="50"
+                    src="/img/logo.svg"
+                    alt="site logo"
+                    title="site logo"
+                    class="desctop-menu__logo-img"
+                />
             </span>
+            <?php endif; ?>
         </div>
         <ul
             class="navbar-nav d-flex flex-row align-items-center justify-content-between col-xl-7 col-xxl-8 desctop-menu__navigation"
         >
             <li class="nav-item desctop-menu__lang dropdown-click lang-dropdown">
-                <?= \frontend\widgets\langwidget\LangWidget::widget(); ?>
+                <?= LangWidget::widget(); ?>
             </li>
             <li
             class="nav-item desctop-menu__phone mr-auto dropdown-click phone-dropdown"
@@ -216,7 +230,7 @@ use backend\modules\banners\widgets\headerwidget\BannerHeaderWidget;
             </svg>
         </button>
         <a
-            href="./catalog.html"
+            href="<?= Url::toRoute(['/catalog']) ?>"
             class="site-navbar__catalog d-none d-xl-block btn btn-secondary text-left"
             >Каталог</a
         >
