@@ -61,9 +61,6 @@ class SiteController extends Controller {
     public function actions()
     {
         return [
-            'error' => [
-                'class' => 'yii\web\ErrorAction',
-            ],
             'captcha' => [
                 'class' => 'yii\captcha\CaptchaAction',
                 'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
@@ -259,5 +256,16 @@ class SiteController extends Controller {
         return $this->render('resendVerificationEmail', [
             'model' => $model
         ]);
+    }
+
+    public function actionError()
+    {
+        $statusCode = Yii::$app->errorHandler->exception->statusCode;
+
+        if($statusCode === 404){
+            return $this->render('404');
+        }else{
+            return $this->render('error');
+        }
     }
 }
