@@ -1,27 +1,20 @@
-<?php
-
-/* @var $this yii\web\View */
-/* @var $name string */
-/* @var $message string */
-/* @var $exception Exception */
-
-use yii\helpers\Html;
-
-$this->title = $name;
+<?php 
+use yii\helpers\Url;
 ?>
-<div class="site-error">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <div class="alert alert-danger">
-        <?= nl2br(Html::encode($message)) ?>
-    </div>
-
-    <p>
-        The above error occurred while the Web server was processing your request.
-    </p>
-    <p>
-        Please contact us if you think this is a server error. Thank you.
-    </p>
-
-</div>
+<main class="main-content">
+    <section class="error-section">
+        <div class="error-section__container">
+            <div class="error-section__desc-wrap">
+                <h1 class="error-section__title">
+                    Упс .....
+                </h1>
+                <p class="error-section__text"> 
+                    Похоже что то пошле не так, увы. 
+                    Попробуйте перезагрузить страницу или вернуться 
+                    назад.
+                </p>
+                <a href="<?= Url::toRoute('site/index'); ?>" class="error-section__btn btn btn-primary">На главную</a>
+            </div>
+        </div>
+    </section>
+</main>
