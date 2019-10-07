@@ -2903,9 +2903,7 @@ use backend\modules\category\widgets\categoryWidget\CategoryWidget;
     </div>
 </div>
 
-<section class="section-news goods-section">
-    <?= BlogWidget::widget(); ?>
-</section>
+<?= BlogWidget::widget(); ?>
 
 <section class="section-seo">
     <div class="container">
