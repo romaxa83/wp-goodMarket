@@ -324,7 +324,7 @@ class SaveImportProductsController extends Controller {
                     }
                 }
                 /* Запаписываем остаток обратно в файл */
-                //$this->importService->writeJson($data, $filepath);
+                $this->importService->writeJson($data, $filepath);
                 return $product;
             }
         }
@@ -868,11 +868,13 @@ class SaveImportProductsController extends Controller {
                 foreach ($connectionData['seo_template'] as $keySeo => $oneSeoColumn) {
                     $seo[$keySeo] = SeoMeta::SeoGenerator($oneSeoColumn, $assemble_cache_frame);
                 }
-                //сохранение сео товару
-                SeoWidget::save($prod_model->id, 'product', $seo['Product']);
-                if (!$prod_model->update()) {
-                    $this->importService->writeLogs("Не удалось сохранить seo продукта с id: " . $prod['id'], 'SaveImportProduct.txt');
-                    return false;
+                foreach($LW as $item){
+                    $resultSaveSeo = SeoWidget::save($prod_model->id, 'product', [$item['alias'] => $seo['Product']]);
+                    //сохранение сео товару
+                    if (empty($resultSaveSeo)) {
+                        $this->importService->writeLogs("Не удалось сохранить seo продукта с id: " . $prod['id'], 'SaveImportProduct.txt');
+                        return false;
+                    }
                 }
             }
             //загрузка картинки товара
