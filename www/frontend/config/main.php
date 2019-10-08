@@ -52,9 +52,9 @@ return [
                 'catalog/<alias:\w+>' => 'category/category',
 
                 'blog' => 'blog/blog',
-                'blog/<alias:\w+>' => 'blog/article',
+                'blog/<alias>' => 'blog/article',
 
-                'product/<alias:\w+>' => 'product/product',
+                'product/<alias>' => 'product/product',
                 
                 '<action:\w+>' => 'site/<action>',
                 [
