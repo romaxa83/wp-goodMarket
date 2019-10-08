@@ -25,14 +25,16 @@ use yii\helpers\Url;
                     <?php foreach($product as $oneProduct) : ?>
                     <div class="swiper-slide">
                         <div class="card product-card">
-                            <!-- <div class="product-card__status-wrap">
+                            <div class="product-card__status-wrap">
+                                <?php if($oneProduct['new']) : ?>
                                 <div class="product-card__status product-card__status--new">
                                     <p>new</p>
                                 </div>
-                                <div class="product-card__status product-card__status--sale">
+                                <?php endif; ?>
+                                <!-- <div class="product-card__status product-card__status--sale">
                                     <p>-20%</p>
-                                </div>
-                            </div> -->
+                                </div> -->
+                            </div>
                             <button class="product-card__favorites">
                                 <svg width="27" height="24">
                                     <use xlink:href="/img/spritemap.svg#sprite-heart-outline"></use>

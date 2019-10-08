@@ -32,7 +32,7 @@ class ProductWidget extends Widget
 
         $aliasLang = Yii::$app->language;
         $product = Yii::$app->db->createCommand(
-            "SELECT product.id,product.publish,product.media_id,product_lang.product_id,product_lang.lang_id,product_lang.alias,product_lang.price,product_lang.name,filemanager_mediafile.url FROM product 
+            "SELECT product.id,product.new,product.publish,product.media_id,product_lang.product_id,product_lang.lang_id,product_lang.alias,product_lang.price,product_lang.name,filemanager_mediafile.url FROM product 
             LEFT JOIN product_lang ON product_lang.product_id = product.id 
             LEFT JOIN filemanager_mediafile ON product.media_id = filemanager_mediafile.id 
             LEFT JOIN lang ON product_lang.lang_id = lang.id 
