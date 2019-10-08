@@ -231,15 +231,15 @@ class SaveImportController extends BaseController {
         $group_model->status = 1;
         //создание характеристики
         if ($group_model->save()) {
-            $group_id = $group_model->id;
-            $shop_group = new ShopGroup();
-            $shop_group->shop_id = $shop_model->id;
-            $shop_group->group_id = $group_id;
-            if ($shop_group->save()) {
+            // $group_id = $group_model->id;
+            // $shop_group = new ShopGroup();
+            // $shop_group->shop_id = $shop_model->id;
+            // $shop_group->group_id = $group_id;
+            // if ($shop_group->save()) {
                 if (!empty($characters_shop)) {
                     foreach ($characters_shop as $key => $value) {
                         $characteristic_model = new Characteristic();
-                        $characteristic_model->group_id = $group_id;
+                        $characteristic_model->group_id = $group_model->id;
                         $characteristic_model->name = $value;
                         $characteristic_model->type = 'text';
                         $characteristic_model->status = 1;
@@ -249,7 +249,7 @@ class SaveImportController extends BaseController {
                         }
                     }
                 }
-            }
+            // }
         }
         /* СОХРАНЕНИЕ ПАРАМЕТРОВ В ФАЙЛ */
         $index = $shop_model->id;
