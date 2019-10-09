@@ -22,6 +22,7 @@ use backend\widgets\SeoWidget;
 use backend\modules\import\service\FilterAttr;
 use backend\modules\product\models\ProductLang;
 use backend\widgets\langwidget\LangWidget;
+use backend\modules\product\models\Group;
 
 class SaveImportProductsController extends Controller {
 
@@ -324,7 +325,7 @@ class SaveImportProductsController extends Controller {
                     }
                 }
                 /* Запаписываем остаток обратно в файл */
-                //$this->importService->writeJson($data, $filepath);
+                $this->importService->writeJson($data, $filepath);
                 return $product;
             }
         }
@@ -746,7 +747,7 @@ class SaveImportProductsController extends Controller {
         $category_status[0] = 0;
         foreach ($category_ids as $id) {
             $category_status[$id] = 0;
-            $category = Category::find()->where(['stock_id' => $id])->one();
+            $category = Category::find()->where(['id' => $id])->one();
             if ($category != null) {
                 $category_status[$id] = $category->publish;
             }
@@ -807,20 +808,6 @@ class SaveImportProductsController extends Controller {
 //                return false;
 //            }
             $prod['media_id'] = 1;
-
-            //сохраниние в характеристики
-            $prod['group_id'] = ShopGroup::find()->where(['shop_id' => $shop_model['id']])->one()->group_id;
-            if (array_key_exists('characteristics', $prod) && !empty($connectionData['characters_id'])) {
-                foreach ($prod['characteristics'] as $k => $value) {
-                    $prod_char_model = new ProductCharacteristic();
-                    $prod_char_model->product_import_id = $prod['id'];
-                    $group_id = $prod['group_id'];
-                    $prod_char_model->group_id = $group_id;
-                    $prod_char_model->characteristic_id = $connectionData['characters_id'][$k];
-                    $prod_char_model->value = $value;
-                    $prod_char_model->save();
-                }
-            }
             //сохранение связки категории - характеристики
             $this->filter->saveCategoryCharacteristics(null, $prod['category_id'], [], $this->filter->getProdChars($prod['id']));
             //сохранение производителя
@@ -841,7 +828,7 @@ class SaveImportProductsController extends Controller {
             $prod_model->media_id = $prod['media_id'];
             $prod_model->manufacturer_id = $prod['manufacturer_id'];
             //$prod_model->import_id = $prod['id'];
-            $prod_model->group_id = $prod['group_id'];
+            // $prod_model->group_id = $prod['group_id'];
             $prod_model->vendor_code = $prod['vendor_code'];
             $prod_model->amount = 1;
             $prod_model->rating = 0;
@@ -863,16 +850,32 @@ class SaveImportProductsController extends Controller {
                 $this->importService->writeLogs("Не удалось сохранить продукт с id: " . $prod['id'], 'SaveImportProduct.txt');
                 return false;
             }
+            //сохраниние в характеристики
+            // $prod['group_id'] = ShopGroup::find()->where(['shop_id' => $shop_model['id']])->one()->group_id;
+            $group = Group::find()->asArray()->where(['name' => $shop_model['name']])->one();
+            if (array_key_exists('characteristics', $prod) && !empty($connectionData['characters_id'])) {
+                foreach ($prod['characteristics'] as $k => $value) {
+                    $prod_char_model = new ProductCharacteristic();
+                    $prod_char_model->product_id = $prod_model->id;
+                    // $group_id = $prod['group_id'];
+                    $prod_char_model->group_id = $group['id'];
+                    $prod_char_model->characteristic_id = $connectionData['characters_id'][$k];
+                    $prod_char_model->value = $value;
+                    $prod_char_model->save();
+                }
+            }
             if (!empty($connectionData['seo_template'])) {
                 //генерация сео
                 foreach ($connectionData['seo_template'] as $keySeo => $oneSeoColumn) {
                     $seo[$keySeo] = SeoMeta::SeoGenerator($oneSeoColumn, $assemble_cache_frame);
                 }
-                //сохранение сео товару
-                SeoWidget::save($prod_model->id, 'product', $seo['Product']);
-                if (!$prod_model->update()) {
-                    $this->importService->writeLogs("Не удалось сохранить seo продукта с id: " . $prod['id'], 'SaveImportProduct.txt');
-                    return false;
+                foreach($LW as $item){
+                    $resultSaveSeo = SeoWidget::save($prod_model->id, 'product', [$item['alias'] => $seo['Product']]);
+                    //сохранение сео товару
+                    if (empty($resultSaveSeo)) {
+                        $this->importService->writeLogs("Не удалось сохранить seo продукта с id: " . $prod['id'], 'SaveImportProduct.txt');
+                        return false;
+                    }
                 }
             }
             //загрузка картинки товара

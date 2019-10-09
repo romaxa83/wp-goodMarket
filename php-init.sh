@@ -13,3 +13,5 @@ php -r "unlink('composer-setup.php');"
 php composer.phar install
 php composer.phar update
 php init --env=Development --overwrite=No
+
+chown -R 500:500 /var/www/html/

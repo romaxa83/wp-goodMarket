@@ -202,7 +202,7 @@ class SaveImportController extends BaseController {
         $main_fields = $post['requiredField'];
         $additional_fields = $post['additionalField'];
         $category_prosto = $post['categoryProsto'];
-
+        $characters_shop = (isset($post['characteristic'])) ? $post['characteristic'] : [];
 //        // пересмотреть код
 //        $category_data = ArrayHelper::index(Category::find()
 //                                ->select(['category.id', 'category.parent_id', 'category_lang.name'])
@@ -210,7 +210,6 @@ class SaveImportController extends BaseController {
 //                                ->asArray()->all(), 'id');
 //        $category_shop = $this->addItem($category_data);
 //        //$category_shop = unserialize('a:2:{i:0;a:5:{i:80257;a:2:{s:6:"parent";a:2:{s:4:"name";s:26:"Телефоны, MP3, GPS";s:9:"parent_id";i:0;}s:5:"child";a:6:{i:80003;a:2:{s:6:"parent";a:2:{s:4:"name";s:35:"Мобильные телефоны";s:9:"parent_id";s:5:"80257";}s:5:"child";a:0:{}}i:80023;a:2:{s:6:"parent";a:2:{s:4:"name";s:33:"Электронные книги";s:9:"parent_id";s:5:"80257";}s:5:"child";a:0:{}}i:80027;a:2:{s:6:"parent";a:2:{s:4:"name";s:16:"Наушники";s:9:"parent_id";s:5:"80257";}s:5:"child";a:0:{}}i:80263;a:2:{s:6:"parent";a:2:{s:4:"name";s:89:"Аксессуары для мобильных телефонов и смартфонов";s:9:"parent_id";s:5:"80257";}s:5:"child";a:5:{i:80032;a:2:{s:6:"parent";a:2:{s:4:"name";s:28:"Bluetooth-гарнитуры";s:9:"parent_id";s:5:"80263";}s:5:"child";a:0:{}}i:146229;a:2:{s:6:"parent";a:2:{s:4:"name";s:55:"Чехлы для мобильных телефонов";s:9:"parent_id";s:5:"80263";}s:5:"child";a:0:{}}i:146332;a:2:{s:6:"parent";a:2:{s:4:"name";s:69:"Аккумуляторы для мобильных телефонов";s:9:"parent_id";s:5:"80263";}s:5:"child";a:0:{}}i:651392;a:2:{s:6:"parent";a:2:{s:4:"name";s:19:"Смарт-часы";s:9:"parent_id";s:5:"80263";}s:5:"child";a:0:{}}i:146202;a:2:{s:6:"parent";a:2:{s:4:"name";s:45:"Защитные пленки и стекла";s:9:"parent_id";s:5:"80263";}s:5:"child";a:2:{i:4635113;a:2:{s:6:"parent";a:2:{s:4:"name";s:29:"Защитные пленки";s:9:"parent_id";s:6:"146202";}s:5:"child";a:0:{}}i:4635121;a:2:{s:6:"parent";a:2:{s:4:"name";s:29:"Защитные стекла";s:9:"parent_id";s:6:"146202";}s:5:"child";a:0:{}}}}}}i:4626529;a:2:{s:6:"parent";a:2:{s:4:"name";s:49:"Мобильная связь и интернет";s:9:"parent_id";s:5:"80257";}s:5:"child";a:1:{i:83244;a:2:{s:6:"parent";a:2:{s:4:"name";s:35:"Мобильный интернет";s:9:"parent_id";s:7:"4626529";}s:5:"child";a:0:{}}}}i:4628089;a:2:{s:6:"parent";a:2:{s:4:"name";s:61:"Оптические аксессуары и адаптеры";s:9:"parent_id";s:5:"80257";}s:5:"child";a:1:{i:4628096;a:2:{s:6:"parent";a:2:{s:4:"name";s:63:"Объективы для мобильных устройств";s:9:"parent_id";s:7:"4628089";}s:5:"child";a:0:{}}}}}}i:81202;a:2:{s:6:"parent";a:2:{s:4:"name";s:55:"Активный отдых, туризм и хобби";s:9:"parent_id";i:0;}s:5:"child";a:1:{i:82411;a:2:{s:6:"parent";a:2:{s:4:"name";s:30:"Туризм и кемпинг";s:9:"parent_id";s:5:"81202";}s:5:"child";a:1:{i:82445;a:2:{s:6:"parent";a:2:{s:4:"name";s:38:"Рюкзаки и гермомешки";s:9:"parent_id";s:5:"82411";}s:5:"child";a:0:{}}}}}}i:88468;a:2:{s:6:"parent";a:2:{s:4:"name";s:30:"Товары для детей";s:9:"parent_id";i:0;}s:5:"child";a:3:{i:4265805;a:2:{s:6:"parent";a:2:{s:4:"name";s:29:"Детские игрушки";s:9:"parent_id";s:5:"88468";}s:5:"child";a:2:{i:100812;a:2:{s:6:"parent";a:2:{s:4:"name";s:59:"Машинки, модели техники и оружие";s:9:"parent_id";s:7:"4265805";}s:5:"child";a:1:{i:97422;a:2:{s:6:"parent";a:2:{s:4:"name";s:47:"Радиоуправляемые игрушки";s:9:"parent_id";s:6:"100812";}s:5:"child";a:0:{}}}}i:100784;a:2:{s:6:"parent";a:2:{s:4:"name";s:40:"Развитие и творчество";s:9:"parent_id";s:7:"4265805";}s:5:"child";a:1:{i:102912;a:2:{s:6:"parent";a:2:{s:4:"name";s:20:"Творчество";s:9:"parent_id";s:6:"100784";}s:5:"child";a:1:{i:4632117;a:2:{s:6:"parent";a:2:{s:4:"name";s:18:"Рисование";s:9:"parent_id";s:6:"102912";}s:5:"child";a:0:{}}}}}}}}i:3933347;a:2:{s:6:"parent";a:2:{s:4:"name";s:47:"Прогулки и активный отдых";s:9:"parent_id";s:5:"88468";}s:5:"child";a:1:{i:4625901;a:2:{s:6:"parent";a:2:{s:4:"name";s:32:"Электротранспорт";s:9:"parent_id";s:7:"3933347";}s:5:"child";a:0:{}}}}i:4630482;a:2:{s:6:"parent";a:2:{s:4:"name";s:26:"Робототехника";s:9:"parent_id";s:5:"88468";}s:5:"child";a:0:{}}}}i:80258;a:2:{s:6:"parent";a:2:{s:4:"name";s:37:"ТВ, Аудио/Видео, Фото";s:9:"parent_id";i:0;}s:5:"child";a:2:{i:80011;a:2:{s:6:"parent";a:2:{s:4:"name";s:22:"Медиаплееры";s:9:"parent_id";s:5:"80258";}s:5:"child";a:0:{}}i:80015;a:2:{s:6:"parent";a:2:{s:4:"name";s:44:"Телевизоры и аксессуары";s:9:"parent_id";s:5:"80258";}s:5:"child";a:1:{i:165692;a:2:{s:6:"parent";a:2:{s:4:"name";s:39:"ТВ-антенны и ресиверы";s:9:"parent_id";s:5:"80015";}s:5:"child";a:0:{}}}}}}i:80253;a:2:{s:6:"parent";a:2:{s:4:"name";s:40:"Компьютеры и ноутбуки";s:9:"parent_id";i:0;}s:5:"child";a:3:{i:80004;a:2:{s:6:"parent";a:2:{s:4:"name";s:16:"Ноутбуки";s:9:"parent_id";s:5:"80253";}s:5:"child";a:0:{}}i:80026;a:2:{s:6:"parent";a:2:{s:4:"name";s:51:"Компьютерные комплектующие";s:9:"parent_id";s:5:"80253";}s:5:"child";a:2:{i:80261;a:2:{s:6:"parent";a:2:{s:4:"name";s:36:"Товары для геймеров";s:9:"parent_id";s:5:"80026";}s:5:"child";a:1:{i:80020;a:2:{s:6:"parent";a:2:{s:4:"name";s:66:"Игровые консоли и детские приставки";s:9:"parent_id";s:5:"80261";}s:5:"child";a:0:{}}}}i:80087;a:2:{s:6:"parent";a:2:{s:4:"name";s:20:"Видеокарты";s:9:"parent_id";s:5:"80026";}s:5:"child";a:0:{}}}}i:80111;a:2:{s:6:"parent";a:2:{s:4:"name";s:39:"Сетевое оборудование";s:9:"parent_id";s:5:"80253";}s:5:"child";a:1:{i:80193;a:2:{s:6:"parent";a:2:{s:4:"name";s:28:"Маршрутизаторы";s:9:"parent_id";s:5:"80111";}s:5:"child";a:0:{}}}}}}}i:1;N;}');
-//        $characters_shop = (isset($post['characteristic'])) ? $post['characteristic'] : [];
 //        $combine_category = array_combine(array_values($this->importService->getCategoryKeys($category_shop)), array_values($category_prosto));
 //        // /пересмотреть код
 
@@ -232,15 +231,15 @@ class SaveImportController extends BaseController {
         $group_model->status = 1;
         //создание характеристики
         if ($group_model->save()) {
-            $group_id = $group_model->id;
-            $shop_group = new ShopGroup();
-            $shop_group->shop_id = $shop_model->id;
-            $shop_group->group_id = $group_id;
-            if ($shop_group->save()) {
+            // $group_id = $group_model->id;
+            // $shop_group = new ShopGroup();
+            // $shop_group->shop_id = $shop_model->id;
+            // $shop_group->group_id = $group_id;
+            // if ($shop_group->save()) {
                 if (!empty($characters_shop)) {
                     foreach ($characters_shop as $key => $value) {
                         $characteristic_model = new Characteristic();
-                        $characteristic_model->group_id = $group_id;
+                        $characteristic_model->group_id = $group_model->id;
                         $characteristic_model->name = $value;
                         $characteristic_model->type = 'text';
                         $characteristic_model->status = 1;
@@ -250,9 +249,7 @@ class SaveImportController extends BaseController {
                         }
                     }
                 }
-            } else {
-                $characters_shop = [];
-            }
+            // }
         }
         /* СОХРАНЕНИЕ ПАРАМЕТРОВ В ФАЙЛ */
         $index = $shop_model->id;
