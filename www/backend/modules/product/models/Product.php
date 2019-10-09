@@ -55,7 +55,8 @@ class Product extends ActiveRecord {
             'rating' => 'Рейтинг',
             'is_variant' => 'Вариативный товар',
             'type' => 'Тип',
-            'vendor_code' => 'Артикул'
+            'vendor_code' => 'Артикул',
+            'new' => 'Отображать ли статус новый'
         ];
     }
 

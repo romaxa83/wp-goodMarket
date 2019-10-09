@@ -129,6 +129,16 @@ Modal::end();
                     return $return;
                 }
             ]);
+            echo $form->field($model, 'new')->inline()->radioList([1 => ' Да', 0 => ' Нет'], [
+                'item' => function($index, $label, $name, $checked, $value) {
+                    $check = $checked ? ' checked="checked"' : '';
+                    $return = '<label class="mr-15">';
+                    $return .= '<input type="radio" name="' . $name . '" value="' . $value . '" ' . $check . ' class="custom-radio">';
+                    $return .= '<span>' . ucwords($label) . '</span>';
+                    $return .= '</label>';
+                    return $return;
+                }
+            ]);
             ?>
         </div>
         <div class="tab-pane" id="tab_3">
