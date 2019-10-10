@@ -16,7 +16,7 @@ use Yii;
  *
  * @property Page $page
  */
-class PageText extends \yii\db\ActiveRecord 
+class PageTextLang extends \yii\db\ActiveRecord 
 {
 
     /**
@@ -24,7 +24,7 @@ class PageText extends \yii\db\ActiveRecord
      */
     public static function tableName() 
     {
-        return 'page_text';
+        return 'page_text_lang';
     }
 
     /**

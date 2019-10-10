@@ -39,17 +39,17 @@ class BannerTest extends Unit {
         BannerLang::deleteAll();
     }
 
-    public function testCreate() {
-        $this->assertTrue(BannerLang::saveAll(new Banner(), new BannerLang(), $this->tester->grabFixture('data')->data));
-    }
+    // public function testCreate() {
+    //     $this->assertTrue(BannerLang::saveAll(new Banner(), new BannerLang(), $this->tester->grabFixture('data')->data));
+    // }
 
-    public function testEmpty() {
-        $model = new Banner();
-        $this->assertTrue($model->load($this->tester->grabFixture('data_empty')->data));
-        $this->assertFalse($model->validate());
-        expect_that($model->getErrors('status'));
-        expect($model->getFirstError('status'))
-                ->equals('Необходимо заполнить «Опубликовать».');
-    }
+    // public function testEmpty() {
+    //     $model = new Banner();
+    //     $this->assertTrue($model->load($this->tester->grabFixture('data_empty')->data));
+    //     $this->assertFalse($model->validate());
+    //     expect_that($model->getErrors('status'));
+    //     expect($model->getFirstError('status'))
+    //             ->equals('Необходимо заполнить «Опубликовать».');
+    // }
 
 }

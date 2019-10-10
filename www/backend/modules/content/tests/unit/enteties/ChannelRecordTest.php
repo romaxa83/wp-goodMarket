@@ -16,6 +16,12 @@ use backend\modules\content\tests\fixtures\ChannelRecordContentFixture;
 use backend\modules\content\tests\fixtures\ChannelRecordsCommonFieldFixture;
 use backend\modules\content\tests\fixtures\SeoDataFixture;
 use backend\modules\content\tests\fixtures\SlugManagerFixture;
+
+use backend\modules\content\tests\fixtures\PageArrayFixture;
+use backend\modules\content\tests\fixtures\PageArrayEmptyFixture;
+use backend\modules\content\tests\fixtures\PageMetaArrayFixture;
+use backend\modules\content\tests\fixtures\PageMetaArrayEmptyFixture;
+
 use backend\modules\content\tests\UnitTester;
 use Codeception\Test\Unit;
 
@@ -43,6 +49,16 @@ class ChannelRecordTest extends Unit
 
     /** @var $channel Channel */
     private $channel;
+
+    public function _fixtures() 
+    {
+        return [
+            'dataPage' => PageArrayFixture::className(),
+            'dataEmptyPage' => PageArrayEmptyFixture::className(),
+            'dataPageMeta' => PageMetaArrayFixture::className(),
+            'dataEmptyPageMeta' => PageMetaArrayEmptyFixture::className()
+        ];
+    }
 
     protected function _before()
     {
