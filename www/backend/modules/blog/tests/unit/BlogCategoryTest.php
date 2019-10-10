@@ -1,4 +1,5 @@
 <?php
+namespace backend\modules\blog\tests\unit;
 
 use common\models\Lang;
 use backend\widgets\langwidget\LangWidget;
@@ -108,7 +109,7 @@ class BlogCategoryTest extends Unit
         $this->assertFalse($form->validate()); 
         $this->assertFalse(LangWidget::validate($langModel,$data));
 
-        $this->expectException(DomainException::class);
+        $this->expectException(\DomainException::class);
         $baseModel = $this->service->create($form);
     }
 
