@@ -2,11 +2,12 @@ version: '3'
 
 services:
   php:
-    image: hub.t-me.pp.ua/wi1w/webserver:7-1-opencart
-    command: bash -c 'sh /migrate.sh && . /etc/apache2/envvars; /usr/sbin/apache2 -DFOREGROUND' 
+    image: hub.t-me.pp.ua/wi1w/webserver:7-1-opencart-rc1-2
+    command: bash -c 'sh /var/www/html/php-init.sh && sh /migrate.sh && . /etc/apache2/envvars; /usr/sbin/apache2 -DFOREGROUND' 
     volumes:
       - ./migrate.sh:/migrate.sh
       - ./www:/var/www/html
+      - ./php-init.sh:/var/www/html/php-init.sh
       - ./logs/apache2:/var/log/apache2
       - ./config/vhosts/default.conf:/etc/apache2/sites-enabled/000-default.conf
       - ./config/php/php.ini:/usr/local/etc/php/php.ini
