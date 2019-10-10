@@ -1,4 +1,5 @@
 <?php 
+namespace backend\modules\blog\tests\unit;
 
 use common\models\Lang;
 use backend\widgets\langwidget\LangWidget;
