@@ -1,0 +1,94 @@
+version: '3'
+
+services:
+  php:
+    image: hub.t-me.pp.ua/wi1w/webserver:7-1-opencart
+    command: bash -c 'sh /migrate.sh && . /etc/apache2/envvars; /usr/sbin/apache2 -DFOREGROUND' 
+    volumes:
+      - ./migrate.sh:/migrate.sh
+      - ./www:/var/www/html
+      - ./logs/apache2:/var/log/apache2
+      - ./config/vhosts/default.conf:/etc/apache2/sites-enabled/000-default.conf
+      - ./config/php/php.ini:/usr/local/etc/php/php.ini
+    links:
+      - mariadb
+    depends_on:
+      - mariadb
+    networks:
+      - backend
+      - frontend
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=frontend'
+      - 'traefik.http.routers.${PROJ}_web.rule=Host(`${DOMAIN}`,`www.${DOMAIN}`)'
+      - 'traefik.http.routers.${PROJ}_web.entrypoints=http'
+      - 'traefik.http.routers.${PROJ}_web.middlewares=forcessl@file,securehead@file'
+      - 'traefik.http.routers.${PROJ}_sweb.rule=Host(`${DOMAIN}`,`www.${DOMAIN}`)'
+      - 'traefik.http.routers.${PROJ}_sweb.entrypoints=https'
+      - 'traefik.http.routers.${PROJ}_sweb.tls.certresolver=sample'
+      - 'traefik.http.routers.${PROJ}_sweb.middlewares=${PROJ}_w3redir,auth@file'
+      - 'traefik.http.services.${PROJ}_web.loadbalancer.server.port=80'
+      - "traefik.http.middlewares.${PROJ}_w3redir.redirectregex.permanent=true"
+      - "traefik.http.middlewares.${PROJ}_w3redir.redirectregex.regex=^https://www.${DOMAIN}/(.*)$$"
+      - "traefik.http.middlewares.${PROJ}_w3redir.redirectregex.replacement=https://${DOMAIN}/$$1"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  mariadb:
+    image: mariadb:10.3
+    command: bash -c "chown -R mysql:mysql /var/log/mysql && exec /docker-entrypoint.sh mysqld --log-error=/var/log/mysql/err.log --general-log=1 --general-log-file=/var/log/mysql/general-log.log --character-set-server=utf8 --collation-server=utf8_general_ci"
+    volumes:
+      - ./mariadb:/var/lib/mysql
+      - ./logs/mysql:/var/log/mysql
+      - ./db/bcp.sql:/docker-entrypoint-initdb.d/dump.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - backend
+    labels:
+      - 'traefik.enable=false'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    links:
+      - mariadb:db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    networks:
+      - frontend
+      - backend
+    volumes: 
+      - /sessions
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=frontend'
+      - 'traefik.http.routers.${PROJ}_madmin.rule=Host(`madmin.${DOMAIN}`)'
+      - 'traefik.http.routers.${PROJ}_madmin.entrypoints=http'
+      - 'traefik.http.routers.${PROJ}_madmin.middlewares=forcessl@file,securehead@file'
+      - 'traefik.http.routers.${PROJ}_smadmin.rule=Host(`madmin.${DOMAIN}`)'
+      - 'traefik.http.routers.${PROJ}_smadmin.entrypoints=https'
+      - 'traefik.http.routers.${PROJ}_smadmin.tls.certresolver=sample'
+      - 'traefik.http.routers.${PROJ}_smadmin.middlewares=auth@file'
+      - 'traefik.http.services.${PROJ}_madmin.loadbalancer.server.port=80'
+
+networks:
+  frontend:
+    external: true
+  backend:
+    external: false
+
