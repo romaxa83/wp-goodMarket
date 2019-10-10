@@ -59,7 +59,6 @@ class SlugManagerTest extends Unit
     public function it_create_route_while_creating_page()
     {
         $page = new Page();
-        $page->title = 'Главная';
         $page->status = 1;
 
         $page->pageMetas = $this->meta;
@@ -75,7 +74,6 @@ class SlugManagerTest extends Unit
     public function a_route_can_be_assigned_to_page()
     {
         $page = new Page();
-        $page->title = 'Главная';
         $page->status = 1;
 
         $page->pageMetas = $this->meta;

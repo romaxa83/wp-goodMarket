@@ -1,19 +1,34 @@
 <?php
 
-
 namespace backend\modules\content\tests\unit\entities;
 
-use backend\modules\content\models\Page;
-use backend\modules\content\models\PageMeta;
-use backend\modules\content\models\PageText;
-use backend\modules\content\models\SlugManager;
-use backend\modules\content\tests\UnitTester;
-use backend\modules\content\tests\fixtures\PageFixture;
-use backend\modules\content\tests\fixtures\PageMetaFixture;
-use backend\modules\content\tests\fixtures\PageTextFixture;
-use backend\modules\content\tests\fixtures\SlugManagerFixture;
-use Codeception\Test\Unit;
+use Yii;
 
+use common\models\Lang;
+use backend\modules\content\models\Page;
+use backend\modules\content\models\PageLang;
+
+use backend\modules\content\models\PageMeta;
+use backend\modules\content\models\PageMetaLang;
+
+use backend\modules\content\models\PageText;
+use backend\modules\content\models\PageTextLang;
+
+use backend\modules\content\tests\fixtures\PageFixture;
+use backend\modules\content\tests\fixtures\PageLangFixture;
+
+use backend\modules\content\tests\fixtures\PageMetaFixture;
+use backend\modules\content\tests\fixtures\PageMetaLangFixture;
+
+use backend\modules\content\tests\fixtures\LangFixture;
+
+use backend\modules\content\models\SlugManager;
+use backend\modules\content\tests\fixtures\SlugManagerFixture;
+
+use backend\widgets\langwidget\LangWidget;
+
+use backend\modules\content\tests\UnitTester;
+use Codeception\Test\Unit;
 
 class PageTest extends Unit
 {
@@ -22,31 +37,32 @@ class PageTest extends Unit
      */
     protected $tester;
 
-    /** @var $content PageText */
-    private $content;
-
-    /** @var $meta PageMeta */
-    private $meta;
-
     /** @var $router SlugManager */
     private $router;
 
     public function _before()
     {
         $this->tester->haveFixtures([
-            'content' => [
-                'class' => PageTextFixture::className(),
+            'page' => [
+                'class' => PageFixture::className()
             ],
-            'meta' => [
-                'class' => PageMetaFixture::className(),
+            'pageLang' => [
+                'class' => PageLangFixture::className()
+            ],
+            'pageMeta' => [
+                'class' => PageMetaFixture::className()
+            ],
+            'pageMetaLang' => [
+                'class' => PageMetaLangFixture::className()
             ],
             'router' => [
-                'class' => SlugManagerFixture::className(),
+                'class' => SlugManagerFixture::className()
+            ],
+            'lang' => [
+                'class' => LangFixture::className()
             ]
         ]);
 
-        $this->content = $this->tester->grabFixture('content', 'content1');
-        $this->meta = $this->tester->grabFixture('meta', 'meta1');
         $this->router = $this->tester->grabFixture('router', 'route1');
     }
 
@@ -54,97 +70,122 @@ class PageTest extends Unit
     {
         SlugManager::deleteAll();
         PageMeta::deleteAll();
-        PageText::deleteAll();
         Page::deleteAll();
     }
 
     /** @test */
-    public function it_not_create_not_named_page()
+    public function testSuccessCreate()
     {
+        $data = $this->tester->grabFixture('dataPageMeta')->data['create'];
+        
         $page = new Page();
+        $pageLang = new PageLang();
 
-        $page->pageMetas = $this->meta;
-        $page->slugManager = $this->router;
+        $pageMeta = new PageMeta();
+        $pageMetaLang = new PageMetaLang();
 
-        $status = $page->save();
-        $this->assertFalse($status);
+        $slug = new SlugManager();
+        
+        $this->assertTrue($page->load($data));
+        $this->assertTrue(LangWidget::validate($pageLang,$data));
+        $this->assertTrue(LangWidget::validate($pageMetaLang,$data));
+
+        $this->assertTrue($page->savePage($page, $pageMeta, $slug,$data));
+
+        $pageLang->saveLang($data['PageLang'],$page->id);
+        $pageMetaLang->saveLang($data['PageMetaLang'],$page->id);
+
+        $pageDb = Page::find()->where(['id' => $page->id])->asArray()->with('manyLang')->one();
+        $pageMetaDb = PageMeta::find()->where(['page_id' => $page->id])->asArray()->with('manyLang')->one();
+
+        $this->assertEquals($pageDb['manyLang'][0]['title'], $data['PageLang']['ru']['title']);
+        $this->assertEquals($pageDb['manyLang'][1]['title'], $data['PageLang']['en']['title']);
+
+        $this->assertEquals($pageMetaDb['manyLang'][0]['title'], $data['PageMetaLang']['ru']['title']);
+        $this->assertEquals($pageMetaDb['manyLang'][1]['title'], $data['PageMetaLang']['en']['title']);
     }
 
     /** @test */
-    public function it_require_assigned_route()
+    public function testEmptyPageCreate()
     {
+        $data = $this->tester->grabFixture('dataEmptyPage')->data;
+        
         $page = new Page();
-        $page->title = 'Главная';
-        $page->status = 1;
+        $pageLang = new PageLang();
 
-        $page->pageMetas = $this->meta;
+        $pageMeta = new PageMeta();
+        $pageMetaLang = new PageMetaLang();
 
-        $status = $page->save();
-        $this->assertFalse($status);
+        $slug = new SlugManager();
 
-        $page->slugManager = $this->router;
-        $this->assertInstanceOf(SlugManager::className(), $page->slugManager);
+        $this->assertTrue($page->load($data));
+        
+        $this->assertFalse(LangWidget::validate($pageLang,$data));
+        $this->assertTrue(LangWidget::validate($pageMetaLang,$data));
     }
 
     /** @test */
-    public function it_require_assigned_meta()
+    public function testEmptyMetaCreate()
     {
+        $data = $this->tester->grabFixture('dataEmptyPageMeta')->data;
+
         $page = new Page();
-        $page->title = 'Главная';
-        $page->status = 1;
+        $pageLang = new PageLang();
 
-        $page->slugManager = $this->router;
+        $pageMeta = new PageMeta();
+        $pageMetaLang = new PageMetaLang();
 
-        $status = $page->save();
-        $this->assertFalse($status);
+        $slug = new SlugManager();
 
-        $page->pageMetas = $this->meta;
-        $this->assertInstanceOf(PageMeta::className(), $page->pageMetas);
+        $this->assertTrue($page->load($data));
+        
+        $this->assertTrue(LangWidget::validate($pageLang,$data));
+        $this->assertFalse(LangWidget::validate($pageMetaLang,$data));
     }
 
     /** @test */
-    public function it_create_page()
+    public function testSuccessUpdate()
     {
-        $page = new Page();
-        $page->title = 'Главная';
-        $page->status = 1;
+        $data = $this->tester->grabFixture('dataPageMeta')->data['update'];
+        
+        $page = Page::find()->one();
+        $pageLang = PageLang::find()->where(['page_id' => $page->id])->one();
 
-        $page->pageMetas = $this->meta;
-        $page->slugManager = $this->router;
+        $pageMeta = PageMeta::find()->where(['page_id' => $page->id])->one();
+        $pageMetaLang = PageMetaLang::find()->where(['meta_id' => $pageMeta->id])->one();
 
-        $status = $page->save();
-        $this->assertTrue($status);
+        $slug = new SlugManager();
+        
+        $this->assertTrue($page->load($data));
+        $this->assertTrue(LangWidget::validate($pageLang,$data));
+        $this->assertTrue(LangWidget::validate($pageMetaLang,$data));
+
+        $this->assertTrue($page->savePage($page, $pageMeta, $slug,$data));
+
+        $pageLang->updateLang($data['PageLang'],$page->id);
+        $pageMetaLang->updateLang($data['PageMetaLang'],$pageMeta->id);
+
+        $pageDb = Page::find()->where(['id' => $page->id])->asArray()->with('manyLang')->one();
+        $pageMetaDb = PageMeta::find()->where(['page_id' => $page->id])->asArray()->with('manyLang')->one();
+
+        $this->assertEquals($pageDb['manyLang'][0]['title'], $data['PageLang']['ru']['title']);
+        $this->assertEquals($pageDb['manyLang'][1]['title'], $data['PageLang']['en']['title']);
+
+        $this->assertEquals($pageMetaDb['manyLang'][0]['title'], $data['PageMetaLang']['ru']['title']);
+        $this->assertEquals($pageMetaDb['manyLang'][1]['title'], $data['PageMetaLang']['en']['title']);
     }
 
-    /** @test */
-    public function it_can_be_assigned_with_content()
+    public function testSuccessDelete()
     {
-        $page = new Page();
-        $page->title = 'Главная';
-        $page->status = 1;
+        Page::deleteAll(['id' => 1]);
+        
+        $this->assertEquals(Page::find()->count(),0);
+        $this->assertEquals(PageLang::find()->count(),0);
 
-        $page->pageMetas = $this->meta;
-        $page->slugManager = $this->router;
-        $page->pageText = $this->content;
+        $this->assertEquals(PageMeta::find()->count(),0);
+        $this->assertEquals(PageMetaLang::find()->count(),0);
 
-        $status = $page->save();
-        $this->assertTrue($status);
-    }
-
-    /** @test */
-    public function it_save_page_with_correct_title_and_status()
-    {
-        $page = new Page();
-        $page->title = 'Главная';
-        $page->status = 1;
-
-        $page->pageMetas = $this->meta;
-        $page->slugManager = $this->router;
-
-        $page->save();
-        $page->refresh();
-
-        $this->assertEquals($page->title, 'Главная');
-        $this->assertEquals($page->status, 1);
+        $this->assertEquals(PageText::find()->count(),0);
+        $this->assertEquals(PageTextLang::find()->count(),0);
     }
 }

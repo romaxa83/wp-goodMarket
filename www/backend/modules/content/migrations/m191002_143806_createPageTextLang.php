@@ -18,7 +18,7 @@ class m191002_143806_createPageTextLang extends Migration
             'id' => $this->primaryKey(),
             'page_id' => $this->integer(),
             'lang_id' => $this->integer(),
-            'text' => $this->string()->notNull()
+            'text' => $this->text()->notNull()
         ], $tableOptions);
         
         $this->addForeignKey('{{%fk-page_text_lang-id}}','{{%page_text_lang}}', 'page_id', '{{%page_text}}', 'id',  'CASCADE', 'RESTRICT');

@@ -7,5 +7,5 @@ use yii\test\ActiveFixture;
 class PageTextFixture extends ActiveFixture
 {
     public $modelClass = 'backend\modules\content\models\PageText';
-    public $dataFile = 'backend/modules/content/tests/fixtures/data/page/page_text.php';
+    public $dataFile = 'backend/modules/content/tests/fixtures/data/pageText/page_text.php';
 }

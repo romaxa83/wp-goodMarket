@@ -48,10 +48,9 @@ class PageTextTest extends Unit
     }
 
     /** @test */
-    public function it_create_content_for_page()
+    public function testSuccessCreate()
     {
         $page = new Page();
-        $page->title = 'Main';
         $page->status = 1;
 
         $page->slugManager = $this->router;
@@ -61,7 +60,6 @@ class PageTextTest extends Unit
         $pageText->name = 'seo';
         $pageText->label = 'SEO Text';
         $pageText->type = 'editor';
-        $pageText->text = '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec rutrum congue leo eget malesuada.</p>';
 
         $page->pageText = $pageText;
 

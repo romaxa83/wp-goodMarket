@@ -125,7 +125,7 @@ class PageController extends Controller
         if(Yii::$app->request->isPost){
             $post = Yii::$app->request->post();
             if($model->load($post) && LangWidget::validate($langModel,$post) && LangWidget::validate($langSeo,$post)){
-                if($this->savePage($model, $seo, $slug)) {
+                if($model->savePage($model, $seo, $slug, $post)) {
                     $langModel->saveLang($post['PageLang'],$model->id);
                     $langSeo->saveLang($post['PageMetaLang'],$model->id);
 
@@ -186,8 +186,8 @@ class PageController extends Controller
 
         if(Yii::$app->request->isPost){
             $post = Yii::$app->request->post();
-            if ($model->load($post) && LangWidget::validate($langModel,$post)) {
-                if($this->savePage($model, $seo, $slug)) {
+            if ($model->load($post)&& LangWidget::validate($langModel,$post) && LangWidget::validate($langSeo,$post)) {
+                if($model->savePage($model, $seo, $slug)) {
                     $langModel->updateLang($post['PageLang'],$id);
                     $langSeo->updateLang($post['PageMetaLang'],$id);
 
@@ -266,35 +266,6 @@ class PageController extends Controller
         $template = Yii::$app->getModule('content')->params['templates'][$slug];
         $route = $template['route'];
         return $route;
-    }
-
-    private function savePage(Page $model, $seo, $slug)
-    {
-        $seo->attributes = Yii::$app->request->post('PageMeta');
-        $model->pageMetas = $seo;
-        
-        $slug->attributes = Yii::$app->request->post('slug');
-        $model->slugManager = $slug;
-
-        $texts = Yii::$app->request->post('block');
-
-        if($texts) {
-            $model->pageText = PageText::preparePostData($texts);
-        }
-
-        if($model->save()) {
-            Yii::$app->session->setFlash('success', "<p>Данные сохранены</p>");
-            return true;
-        }else {
-            $errors = '';
-            foreach ($model->getErrors() as $fieldWithErrors) {
-                foreach ($fieldWithErrors as $error) {
-                    $errors .= '<p>' . $error . '</p>';
-                }
-            }
-            Yii::$app->session->setFlash('error', $errors);
-        }
-        return false;
     }
 
     /**

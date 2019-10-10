@@ -93,6 +93,35 @@ class Page extends ActiveRecord {
         return parent::save($runValidation, $attributeNames);
     }
 
+    public function savePage(Page $model, $seo, $slug, $post)
+    {
+        $seo->attributes = $post['PageMeta'] ?? [];
+        $model->pageMetas = $seo;
+
+        $slug->attributes = $post['slug'] ?? [];
+        $model->slugManager = $slug;
+
+        $texts = $post['block'] ?? [];
+
+        if($texts) {
+            $model->pageText = PageText::preparePostData($texts);
+        }
+
+        if($model->save()) {
+            Yii::$app->session->setFlash('success', "<p>Данные сохранены</p>");
+            return true;
+        }else {
+            $errors = '';
+            foreach ($model->getErrors() as $fieldWithErrors) {
+                foreach ($fieldWithErrors as $error) {
+                    $errors .= '<p>' . $error . '</p>';   
+                }
+            }
+            Yii::$app->session->setFlash('error', $errors);
+        }
+        return false;
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */
